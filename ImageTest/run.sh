@@ -1,4 +1,24 @@
 #!/bin/bash
+
+function printUsageAndExit()
+{
+    echo "Must provide arguments: <arch. type> <swt version>"
+    echo "   possible values: <32|64> <3.3.2|3.4|3.4.1|3.4.2|3.5|3.5.1|3.5.2|3.6.1|3.6.2|3.7M5>"
+    echo "Example:"
+    echo "   ./run.sh 64 3.5.1"
+    exit -1
+}
+
+
+if [ "X${1}" = "X" ]
+then
+    printUsageAndExit
+fi
+if [ "X${2}" = "X" ]
+then
+    printUsageAndExit
+fi
+
 DEST_DIR=~/swt_test
 PKG=de/loskutov/swt/tests
 CLASS=de.loskutov.swt.tests.ShellWithImages
@@ -32,6 +52,13 @@ else
     fi
     unzip -nq 64bit.zip
     classpath=${DEST_DIR}/:${DEST_DIR}/64bit/${2}/swt.jar
+fi
+
+if [[ ! -a ${JAVA_CMD} ]]
+then
+    echo "Java not found in "${JAVA_CMD}
+    JAVA_CMD=${JAVA_HOME}/bin/java
+    echo "Using whatever defined by \$JAVA_HOME: "${JAVA_CMD}
 fi
 
 if [[ ! -a ${DEST_DIR}/${PKG}/ShellWithImages.class ]]

@@ -3,4 +3,4 @@ syntax: regexp
 syntax: regexp
 ^IOTester/build\.xml$
 syntax: regexp
-^.+\.class
+^.+\.class$

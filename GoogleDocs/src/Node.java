@@ -93,6 +93,18 @@ public class Node {
         }
     }
 
+    static int leastCommonAncestor(Node n, int v1, int v2) {
+        while(true) {
+            if(v1 > n.value && v2 > n.value && n.right != null) {
+                n = n.right;
+            } else if (v1 < n.value && v2 < n.value && n.left != null) {
+                n = n.left;
+            } else {
+                return n.value;
+            }
+        }
+    }
+
     public static void main(String[] args) {
         Node n = new Node(5);
         n.left = new Node(3);
@@ -126,6 +138,9 @@ public class Node {
         System.out.print("\nInorder (nr): \t\t");
         inOrderPrintNonRec(n);
 
+        int first = 6;
+        int second = 2;
+        System.out.print("\nLCA of " + first + "&" + second + " is " + leastCommonAncestor(n, first, second));
 
         System.out.println();
     }

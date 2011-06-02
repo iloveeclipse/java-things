@@ -1,5 +1,5 @@
 #FindBugs User Preferences
-#Mon Mar 21 14:51:53 CET 2011
+#Thu Jun 02 22:18:07 CEST 2011
 detectorAppendingToAnObjectOutputStream=AppendingToAnObjectOutputStream|true
 detectorAtomicityProblem=AtomicityProblem|true
 detectorBCPMethodReturnCheck=BCPMethodReturnCheck|true
@@ -159,7 +159,6 @@ detectorWrongMapIterator=WrongMapIterator|true
 detectorXMLFactoryBypass=XMLFactoryBypass|true
 detector_threshold=2
 effort=max
-excludefilter0=findbugsExclude.xml
-filter_settings=Medium|BAD_PRACTICE,CORRECTNESS,EXPERIMENTAL,I18N,MT_CORRECTNESS,PERFORMANCE,SECURITY,STYLE|false|15
+filter_settings=Medium|BAD_PRACTICE,CORRECTNESS,EXPERIMENTAL,I18N,MT_CORRECTNESS,PERFORMANCE,SECURITY,STYLE|false|20
 filter_settings_neg=MALICIOUS_CODE,NOISE|
 run_at_full_build=false

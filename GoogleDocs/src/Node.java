@@ -34,6 +34,7 @@ public class Node {
     }
 
 
+
     static void inOrderPrint(Node n) {
         if(n.left != null) {
             inOrderPrint(n.left);
@@ -43,6 +44,26 @@ public class Node {
             inOrderPrint(n.right);
         }
     }
+
+    static void inOrderPrintNonRec(Node n) {
+        Stack<Node> stack = new Stack<Node>();
+        stack.push(n);
+        while (!stack.isEmpty()) {
+            n = stack.pop();
+            if(n.right != null) {
+                stack.push(n.right);
+            }
+            if(n.left == null && n.right == null) {
+                System.out.print(n.value);
+            } else {
+                stack.push(new Node(n.value));
+            }
+            if(n.left != null) {
+                stack.push(n.left);
+            }
+        }
+    }
+
     static void postOrderPrint(Node n) {
         if(n.left != null) {
             postOrderPrint(n.left);
@@ -51,6 +72,25 @@ public class Node {
             postOrderPrint(n.right);
         }
         System.out.print(n.value);
+    }
+
+    static void postOrderPrintNonRec(Node n) {
+        Stack<Node> stack = new Stack<Node>();
+        stack.push(n);
+        while (!stack.isEmpty()) {
+            n = stack.pop();
+            if(n.left == null && n.right == null) {
+                System.out.print(n.value);
+            } else {
+                stack.push(new Node(n.value));
+            }
+            if(n.right != null) {
+                stack.push(n.right);
+            }
+            if(n.left != null) {
+                stack.push(n.left);
+            }
+        }
     }
 
     public static void main(String[] args) {
@@ -71,16 +111,22 @@ public class Node {
 //		123456789  inorder
 //		124369875  postorder
 
+        System.out.print("Preorder: \t\t");
         preOrderPrint(n);
-        System.out.println();
-
-        inOrderPrint(n);
-        System.out.println();
-
-        postOrderPrint(n);
-        System.out.println();
-
+        System.out.print("\nPreorder (nr): \t\t");
         preOrderPrintNonRec(n);
+
+        System.out.print("\nPostorder: \t\t");
+        postOrderPrint(n);
+        System.out.print("\nPostorder (nr):\t\t");
+        postOrderPrintNonRec(n);
+
+        System.out.print("\nInorder: \t\t");
+        inOrderPrint(n);
+        System.out.print("\nInorder (nr): \t\t");
+        inOrderPrintNonRec(n);
+
+
         System.out.println();
     }
 }

@@ -14,14 +14,12 @@ public class NameMatcher extends AbstractMatcher {
 	private String segment;
 
 	NameMatcher(String pattern){
-		if(pattern.charAt(0) == '/'){
-			firstSegmentOnly = true;
-		}
-		if(pattern.charAt(pattern.length() - 1) == '/'){
-			isDirectory = true;
-		}
 		this.pattern = pattern;
-		if(firstSegmentOnly || isDirectory){
+		firstSegmentOnly = pattern.charAt(0) == '/';
+		isDirectory = pattern.charAt(pattern.length() - 1) == '/';
+		if(!firstSegmentOnly && !isDirectory) {
+			this.segment = pattern;
+		} else {
 			if(firstSegmentOnly && isDirectory){
 				this.segment = pattern.substring(1, pattern.length() - 1);
 			} else if(firstSegmentOnly){
@@ -29,8 +27,6 @@ public class NameMatcher extends AbstractMatcher {
 			} else {
 				this.segment = pattern.substring(0, pattern.length() - 1);
 			}
-		} else {
-			this.segment = pattern;
 		}
 	}
 

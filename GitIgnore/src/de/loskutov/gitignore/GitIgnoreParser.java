@@ -17,12 +17,12 @@ public class GitIgnoreParser {
 		for (int i = 0; i < args.length; i++) {
 			String pattern = args[i];
 			String path = args[++i];
-			boolean match = createMatcher(pattern).match(path);
+			boolean match = createRule(pattern).match(path);
 			System.out.println(path + " is " + (match? "ignored" : "not ignored") + " via " + pattern );
 		}
 	}
 
-	public static IgnoreRule createMatcher(String pattern) {
+	public static IgnoreRule createRule(String pattern) {
 		return new IgnoreRule(pattern);
 	}
 }

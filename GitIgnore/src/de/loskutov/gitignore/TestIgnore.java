@@ -24,7 +24,7 @@ public class TestIgnore {
 	}
 
 	String matches(String pattern, String path){
-		boolean match = GitIgnoreParser.createMatcher(pattern).match(path);
+		boolean match = GitIgnoreParser.createRule(pattern).match(path);
 		String result = path + " is " + (match? "ignored" : "not ignored") + " via '" + pattern + "' rule";
 		System.out.println(result);
 		if(match){

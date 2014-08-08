@@ -51,8 +51,9 @@ public class IgnoreRule {
 
 	private static IgnoreMatcher createMatcher(String pattern) {
 		pattern = pattern.trim();
-		int containsSlash = pattern.indexOf('/');
-		if(containsSlash > 0){
+		// ignore possible leading and trailing slash
+		int slash = pattern.indexOf('/', 1);
+		if(slash > 0 && slash < pattern.length() - 1){
 			return new PathMatcher(pattern);
 		}
 		return new NameMatcher(pattern);

@@ -9,5 +9,5 @@
 package de.loskutov.gitignore;
 
 public interface IgnoreMatcher {
-	boolean matches(String s);
+	boolean matches(String path);
 }

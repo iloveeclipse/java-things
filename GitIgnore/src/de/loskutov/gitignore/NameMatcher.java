@@ -10,20 +10,22 @@ package de.loskutov.gitignore;
 
 public class NameMatcher extends AbstractMatcher {
 
-	private final boolean firstSegmentOnly;
-	private String segment;
+	private final boolean beginning;
+	private CharSequence subPattern;
 
 	NameMatcher(String pattern){
 		this.pattern = pattern;
-		firstSegmentOnly = pattern.charAt(0) == '/';
+		beginning = pattern.charAt(0) == '/';
 
-		if(!firstSegmentOnly) {
-			this.segment = pattern;
+		if(!beginning) {
+			this.subPattern = pattern;
 		} else {
-			if(firstSegmentOnly){
-				this.segment = pattern.substring(1, pattern.length());
-			}
+			this.subPattern = pattern.subSequence(1, pattern.length());
 		}
+	}
+
+	public boolean isBeginning() {
+		return beginning;
 	}
 
 	/**
@@ -41,7 +43,7 @@ public class NameMatcher extends AbstractMatcher {
 				return true;
 			}
 		}
-		while(!firstSegmentOnly && nextSlash != s.length());
+		while(!beginning && nextSlash != s.length());
 		return false;
 	}
 
@@ -55,13 +57,13 @@ public class NameMatcher extends AbstractMatcher {
 		return slash == -1? s.length() : slash;
 	}
 
-	boolean matches(String s2, int startIncl, int endExcl){
-		if(segment.length() != (endExcl - startIncl)){
+	boolean matches(String segment, int startIncl, int endExcl){
+		if(subPattern.length() != (endExcl - startIncl)){
 			return false;
 		}
-		for (int i = 0; i < segment.length(); i++) {
-			char c1 = segment.charAt(i);
-			char c2 = s2.charAt(i + startIncl);
+		for (int i = 0; i < subPattern.length(); i++) {
+			char c1 = subPattern.charAt(i);
+			char c2 = segment.charAt(i + startIncl);
 			if(c1 != c2){
 				return false;
 			}

@@ -8,7 +8,7 @@
  *******************************************************************************/
 package de.loskutov.gitignore;
 
-public class WildMatcher extends AbstractMatcher {
+public final class WildMatcher extends AbstractMatcher {
 
 	static final String WILDMATCH = "**";
 
@@ -18,12 +18,12 @@ public class WildMatcher extends AbstractMatcher {
 	}
 
 	@Override
-	public boolean matches(String path) {
+	public final boolean matches(String path) {
 		return true;
 	}
 
 	@Override
-	public boolean matches(String segment, int startIncl, int endExcl) {
+	public final boolean matches(String segment, int startIncl, int endExcl) {
 		return true;
 	}
 

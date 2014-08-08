@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: GitIgnore
+Bundle-SymbolicName: GitIgnore
+Bundle-Version: 1.0.0.qualifier
+Export-Package: de.loskutov.gitignore
+Require-Bundle: org.junit4

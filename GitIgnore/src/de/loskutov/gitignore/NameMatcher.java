@@ -29,21 +29,21 @@ public class NameMatcher extends AbstractMatcher {
 	}
 
 	/**
-	 * @param s string which is not empty and is trimmed
+	 * @param path string which is not empty and is trimmed
 	 */
 	@Override
-	public boolean matches(String s) {
+	public boolean matches(String path) {
 		int nextSlash = 0;
 		int firstChar = 0;
 		do {
-			firstChar = getFirstNotSlash(s, nextSlash);
-			nextSlash = getFirstSlash(s, firstChar);
-			boolean match = matches(s, firstChar, nextSlash);
+			firstChar = getFirstNotSlash(path, nextSlash);
+			nextSlash = getFirstSlash(path, firstChar);
+			boolean match = matches(path, firstChar, nextSlash);
 			if(match){
 				return true;
 			}
 		}
-		while(!beginning && nextSlash != s.length());
+		while(!beginning && nextSlash != path.length());
 		return false;
 	}
 

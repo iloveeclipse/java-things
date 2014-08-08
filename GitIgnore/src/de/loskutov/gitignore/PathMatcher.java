@@ -78,15 +78,7 @@ public class PathMatcher extends AbstractMatcher {
 				return match && matcher + 1 == matchers.size();
 			}
 			if(right - left > 0) {
-				/*if(left == 1){
-					// leading slash should remain by the first pattern
-					match = matches(matcher, path, left - 1, right);
-				} else if(right == path.length() - 1){
-					// trailing slash should remain too
-					match = matches(matcher, path, left, right + 1);
-				} else*/ {
-					match = matches(matcher, path, left, right);
-				}
+				match = matches(matcher, path, left, right);
 			} else {
 				// path starts with slash???
 				right ++;

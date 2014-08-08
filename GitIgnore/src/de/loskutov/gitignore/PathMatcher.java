@@ -90,14 +90,16 @@ public class PathMatcher extends AbstractMatcher {
 				if(left < endExcl){
 					match = matches(matcher, path, left, endExcl);
 				}
-				if(match && matcher < matchers.size() - 1 && matchers.get(matcher).isWildmatch()){
-					// ** can match *nothing*: a/**/b match also a/b
-					matcher ++;
-					match = matches(matcher, path, left, endExcl);
-				}
-				if(match && matcher == matchers.size() - 2 && matchers.get(matcher + 1).isWildmatch()){
-					// ** can match *nothing*: a/b/** match also a/b
-					return true;
+				if(match){
+					if(matcher == matchers.size() - 2 && matchers.get(matcher + 1).isWildmatch()){
+						// ** can match *nothing*: a/b/** match also a/b
+						return true;
+					}
+					if(matcher < matchers.size() - 1 && matchers.get(matcher).isWildmatch()){
+						// ** can match *nothing*: a/**/b match also a/b
+						matcher ++;
+						match = matches(matcher, path, left, endExcl);
+					}
 				}
 				return match && matcher + 1 == matchers.size();
 			}

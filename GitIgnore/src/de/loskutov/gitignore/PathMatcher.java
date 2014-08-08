@@ -12,6 +12,7 @@ import java.util.*;
 
 public class PathMatcher extends AbstractMatcher {
 
+	private static final WildMatcher WILD = new WildMatcher();
 	private final List<AbstractMatcher> matchers;
 
 	PathMatcher(String pattern){
@@ -24,7 +25,10 @@ public class PathMatcher extends AbstractMatcher {
 		for (int i = 0; i < segments.size(); i++) {
 			String segment = segments.get(i);
 			if(WildMatcher.WILDMATCH.equals(segment)){
-				matchers.add(new WildMatcher());
+				// collapse wildmatchers following each other: **/** is same as **
+				if(matchers.size() == 0 || matchers.get(matchers.size() - 1) != WILD) {
+					matchers.add(WILD);
+				}
 			} else {
 				matchers.add(new NameMatcher(segment));
 			}
@@ -87,9 +91,13 @@ public class PathMatcher extends AbstractMatcher {
 					match = matches(matcher, path, left, endExcl);
 				}
 				if(match && matcher < matchers.size() - 1 && matchers.get(matcher).isWildmatch()){
-					// test next as ** can match *nothing*: a/**/b match also a/b
+					// ** can match *nothing*: a/**/b match also a/b
 					matcher ++;
 					match = matches(matcher, path, left, endExcl);
+				}
+				if(match && matcher == matchers.size() - 2 && matchers.get(matcher + 1).isWildmatch()){
+					// ** can match *nothing*: a/b/** match also a/b
+					return true;
 				}
 				return match && matcher + 1 == matchers.size();
 			}

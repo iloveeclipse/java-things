@@ -91,9 +91,34 @@ public class TestIgnore {
 	}
 
 	@Test
-	public void testWildMatch(){
+	public void testWildmatch(){
+		assertEquals("", matches("**/a/b", "a/b"));
+		assertEquals("", matches("**/a/b", "c/a/b"));
+		assertEquals("", matches("**/a/b", "c/d/a/b"));
+		assertEquals("", matches("**/**/a/b", "c/d/a/b"));
+
+		assertEquals("", matches("a/b/**", "a/b"));
+		assertEquals("", matches("a/b/**", "a/b/c"));
+		assertEquals("", matches("a/b/**", "a/b/c/d/"));
+		assertEquals("", matches("a/b/**/**", "a/b/c/d"));
+
+		assertEquals("", matches("**/a/**/b", "c/d/a/b"));
+		assertEquals("", matches("**/a/**/b", "c/d/a/e/b"));
+		assertEquals("", matches("**/**/a/**/**/b", "c/d/a/e/b"));
+
 		assertEquals("", matches("a/**/b", "a/b"));
 		assertEquals("", matches("a/**/b", "a/c/b"));
+		assertEquals("", matches("a/**/b", "a/c/d/b"));
+		assertEquals("", matches("a/**/**/b", "a/c/d/b"));
+
+		assertEquals("", matches("a/**/b/**/c", "a/c/b/d/c"));
+		assertEquals("", matches("a/**/**/b/**/**/c", "a/c/b/d/c"));
+	}
+
+	@Test
+	public void testWildmatchDoNotMatch(){
+		assertEquals("", notMatches("**/a/b", "a/c/b"));
+		assertEquals("", notMatches("a/**/b", "a/c/bb"));
 	}
 
 	@Test

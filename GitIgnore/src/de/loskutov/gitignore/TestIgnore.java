@@ -10,7 +10,7 @@ package de.loskutov.gitignore;
 
 import static org.junit.Assert.*;
 
-import org.junit.*;
+import org.junit.Test;
 
 public class TestIgnore {
 	@Test
@@ -61,9 +61,26 @@ public class TestIgnore {
 	}
 
 	@Test
-	@Ignore
 	public void testSegments(){
+		assertEquals("", matches("/a/b", "a/b"));
+		assertEquals("", matches("/a/b", "/a/b"));
+		assertEquals("", matches("/a/b", "/a/b/"));
+		assertEquals("", matches("/a/b", "/a/b/c"));
+
+		assertEquals("", matches("a/b", "a/b"));
+		assertEquals("", matches("a/b", "/a/b"));
+		assertEquals("", matches("a/b", "/a/b/"));
+		assertEquals("", matches("a/b", "/a/b/c"));
+
 		assertEquals("", matches("a/b", "c/a/b"));
+		assertEquals("", matches("a/b", "c/a/b/"));
+		assertEquals("", matches("a/b", "c/a/b/c"));
+
+		assertEquals("", notMatches("a/b", "c/aa/b"));
+		assertEquals("", notMatches("a/b", "c/a/bb"));
+		assertEquals("", notMatches("/a/b", "c/a/b"));
+		assertEquals("", notMatches("/a/b/", "c/a/b"));
+		assertEquals("", notMatches("/a/b/", "c/a/b/"));
 	}
 
 	@Test
@@ -105,6 +122,24 @@ public class TestIgnore {
 			// expected
 		}
 	}
+
+	@Test
+	public void testSplit(){
+		try{
+			PathMatcher.split("/").toArray();
+			fail("should not allow single slash");
+		} catch(IllegalStateException e){
+			// expected
+		}
+
+		assertArrayEquals(new String[]{"a", "b"}, PathMatcher.split("a/b").toArray());
+		assertArrayEquals(new String[]{"a", "b/"}, PathMatcher.split("a/b/").toArray());
+		assertArrayEquals(new String[]{"/a", "b"}, PathMatcher.split("/a/b").toArray());
+		assertArrayEquals(new String[]{"/a", "b/"}, PathMatcher.split("/a/b/").toArray());
+		assertArrayEquals(new String[]{"/a", "b", "c"}, PathMatcher.split("/a/b/c").toArray());
+		assertArrayEquals(new String[]{"/a", "b", "c/"}, PathMatcher.split("/a/b/c/").toArray());
+	}
+
 
 	String matches(String pattern, String path){
 		IgnoreRule rule = GitIgnoreParser.createRule(pattern);

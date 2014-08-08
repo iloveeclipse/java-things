@@ -61,7 +61,7 @@ public class TestIgnore {
 	}
 
 	@Test
-	public void testSegments(){
+	public void testSegmentsMatch(){
 		assertEquals("", matches("/a/b", "a/b"));
 		assertEquals("", matches("/a/b", "/a/b"));
 		assertEquals("", matches("/a/b", "/a/b/"));
@@ -75,7 +75,14 @@ public class TestIgnore {
 		assertEquals("", matches("a/b", "c/a/b"));
 		assertEquals("", matches("a/b", "c/a/b/"));
 		assertEquals("", matches("a/b", "c/a/b/c"));
+	}
 
+	@Test
+	public void testSegmentsDoNotMatch(){
+		assertEquals("", notMatches("a/b", "/a/bb"));
+		assertEquals("", notMatches("a/b", "/aa/b"));
+		assertEquals("", notMatches("a/b", "a/bb"));
+		assertEquals("", notMatches("a/b", "aa/b"));
 		assertEquals("", notMatches("a/b", "c/aa/b"));
 		assertEquals("", notMatches("a/b", "c/a/bb"));
 		assertEquals("", notMatches("/a/b", "c/a/b"));

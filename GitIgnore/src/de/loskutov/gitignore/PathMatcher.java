@@ -29,6 +29,8 @@ public class PathMatcher extends AbstractMatcher {
 				if(matchers.size() == 0 || matchers.get(matchers.size() - 1) != WILD) {
 					matchers.add(WILD);
 				}
+			} else if(segment.indexOf('*') != -1){
+				matchers.add(new WildCardMatcher(segment));
 			} else {
 				matchers.add(new NameMatcher(segment));
 			}

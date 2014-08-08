@@ -14,6 +14,35 @@ import org.junit.Test;
 
 public class TestIgnore {
 	@Test
+	public void testAsteriskMatch(){
+		assertEquals("", matches("a*", "a"));
+		assertEquals("", matches("a*", "a/"));
+		assertEquals("", matches("a*", "ab"));
+
+		assertEquals("", matches("a*", "b/ab"));
+		assertEquals("", matches("a*", "b/ab/"));
+		assertEquals("", matches("a*", "b/ab/b"));
+
+		assertEquals("", matches("a*", "/ab/"));
+		assertEquals("", matches("a*", "/ab/b"));
+
+		assertEquals("", matches("a*", "c/ab/b"));
+		assertEquals("", matches("a*", "c/b/ab"));
+
+		assertEquals("", matches("/a*", "ab"));
+		assertEquals("", matches("/a*", "ab/"));
+		assertEquals("", matches("/a*", "ab/b"));
+		assertEquals("", matches("/a*", "/ab"));
+		assertEquals("", matches("/a*", "/ab/"));
+		assertEquals("", matches("/a*", "/ab/b"));
+
+		assertEquals("", matches("/a*/b", "ab/b"));
+		assertEquals("", matches("/a*/b", "/ab/b"));
+		assertEquals("", matches("/a*/b", "/abc/b"));
+		assertEquals("", matches("/a*/b", "/a/b"));
+	}
+
+	@Test
 	public void testSimplePatternsMatch(){
 		assertEquals("", matches("a", "a"));
 		assertEquals("", matches("a", "a/"));
@@ -39,6 +68,10 @@ public class TestIgnore {
 
 	@Test
 	public void testSimplePatternsDoNotMatch(){
+		assertEquals("", notMatches("ab", "a"));
+		assertEquals("", notMatches("abc", "a/"));
+		assertEquals("", notMatches("abc", "a/b"));
+
 		assertEquals("", notMatches("a", "ab"));
 		assertEquals("", notMatches("a", "ba"));
 		assertEquals("", notMatches("a", "aa"));

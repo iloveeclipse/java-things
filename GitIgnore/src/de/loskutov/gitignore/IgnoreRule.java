@@ -56,6 +56,9 @@ public class IgnoreRule {
 		if(slash > 0 && slash < pattern.length() - 1){
 			return new PathMatcher(pattern);
 		}
+		if(pattern.indexOf('*') != -1){
+			return new WildCardMatcher(pattern);
+		}
 		return new NameMatcher(pattern);
 	}
 

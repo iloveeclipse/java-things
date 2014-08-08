@@ -10,8 +10,8 @@ package de.loskutov.gitignore;
 
 public class NameMatcher extends AbstractMatcher {
 
-	private final boolean beginning;
-	private CharSequence subPattern;
+	final boolean beginning;
+	final String subPattern;
 
 	NameMatcher(String pattern){
 		this.pattern = pattern;
@@ -20,7 +20,7 @@ public class NameMatcher extends AbstractMatcher {
 		if(!beginning) {
 			this.subPattern = pattern;
 		} else {
-			this.subPattern = pattern.subSequence(1, pattern.length());
+			this.subPattern = pattern.substring(1, pattern.length());
 		}
 	}
 

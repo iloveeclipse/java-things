@@ -24,6 +24,7 @@ public class NameMatcher extends AbstractMatcher {
 		}
 	}
 
+	@Override
 	public boolean isBeginning() {
 		return beginning;
 	}
@@ -57,7 +58,8 @@ public class NameMatcher extends AbstractMatcher {
 		return slash == -1? s.length() : slash;
 	}
 
-	boolean matches(String segment, int startIncl, int endExcl){
+	@Override
+	public boolean matches(String segment, int startIncl, int endExcl){
 		if(subPattern.length() != (endExcl - startIncl)){
 			return false;
 		}

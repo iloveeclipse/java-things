@@ -10,4 +10,5 @@ package de.loskutov.gitignore;
 
 public interface IgnoreMatcher {
 	boolean matches(String path);
+	boolean matches(String segment, int startIncl, int endExcl);
 }

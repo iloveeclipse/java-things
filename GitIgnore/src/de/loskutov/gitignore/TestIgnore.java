@@ -91,6 +91,12 @@ public class TestIgnore {
 	}
 
 	@Test
+	public void testWildMatch(){
+		assertEquals("", matches("a/**/b", "a/b"));
+		assertEquals("", matches("a/**/b", "a/c/b"));
+	}
+
+	@Test
 	public void testSimpleRules(){
 		try {
 			GitIgnoreParser.createRule(null);

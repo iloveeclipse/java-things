@@ -12,17 +12,22 @@ import java.util.*;
 
 public class PathMatcher extends AbstractMatcher {
 
-	private final List<NameMatcher> matchers;
+	private final List<AbstractMatcher> matchers;
 
 	PathMatcher(String pattern){
 		this.pattern = pattern;
 		matchers = createMatchers(split(pattern));
 	}
 
-	static private List<NameMatcher> createMatchers(List<String> segments) {
-		List<NameMatcher> matchers = new ArrayList<NameMatcher>(segments.size());
+	static private List<AbstractMatcher> createMatchers(List<String> segments) {
+		List<AbstractMatcher> matchers = new ArrayList<AbstractMatcher>(segments.size());
 		for (int i = 0; i < segments.size(); i++) {
-			matchers.add(new NameMatcher(segments.get(i)));
+			String segment = segments.get(i);
+			if(WildMatcher.WILDMATCH.equals(segment)){
+				matchers.add(new WildMatcher());
+			} else {
+				matchers.add(new NameMatcher(segment));
+			}
 		}
 		return matchers;
 	}
@@ -61,19 +66,30 @@ public class PathMatcher extends AbstractMatcher {
 
 	@Override
 	public boolean matches(String path) {
-		return iterate(path);
+		return matches(path, 0, path.length());
 	}
 
-	boolean iterate(String path){
+	@Override
+	public boolean matches(String segment, int startIncl, int endExcl) {
+		return iterate(segment, startIncl, endExcl);
+	}
+
+	boolean iterate(final String path, final int startIncl, final int endExcl){
 		int matcher = 0;
-		int right = 0;
+		int right = startIncl;
 		boolean match = false;
+		int lastWildmatch = -1;
 		while (true) {
 			int left = right;
 			right = path.indexOf('/', right);
 			if(right == -1) {
-				if(left < path.length()){
-					match = matches(matcher, path, left, path.length());
+				if(left < endExcl){
+					match = matches(matcher, path, left, endExcl);
+				}
+				if(match && matcher < matchers.size() - 1 && matchers.get(matcher).isWildmatch()){
+					// test next as ** can match *nothing*: a/**/b match also a/b
+					matcher ++;
+					match = matches(matcher, path, left, endExcl);
 				}
 				return match && matcher + 1 == matchers.size();
 			}
@@ -85,20 +101,30 @@ public class PathMatcher extends AbstractMatcher {
 				continue;
 			}
 			if(match){
+				if(matchers.get(matcher).isWildmatch()){
+					lastWildmatch = matcher;
+					// reset index as ** can match *nothing*: a/**/b match also a/b
+					right = left - 1;
+				}
 				matcher ++;
 				if (matcher == matchers.size()) {
 					return true;
 				}
-			} else if(matcher == 0 && matchers.get(matcher).isBeginning()){
-				return false;
+			} else {
+				if (matcher == 0 && matchers.get(matcher).isBeginning()) {
+					return false;
+				}
+				if(lastWildmatch != -1){
+					matcher = lastWildmatch + 1;
+				}
 			}
 			right ++;
 		}
 	}
 
-	boolean matches(int matcher, String path, int startIncl, int endExcl){
-		NameMatcher nameMatcher = matchers.get(matcher);
-		return nameMatcher.matches(path, startIncl, endExcl);
+	boolean matches(int matcherIdx, String path, int startIncl, int endExcl){
+		AbstractMatcher matcher = matchers.get(matcherIdx);
+		return matcher.matches(path, startIncl, endExcl);
 	}
 
 	static int count(String s, char c, boolean ignoreFirstLast){
@@ -116,4 +142,6 @@ public class PathMatcher extends AbstractMatcher {
 		}
 		return count;
 	}
+
+
 }

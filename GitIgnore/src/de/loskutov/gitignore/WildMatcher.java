@@ -8,37 +8,28 @@
  *******************************************************************************/
 package de.loskutov.gitignore;
 
-public abstract class AbstractMatcher implements IgnoreMatcher {
-	boolean isDirectory;
+public class WildMatcher extends AbstractMatcher {
 
-	String pattern;
+	static final String WILDMATCH = "**";
 
-	public boolean isBeginning() {
-		return false;
-	}
-
-	public boolean isWildmatch(){
-		return false;
+	public WildMatcher() {
+		isDirectory = true;
+		pattern = WILDMATCH;
 	}
 
 	@Override
-	public String toString() {
-		return pattern;
+	public boolean matches(String path) {
+		return true;
 	}
 
 	@Override
-	public int hashCode() {
-		return pattern.hashCode();
+	public boolean matches(String segment, int startIncl, int endExcl) {
+		return true;
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!(obj instanceof AbstractMatcher)) {
-			return false;
-		}
-		return pattern.equals(((AbstractMatcher) obj).pattern);
+	public final boolean isWildmatch() {
+		return true;
 	}
+
 }

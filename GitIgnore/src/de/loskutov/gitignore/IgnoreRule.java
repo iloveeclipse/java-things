@@ -10,16 +10,46 @@ package de.loskutov.gitignore;
 
 public class IgnoreRule {
 
-	private IgnoreMatcher matcher;
+	private final IgnoreMatcher matcher;
+	private final boolean inverse;
+	private final boolean isDirectory;
 
 	public IgnoreRule(String pattern) {
 		if(pattern == null){
 			throw new IllegalArgumentException("Pattern must be not null!");
 		}
+		pattern = pattern.trim();
+		checkEmptyRule(pattern);
+		if(pattern.charAt(0) == '#'){
+			throw new IllegalArgumentException("Comment is not pattern!");
+		}
+		inverse = pattern.charAt(0) == '!';
+		if(inverse){
+			pattern = pattern.substring(1);
+			checkEmptyRule(pattern);
+		}
+		isDirectory = pattern.charAt(pattern.length() - 1) == '/';
+		if(isDirectory) {
+			pattern = stripSlashes(pattern);
+			checkEmptyRule(pattern);
+		}
 		this.matcher = createMatcher(pattern);
 	}
 
-	private IgnoreMatcher createMatcher(String pattern) {
+	private static String stripSlashes(String pattern) {
+		while(pattern.length() > 0 && pattern.charAt(pattern.length() - 1) == '/'){
+			pattern = pattern.substring(0, pattern.length() - 1);
+		}
+		return pattern;
+	}
+
+	private static void checkEmptyRule(String pattern) {
+		if(pattern.isEmpty()){
+			throw new IllegalArgumentException("Pattern must be not empty!");
+		}
+	}
+
+	private static IgnoreMatcher createMatcher(String pattern) {
 		pattern = pattern.trim();
 		int containsSlash = pattern.indexOf('/');
 		if(containsSlash > 0){
@@ -30,23 +60,50 @@ public class IgnoreRule {
 
 	public boolean match(String path) {
 		if(path == null){
-			return false;
+			return updateMatch(false);
 		}
 		path = path.trim();
 		if(path.isEmpty()){
-			return false;
+			return updateMatch(false);
 		}
-		return matcher.matches(path);
+		boolean match = matcher.matches(path);
+		return updateMatch(match);
+	}
+
+	private boolean updateMatch(boolean result){
+		return !inverse? result : !result;
+	}
+
+	public boolean isDirectory() {
+		return isDirectory;
+	}
+
+	public boolean isInverse() {
+		return inverse;
 	}
 
 	@Override
 	public String toString() {
-		return matcher.toString();
+		StringBuilder sb = new StringBuilder();
+		if (inverse) {
+			sb.append('!');
+		}
+		sb.append(matcher);
+		if (isDirectory) {
+			sb.append('/');
+		}
+		return sb.toString();
+
 	}
 
 	@Override
 	public int hashCode() {
-		return matcher.hashCode();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (inverse ? 1231 : 1237);
+		result = prime * result + (isDirectory ? 1231 : 1237);
+		result = prime * result + ((matcher == null) ? 0 : matcher.hashCode());
+		return result;
 	}
 
 	@Override
@@ -57,7 +114,15 @@ public class IgnoreRule {
 		if (!(obj instanceof IgnoreRule)) {
 			return false;
 		}
-		return matcher.equals(((IgnoreRule) obj).matcher);
+
+		IgnoreRule other = (IgnoreRule) obj;
+		if(inverse != other.inverse) {
+			return false;
+		}
+		if(isDirectory != other.isDirectory) {
+			return false;
+		}
+		return matcher.equals(other.matcher);
 	}
 
 }

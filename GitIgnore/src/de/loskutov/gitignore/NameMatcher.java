@@ -10,22 +10,18 @@ package de.loskutov.gitignore;
 
 public class NameMatcher extends AbstractMatcher {
 
-	private boolean firstSegmentOnly;
+	private final boolean firstSegmentOnly;
 	private String segment;
 
 	NameMatcher(String pattern){
 		this.pattern = pattern;
 		firstSegmentOnly = pattern.charAt(0) == '/';
-		isDirectory = pattern.charAt(pattern.length() - 1) == '/';
-		if(!firstSegmentOnly && !isDirectory) {
+
+		if(!firstSegmentOnly) {
 			this.segment = pattern;
 		} else {
-			if(firstSegmentOnly && isDirectory){
-				this.segment = pattern.substring(1, pattern.length() - 1);
-			} else if(firstSegmentOnly){
+			if(firstSegmentOnly){
 				this.segment = pattern.substring(1, pattern.length());
-			} else {
-				this.segment = pattern.substring(0, pattern.length() - 1);
 			}
 		}
 	}
@@ -49,12 +45,12 @@ public class NameMatcher extends AbstractMatcher {
 		return false;
 	}
 
-	private int getFirstNotSlash(String s, int start) {
+	private static int getFirstNotSlash(String s, int start) {
 		int slash = s.indexOf('/', start);
 		return slash == start? start + 1 : start;
 	}
 
-	private int getFirstSlash(String s, int start) {
+	private static int getFirstSlash(String s, int start) {
 		int slash = s.indexOf('/', start);
 		return slash == -1? s.length() : slash;
 	}

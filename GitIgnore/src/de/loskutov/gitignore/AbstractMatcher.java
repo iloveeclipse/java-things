@@ -14,11 +14,6 @@ public abstract class AbstractMatcher implements IgnoreMatcher {
 	String pattern;
 
 	@Override
-	public boolean isDirectory() {
-		return isDirectory;
-	}
-
-	@Override
 	public String toString() {
 		return pattern;
 	}

@@ -4,4 +4,5 @@ Bundle-Name: GitIgnore
 Bundle-SymbolicName: GitIgnore
 Bundle-Version: 1.0.0.qualifier
 Export-Package: de.loskutov.gitignore
-Require-Bundle: org.junit4
+Require-Bundle: org.junit4;resolution:=optional,
+ org.eclipse.jgit;bundle-version="3.5.0";resolution:=optional

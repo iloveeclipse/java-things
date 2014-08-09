@@ -214,7 +214,8 @@ public class TestIgnore {
 
 	String matches(String pattern, String path){
 		IgnoreRule rule = GitIgnoreParser.createRule(pattern);
-		boolean match = rule.match(path);
+		boolean dir = pattern.endsWith("/");
+		boolean match = rule.isMatch(path, dir);
 		String result = path + " is " + (match? "ignored" : "not ignored") + " via '" + pattern + "' rule";
 		if(match) {
 			System.out.println(result);
@@ -222,22 +223,22 @@ public class TestIgnore {
 			System.err.println(result);
 		}
 
-		if(pattern.endsWith("/")) {
-			assertTrue(rule.isDirectory());
+		if(dir) {
+			assertTrue(rule.dirOnly());
 		} else {
 			rule = GitIgnoreParser.createRule(pattern + "/");
 			if(match) {
-				assertTrue(rule.match(path));
+				assertTrue(rule.isMatch(path, true));
 			} else {
-				assertFalse(rule.match(path));
+				assertFalse(rule.isMatch(path, true));
 			}
 		}
 
 		rule = GitIgnoreParser.createRule("!" + pattern);
 		if(match) {
-			assertFalse(rule.match(path));
+			assertFalse(rule.isMatch(path, dir));
 		} else {
-			assertTrue(rule.match(path));
+			assertTrue(rule.isMatch(path, dir));
 		}
 
 		if(match){
@@ -248,7 +249,8 @@ public class TestIgnore {
 
 	String notMatches(String pattern, String path){
 		IgnoreRule rule = GitIgnoreParser.createRule(pattern);
-		boolean match = rule.match(path);
+		boolean dir = pattern.endsWith("/");
+		boolean match = rule.isMatch(path, dir);
 		String result = path + " is " + (match? "ignored" : "not ignored") + " via '" + pattern + "' rule";
 		if(match) {
 			System.err.println(result);
@@ -256,22 +258,22 @@ public class TestIgnore {
 			System.out.println(result);
 		}
 
-		if(pattern.endsWith("/")) {
-			assertTrue(rule.isDirectory());
+		if(dir) {
+			assertTrue(rule.dirOnly());
 		} else {
 			rule = GitIgnoreParser.createRule(pattern + "/");
 			if(match) {
-				assertTrue(rule.match(path));
+				assertTrue(rule.isMatch(path, dir));
 			} else {
-				assertFalse(rule.match(path));
+				assertFalse(rule.isMatch(path, dir));
 			}
 		}
 
 		rule = GitIgnoreParser.createRule("!" + pattern);
 		if(match) {
-			assertFalse(rule.match(path));
+			assertFalse(rule.isMatch(path, dir));
 		} else {
-			assertTrue(rule.match(path));
+			assertTrue(rule.isMatch(path, dir));
 		}
 
 		if(!match){

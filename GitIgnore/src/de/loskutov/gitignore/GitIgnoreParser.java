@@ -17,7 +17,7 @@ public class GitIgnoreParser {
 		for (int i = 0; i < args.length; i++) {
 			String pattern = args[i];
 			String path = args[++i];
-			boolean match = createRule(pattern).match(path);
+			boolean match = createRule(pattern).isMatch(path, true);
 			System.out.println(path + " is " + (match? "ignored" : "not ignored") + " via " + pattern );
 		}
 	}

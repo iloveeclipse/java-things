@@ -62,7 +62,7 @@ public class IgnoreRule {
 		return new NameMatcher(pattern);
 	}
 
-	public boolean match(String path) {
+	public boolean isMatch(String path, boolean directory) {
 		if(path == null){
 			return updateMatch(false);
 		}
@@ -70,7 +70,7 @@ public class IgnoreRule {
 		if(path.isEmpty()){
 			return updateMatch(false);
 		}
-		boolean match = matcher.matches(path);
+		boolean match = matcher.matches(path) && isDirectory == directory;
 		return updateMatch(match);
 	}
 
@@ -78,7 +78,7 @@ public class IgnoreRule {
 		return !inverse? result : !result;
 	}
 
-	public boolean isDirectory() {
+	public boolean dirOnly() {
 		return isDirectory;
 	}
 

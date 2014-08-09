@@ -8,8 +8,10 @@
  *******************************************************************************/
 package de.loskutov.gitignore;
 
-public class FastIgnoreRule {
+import static de.loskutov.gitignore.Strings.*;
 
+public class FastIgnoreRule {
+	private static final NoResultMatcher NO_MATCH = new NoResultMatcher();
 	private final IgnoreMatcher matcher;
 	private final boolean inverse;
 	private final boolean isDirectory;
@@ -20,28 +22,25 @@ public class FastIgnoreRule {
 		}
 		pattern = pattern.trim();
 		checkEmptyRule(pattern);
-		if(pattern.charAt(0) == '#'){
-			throw new IllegalArgumentException("Comment is not pattern!");
-		}
 		inverse = pattern.charAt(0) == '!';
 		if(inverse){
 			pattern = pattern.substring(1);
 			checkEmptyRule(pattern);
 		}
-		isDirectory = pattern.charAt(pattern.length() - 1) == '/';
-		if(isDirectory) {
-			pattern = stripSlashes(pattern);
-			checkEmptyRule(pattern);
+		if(pattern.charAt(0) == '#'){
+			this.matcher = NO_MATCH;
+			isDirectory = false;
+		} else {
+			isDirectory = pattern.charAt(pattern.length() - 1) == '/';
+			if(isDirectory) {
+				pattern = stripSlashes(pattern);
+				checkEmptyRule(pattern);
+			}
+			this.matcher = createMatcher(pattern, isDirectory);
 		}
-		this.matcher = createMatcher(pattern);
 	}
 
-	private static String stripSlashes(String pattern) {
-		while(pattern.length() > 0 && pattern.charAt(pattern.length() - 1) == '/'){
-			pattern = pattern.substring(0, pattern.length() - 1);
-		}
-		return pattern;
-	}
+
 
 	private static void checkEmptyRule(String pattern) {
 		if(pattern.isEmpty()){
@@ -49,33 +48,29 @@ public class FastIgnoreRule {
 		}
 	}
 
-	private static IgnoreMatcher createMatcher(String pattern) {
+	private static IgnoreMatcher createMatcher(String pattern, boolean dirOnly) {
 		pattern = pattern.trim();
 		// ignore possible leading and trailing slash
 		int slash = pattern.indexOf('/', 1);
 		if(slash > 0 && slash < pattern.length() - 1){
-			return new PathMatcher(pattern);
+			return new PathMatcher(pattern, dirOnly);
 		}
-		if(pattern.indexOf('*') != -1){
-			return new WildCardMatcher(pattern);
+		if(isWildCard(pattern)){
+			return new WildCardMatcher(pattern, dirOnly);
 		}
-		return new NameMatcher(pattern);
+		return new NameMatcher(pattern, dirOnly);
 	}
 
 	public boolean isMatch(String path, boolean directory) {
 		if(path == null){
-			return updateMatch(false);
+			return false;
 		}
 		path = path.trim();
 		if(path.isEmpty()){
-			return updateMatch(false);
+			return false;
 		}
-		boolean match = matcher.matches(path) && isDirectory == directory;
-		return updateMatch(match);
-	}
-
-	private boolean updateMatch(boolean result){
-		return !inverse? result : !result;
+		boolean match = matcher.matches(path, directory);
+		return match;
 	}
 
 	public boolean dirOnly() {
@@ -129,4 +124,17 @@ public class FastIgnoreRule {
 		return matcher.equals(other.matcher);
 	}
 
+	static final class NoResultMatcher implements IgnoreMatcher {
+
+		@Override
+		public boolean matches(String path, boolean dirOnly) {
+			return false;
+		}
+
+		@Override
+		public boolean matches(String segment, int startIncl, int endExcl, boolean dirOnly) {
+			return false;
+		}
+
+	}
 }

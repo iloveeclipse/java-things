@@ -9,6 +9,6 @@
 package de.loskutov.gitignore;
 
 public interface IgnoreMatcher {
-	boolean matches(String path);
-	boolean matches(String segment, int startIncl, int endExcl);
+	boolean matches(String path, boolean dirOnly);
+	boolean matches(String segment, int startIncl, int endExcl, boolean dirOnly);
 }

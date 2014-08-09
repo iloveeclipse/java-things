@@ -8,23 +8,20 @@
  *******************************************************************************/
 package de.loskutov.gitignore;
 
+import static de.loskutov.gitignore.Strings.convert;
+
 import java.util.regex.Pattern;
 
 public class WildCardMatcher extends NameMatcher {
 
 	final Pattern p;
-	WildCardMatcher(String pattern) {
-		super(pattern);
+	WildCardMatcher(String pattern, boolean dirOnly) {
+		super(pattern, dirOnly);
 		p = convert(subPattern);
 	}
 
-	private static Pattern convert(String subPattern) {
-		String pat = subPattern.replaceAll("\\*", ".*");
-		return Pattern.compile(pat);
-	}
-
 	@Override
-	public boolean matches(String segment, int startIncl, int endExcl){
+	public boolean matches(String segment, int startIncl, int endExcl, boolean dirOnly){
 		return p.matcher(new SubString(segment, startIncl, endExcl)).matches();
 	}
 

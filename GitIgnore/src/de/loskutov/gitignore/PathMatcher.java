@@ -8,6 +8,8 @@
  *******************************************************************************/
 package de.loskutov.gitignore;
 
+import static de.loskutov.gitignore.Strings.*;
+
 import java.util.*;
 
 public class PathMatcher extends AbstractMatcher {
@@ -15,12 +17,13 @@ public class PathMatcher extends AbstractMatcher {
 	private static final WildMatcher WILD = new WildMatcher();
 	private final List<AbstractMatcher> matchers;
 
-	PathMatcher(String pattern){
+	PathMatcher(String pattern, boolean dirOnly){
 		this.pattern = pattern;
-		matchers = createMatchers(split(pattern));
+		isDirectory = dirOnly;
+		matchers = createMatchers(split(pattern), dirOnly);
 	}
 
-	static private List<AbstractMatcher> createMatchers(List<String> segments) {
+	static private List<AbstractMatcher> createMatchers(List<String> segments, boolean dirOnly) {
 		List<AbstractMatcher> matchers = new ArrayList<AbstractMatcher>(segments.size());
 		for (int i = 0; i < segments.size(); i++) {
 			String segment = segments.get(i);
@@ -29,58 +32,34 @@ public class PathMatcher extends AbstractMatcher {
 				if(matchers.size() == 0 || matchers.get(matchers.size() - 1) != WILD) {
 					matchers.add(WILD);
 				}
-			} else if(segment.indexOf('*') != -1){
-				matchers.add(new WildCardMatcher(segment));
+			} else if(isWildCard(segment)){
+				if(i != segments.size() - 1) {
+					matchers.add(new WildCardMatcher(segment, false));
+				} else {
+					matchers.add(new WildCardMatcher(segment, dirOnly));
+				}
 			} else {
-				matchers.add(new NameMatcher(segment));
+				if(i != segments.size() - 1) {
+					matchers.add(new NameMatcher(segment, false));
+				} else {
+					matchers.add(new NameMatcher(segment, dirOnly));
+				}
 			}
 		}
 		return matchers;
 	}
 
-	static List<String> split(String pattern){
-		int count = count(pattern, '/', true);
-		if(count < 1){
-			throw new IllegalStateException("Pattern must have at least two segments: " + pattern);
-		}
-		List<String> segments = new ArrayList<String>(count);
-		int right = 0;
-		while (true) {
-			int left = right;
-			right = pattern.indexOf('/', right);
-			if(right == -1) {
-				if(left < pattern.length()){
-					segments.add(pattern.substring(left));
-				}
-				break;
-			}
-			if(right - left > 0) {
-				if(left == 1){
-					// leading slash should remain by the first pattern
-					segments.add(pattern.substring(left - 1, right));
-				} else if(right == pattern.length() - 1){
-					// trailing slash should remain too
-					segments.add(pattern.substring(left, right + 1));
-				} else {
-					segments.add(pattern.substring(left, right));
-				}
-			}
-			right ++;
-		}
-		return segments;
+	@Override
+	public boolean matches(String path, boolean dirOnly) {
+		return matches(path, 0, path.length(), dirOnly);
 	}
 
 	@Override
-	public boolean matches(String path) {
-		return matches(path, 0, path.length());
+	public boolean matches(String segment, int startIncl, int endExcl, boolean dirOnly) {
+		return iterate(segment, startIncl, endExcl, dirOnly);
 	}
 
-	@Override
-	public boolean matches(String segment, int startIncl, int endExcl) {
-		return iterate(segment, startIncl, endExcl);
-	}
-
-	boolean iterate(final String path, final int startIncl, final int endExcl){
+	boolean iterate(final String path, final int startIncl, final int endExcl, boolean dirOnly){
 		int matcher = 0;
 		int right = startIncl;
 		boolean match = false;
@@ -90,7 +69,7 @@ public class PathMatcher extends AbstractMatcher {
 			right = path.indexOf('/', right);
 			if(right == -1) {
 				if(left < endExcl){
-					match = matches(matcher, path, left, endExcl);
+					match = matches(matcher, path, left, endExcl, dirOnly);
 				}
 				if(match){
 					if(matcher == matchers.size() - 2 && matchers.get(matcher + 1).isWildmatch()){
@@ -100,13 +79,16 @@ public class PathMatcher extends AbstractMatcher {
 					if(matcher < matchers.size() - 1 && matchers.get(matcher).isWildmatch()){
 						// ** can match *nothing*: a/**/b match also a/b
 						matcher ++;
-						match = matches(matcher, path, left, endExcl);
-					}
+						match = matches(matcher, path, left, endExcl, dirOnly);
+					} else
+						if(matchers.get(matcher).isDirectory){
+							return false;
+						}
 				}
 				return match && matcher + 1 == matchers.size();
 			}
 			if(right - left > 0) {
-				match = matches(matcher, path, left, right);
+				match = matches(matcher, path, left, right, dirOnly);
 			} else {
 				// path starts with slash???
 				right ++;
@@ -123,7 +105,7 @@ public class PathMatcher extends AbstractMatcher {
 					return true;
 				}
 			} else {
-				if (matcher == 0 && matchers.get(matcher).isBeginning()) {
+				if (matchers.get(0).isBeginning()) {
 					return false;
 				}
 				if(lastWildmatch != -1){
@@ -134,25 +116,9 @@ public class PathMatcher extends AbstractMatcher {
 		}
 	}
 
-	boolean matches(int matcherIdx, String path, int startIncl, int endExcl){
+	boolean matches(int matcherIdx, String path, int startIncl, int endExcl, boolean dirOnly){
 		AbstractMatcher matcher = matchers.get(matcherIdx);
-		return matcher.matches(path, startIncl, endExcl);
-	}
-
-	static int count(String s, char c, boolean ignoreFirstLast){
-		int start = 0;
-		int count = 0;
-		while (true) {
-			start = s.indexOf(c, start);
-			if(start == -1) {
-				break;
-			}
-			if(!ignoreFirstLast || (start != 0 && start != s.length())) {
-				count ++;
-			}
-			start ++;
-		}
-		return count;
+		return matcher.matches(path, startIncl, endExcl, dirOnly);
 	}
 
 

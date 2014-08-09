@@ -13,17 +13,17 @@ public final class WildMatcher extends AbstractMatcher {
 	static final String WILDMATCH = "**";
 
 	public WildMatcher() {
-		isDirectory = true;
+		isDirectory = false;
 		pattern = WILDMATCH;
 	}
 
 	@Override
-	public final boolean matches(String path) {
+	public final boolean matches(String path, boolean dirOnly) {
 		return true;
 	}
 
 	@Override
-	public final boolean matches(String segment, int startIncl, int endExcl) {
+	public final boolean matches(String segment, int startIncl, int endExcl, boolean dirOnly) {
 		return true;
 	}
 

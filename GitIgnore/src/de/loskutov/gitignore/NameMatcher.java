@@ -13,10 +13,10 @@ public class NameMatcher extends AbstractMatcher {
 	final boolean beginning;
 	final String subPattern;
 
-	NameMatcher(String pattern){
+	NameMatcher(String pattern, boolean dirOnly){
 		this.pattern = pattern;
 		beginning = pattern.charAt(0) == '/';
-
+		isDirectory = dirOnly;
 		if(!beginning) {
 			this.subPattern = pattern;
 		} else {
@@ -33,18 +33,18 @@ public class NameMatcher extends AbstractMatcher {
 	 * @param path string which is not empty and is trimmed
 	 */
 	@Override
-	public boolean matches(String path) {
-		int nextSlash = 0;
+	public boolean matches(String path, boolean dirOnly) {
+		int end = 0;
 		int firstChar = 0;
 		do {
-			firstChar = getFirstNotSlash(path, nextSlash);
-			nextSlash = getFirstSlash(path, firstChar);
-			boolean match = matches(path, firstChar, nextSlash);
+			firstChar = getFirstNotSlash(path, end);
+			end = getFirstSlash(path, firstChar);
+			boolean match = matches(path, firstChar, end, dirOnly);
 			if(match){
-				return true;
+				return isDirectory? end > 0 && end != path.length() : true;
 			}
 		}
-		while(!beginning && nextSlash != path.length());
+		while(!beginning && end != path.length());
 		return false;
 	}
 
@@ -59,11 +59,12 @@ public class NameMatcher extends AbstractMatcher {
 	}
 
 	@Override
-	public boolean matches(String segment, int startIncl, int endExcl){
+	public boolean matches(String segment, int startIncl, int endExcl, boolean dirOnly){
 		if(subPattern.length() != (endExcl - startIncl)){
 			return false;
 		}
-		for (int i = 0; i < subPattern.length(); i++) {
+		int i = 0;
+		for (; i < subPattern.length(); i++) {
 			char c1 = subPattern.charAt(i);
 			char c2 = segment.charAt(i + startIncl);
 			if(c1 != c2){

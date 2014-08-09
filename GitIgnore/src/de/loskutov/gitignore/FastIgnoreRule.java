@@ -21,11 +21,20 @@ public class FastIgnoreRule {
 			throw new IllegalArgumentException("Pattern must be not null!");
 		}
 		pattern = pattern.trim();
-		checkEmptyRule(pattern);
+		if(pattern.isEmpty()){
+			isDirectory = false;
+			inverse = false;
+			this.matcher = NO_MATCH;
+			return;
+		}
 		inverse = pattern.charAt(0) == '!';
 		if(inverse){
 			pattern = pattern.substring(1);
-			checkEmptyRule(pattern);
+			if(pattern.isEmpty()){
+				isDirectory = false;
+				this.matcher = NO_MATCH;
+				return;
+			}
 		}
 		if(pattern.charAt(0) == '#'){
 			this.matcher = NO_MATCH;
@@ -34,17 +43,12 @@ public class FastIgnoreRule {
 			isDirectory = pattern.charAt(pattern.length() - 1) == '/';
 			if(isDirectory) {
 				pattern = stripSlashes(pattern);
-				checkEmptyRule(pattern);
+				if(pattern.isEmpty()){
+					this.matcher = NO_MATCH;
+					return;
+				}
 			}
 			this.matcher = createMatcher(pattern, isDirectory);
-		}
-	}
-
-
-
-	private static void checkEmptyRule(String pattern) {
-		if(pattern.isEmpty()){
-			throw new IllegalArgumentException("Pattern must be not empty!");
 		}
 	}
 

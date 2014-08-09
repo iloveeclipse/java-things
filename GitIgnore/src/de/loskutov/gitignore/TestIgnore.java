@@ -213,7 +213,7 @@ public class TestIgnore {
 
 
 	String matches(String pattern, String path){
-		IgnoreRule rule = GitIgnoreParser.createRule(pattern);
+		FastIgnoreRule rule = GitIgnoreParser.createRule(pattern);
 		boolean dir = pattern.endsWith("/");
 		boolean match = rule.isMatch(path, dir);
 		String result = path + " is " + (match? "ignored" : "not ignored") + " via '" + pattern + "' rule";
@@ -248,7 +248,7 @@ public class TestIgnore {
 	}
 
 	String notMatches(String pattern, String path){
-		IgnoreRule rule = GitIgnoreParser.createRule(pattern);
+		FastIgnoreRule rule = GitIgnoreParser.createRule(pattern);
 		boolean dir = pattern.endsWith("/");
 		boolean match = rule.isMatch(path, dir);
 		String result = path + " is " + (match? "ignored" : "not ignored") + " via '" + pattern + "' rule";

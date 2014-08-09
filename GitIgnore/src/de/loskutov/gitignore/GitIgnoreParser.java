@@ -22,7 +22,7 @@ public class GitIgnoreParser {
 		}
 	}
 
-	public static IgnoreRule createRule(String pattern) {
-		return new IgnoreRule(pattern);
+	public static FastIgnoreRule createRule(String pattern) {
+		return new FastIgnoreRule(pattern);
 	}
 }

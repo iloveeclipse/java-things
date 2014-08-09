@@ -8,13 +8,13 @@
  *******************************************************************************/
 package de.loskutov.gitignore;
 
-public class IgnoreRule {
+public class FastIgnoreRule {
 
 	private final IgnoreMatcher matcher;
 	private final boolean inverse;
 	private final boolean isDirectory;
 
-	public IgnoreRule(String pattern) {
+	public FastIgnoreRule(String pattern) {
 		if(pattern == null){
 			throw new IllegalArgumentException("Pattern must be not null!");
 		}
@@ -115,11 +115,11 @@ public class IgnoreRule {
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof IgnoreRule)) {
+		if (!(obj instanceof FastIgnoreRule)) {
 			return false;
 		}
 
-		IgnoreRule other = (IgnoreRule) obj;
+		FastIgnoreRule other = (FastIgnoreRule) obj;
 		if(inverse != other.inverse) {
 			return false;
 		}

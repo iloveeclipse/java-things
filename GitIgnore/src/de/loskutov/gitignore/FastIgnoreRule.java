@@ -10,6 +10,8 @@ package de.loskutov.gitignore;
 
 import static de.loskutov.gitignore.Strings.*;
 
+import org.eclipse.jgit.errors.InvalidPatternException;
+
 public class FastIgnoreRule {
 	private static final NoResultMatcher NO_MATCH = new NoResultMatcher();
 	private final IgnoreMatcher matcher;
@@ -48,11 +50,18 @@ public class FastIgnoreRule {
 					return;
 				}
 			}
-			this.matcher = createMatcher(pattern, isDirectory);
+			IgnoreMatcher m;
+			try {
+				m = createMatcher(pattern, isDirectory);
+			} catch (InvalidPatternException e) {
+				// TODO Auto-generated catch block
+				m = NO_MATCH;
+			}
+			this.matcher = m;
 		}
 	}
 
-	private static IgnoreMatcher createMatcher(String pattern, boolean dirOnly) {
+	private static IgnoreMatcher createMatcher(String pattern, boolean dirOnly) throws InvalidPatternException {
 		pattern = pattern.trim();
 		// ignore possible leading and trailing slash
 		int slash = pattern.indexOf('/', 1);
@@ -70,9 +79,10 @@ public class FastIgnoreRule {
 			return false;
 		}
 		path = path.trim();
-		if(path.isEmpty()){
-			return false;
-		}
+		// XXX ???
+		//		if(path.isEmpty()){
+		//			return false;
+		//		}
 		boolean match = matcher.matches(path, directory);
 		return match;
 	}
@@ -132,7 +142,8 @@ public class FastIgnoreRule {
 
 		@Override
 		public boolean matches(String path, boolean dirOnly) {
-			return false;
+			// XXX ???
+			return path.length() == 0;
 		}
 
 		@Override

@@ -8,16 +8,18 @@
  *******************************************************************************/
 package de.loskutov.gitignore;
 
-import static de.loskutov.gitignore.Strings.convert;
+import static de.loskutov.gitignore.Strings.convertGlob;
 
 import java.util.regex.Pattern;
+
+import org.eclipse.jgit.errors.InvalidPatternException;
 
 public class WildCardMatcher extends NameMatcher {
 
 	final Pattern p;
-	WildCardMatcher(String pattern, boolean dirOnly) {
+	WildCardMatcher(String pattern, boolean dirOnly) throws InvalidPatternException {
 		super(pattern, dirOnly);
-		p = convert(subPattern);
+		p = convertGlob(subPattern);
 	}
 
 	@Override

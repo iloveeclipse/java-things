@@ -12,12 +12,13 @@ package de.loskutov.gitignore;
 import static de.loskutov.gitignore.Strings.split;
 import static org.junit.Assert.*;
 
+import org.eclipse.jgit.errors.InvalidPatternException;
 import org.junit.Test;
 
 public class TestIgnore {
 
 	@Test
-	public void testSimpleCharClass(){
+	public void testSimpleCharClass() throws InvalidPatternException{
 		assertEquals("", matches("[a]", "a"));
 		assertEquals("", matches("[a]", "a/"));
 		assertEquals("", matches("[a]", "a/b"));
@@ -51,7 +52,7 @@ public class TestIgnore {
 	}
 
 	@Test
-	public void testCharClass(){
+	public void testCharClass() throws InvalidPatternException{
 		assertEquals("", matches("[v-z]", "x"));
 		assertEquals("", matches("[v-z]", "x/"));
 		assertEquals("", matches("[v-z]", "x/b"));
@@ -85,7 +86,7 @@ public class TestIgnore {
 	}
 
 	@Test
-	public void testDotAsterisk(){
+	public void testDotAsterisk() throws InvalidPatternException{
 		assertEquals("", matches("*.a", ".a"));
 		assertEquals("", matches("*.a", "/.a"));
 		assertEquals("", matches("*.a", "a.a"));
@@ -96,7 +97,7 @@ public class TestIgnore {
 	}
 
 	@Test
-	public void testDotAsteriskDoNotMatch(){
+	public void testDotAsteriskDoNotMatch() throws InvalidPatternException{
 		assertEquals("", notMatches("*.a", ".ab"));
 		assertEquals("", notMatches("*.a", "/.ab"));
 		assertEquals("", notMatches("*.stp", "/test.astp"));
@@ -108,7 +109,7 @@ public class TestIgnore {
 	}
 
 	@Test
-	public void testAsteriskDotMatch(){
+	public void testAsteriskDotMatch() throws InvalidPatternException{
 		assertEquals("", matches("a.*", "a."));
 		assertEquals("", matches("a.*", "a./"));
 		assertEquals("", matches("a.*", "a.b"));
@@ -137,7 +138,7 @@ public class TestIgnore {
 	}
 
 	@Test
-	public void testAsterisk(){
+	public void testAsterisk() throws InvalidPatternException{
 		assertEquals("", matches("a*", "a"));
 		assertEquals("", matches("a*", "a/"));
 		assertEquals("", matches("a*", "ab"));
@@ -170,7 +171,7 @@ public class TestIgnore {
 	}
 
 	@Test
-	public void testQuestionmark(){
+	public void testQuestionmark() throws InvalidPatternException{
 		assertEquals("", matches("a?", "ab"));
 		assertEquals("", matches("a?", "ab/"));
 
@@ -196,7 +197,7 @@ public class TestIgnore {
 	}
 
 	@Test
-	public void testQuestionmarkDoNotMatch(){
+	public void testQuestionmarkDoNotMatch() throws InvalidPatternException{
 		assertEquals("", notMatches("a?", "a/"));
 		assertEquals("", notMatches("a?", "abc"));
 		assertEquals("", notMatches("a?", "abc/"));
@@ -223,7 +224,7 @@ public class TestIgnore {
 	}
 
 	@Test
-	public void testSimplePatterns(){
+	public void testSimplePatterns() throws InvalidPatternException{
 		assertEquals("", matches("a", "a"));
 		assertEquals("", matches("a", "a/"));
 		assertEquals("", matches("a", "a/b"));
@@ -258,7 +259,7 @@ public class TestIgnore {
 	}
 
 	@Test
-	public void testSimplePatternsDoNotMatch(){
+	public void testSimplePatternsDoNotMatch() throws InvalidPatternException{
 		assertEquals("", notMatches("ab", "a"));
 		assertEquals("", notMatches("abc", "a/"));
 		assertEquals("", notMatches("abc", "a/b"));
@@ -291,7 +292,7 @@ public class TestIgnore {
 	}
 
 	@Test
-	public void testSegments(){
+	public void testSegments() throws InvalidPatternException{
 		assertEquals("", matches("/a/b", "a/b"));
 		assertEquals("", matches("/a/b", "/a/b"));
 		assertEquals("", matches("/a/b", "/a/b/"));
@@ -315,7 +316,7 @@ public class TestIgnore {
 	}
 
 	@Test
-	public void testSegmentsDoNotMatch(){
+	public void testSegmentsDoNotMatch() throws InvalidPatternException{
 		assertEquals("", notMatches("a/b", "/a/bb"));
 		assertEquals("", notMatches("a/b", "/aa/b"));
 		assertEquals("", notMatches("a/b", "a/bb"));
@@ -330,7 +331,7 @@ public class TestIgnore {
 	}
 
 	@Test
-	public void testWildmatch(){
+	public void testWildmatch() throws InvalidPatternException{
 		assertEquals("", matches("**/a/b", "a/b"));
 		assertEquals("", matches("**/a/b", "c/a/b"));
 		assertEquals("", matches("**/a/b", "c/d/a/b"));
@@ -355,44 +356,24 @@ public class TestIgnore {
 	}
 
 	@Test
-	public void testWildmatchDoNotMatch(){
+	public void testWildmatchDoNotMatch() throws InvalidPatternException{
 		assertEquals("", notMatches("**/a/b", "a/c/b"));
 		assertEquals("", notMatches("a/**/b", "a/c/bb"));
 	}
 
 	@Test
-	public void testSimpleRules(){
+	public void testSimpleRules() throws InvalidPatternException{
 		try {
 			GitIgnoreParser.createRule(null);
 			fail("Illegal input allowed!");
 		} catch (IllegalArgumentException e) {
 			// expected
 		}
-		try {
-			GitIgnoreParser.createRule("");
-			fail("Illegal input allowed!");
-		} catch (IllegalArgumentException e) {
-			// expected
-		}
-		try {
-			GitIgnoreParser.createRule(" ");
-			fail("Illegal input allowed!");
-		} catch (IllegalArgumentException e) {
-			// expected
-		}
-		try {
-			GitIgnoreParser.createRule("/");
-			fail("Illegal input allowed!");
-		} catch (IllegalArgumentException e) {
-			// expected
-		}
-		try {
-			GitIgnoreParser.createRule("//");
-			fail("Illegal input allowed!");
-		} catch (IllegalArgumentException e) {
-			// expected
-		}
+		assertFalse(GitIgnoreParser.createRule("/").isMatch("/", false));
+		assertFalse(GitIgnoreParser.createRule("//").isMatch("//", false));
 		assertFalse(GitIgnoreParser.createRule("#").isMatch("#", false));
+		assertTrue(GitIgnoreParser.createRule("").isMatch("", false));
+		assertTrue(GitIgnoreParser.createRule(" ").isMatch(" ", false));
 	}
 
 	@Test
@@ -413,7 +394,7 @@ public class TestIgnore {
 	}
 
 
-	String matches(String pattern, String path){
+	String matches(String pattern, String path) throws InvalidPatternException{
 		FastIgnoreRule rule = GitIgnoreParser.createRule(pattern);
 		boolean dir = path.endsWith("/");
 		boolean match = rule.isMatch(path, dir);
@@ -444,7 +425,7 @@ public class TestIgnore {
 		return result;
 	}
 
-	String notMatches(String pattern, String path){
+	String notMatches(String pattern, String path) throws InvalidPatternException{
 		FastIgnoreRule rule = GitIgnoreParser.createRule(pattern);
 		boolean dir = path.endsWith("/");
 		boolean match = rule.isMatch(path, dir);

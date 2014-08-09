@@ -12,18 +12,20 @@ import static de.loskutov.gitignore.Strings.*;
 
 import java.util.*;
 
+import org.eclipse.jgit.errors.InvalidPatternException;
+
 public class PathMatcher extends AbstractMatcher {
 
 	private static final WildMatcher WILD = new WildMatcher();
 	private final List<AbstractMatcher> matchers;
 
-	PathMatcher(String pattern, boolean dirOnly){
+	PathMatcher(String pattern, boolean dirOnly) throws InvalidPatternException{
 		this.pattern = pattern;
 		isDirectory = dirOnly;
 		matchers = createMatchers(split(pattern), dirOnly);
 	}
 
-	static private List<AbstractMatcher> createMatchers(List<String> segments, boolean dirOnly) {
+	static private List<AbstractMatcher> createMatchers(List<String> segments, boolean dirOnly) throws InvalidPatternException {
 		List<AbstractMatcher> matchers = new ArrayList<AbstractMatcher>(segments.size());
 		for (int i = 0; i < segments.size(); i++) {
 			String segment = segments.get(i);

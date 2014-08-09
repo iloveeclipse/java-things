@@ -8,8 +8,10 @@
  *******************************************************************************/
 package de.loskutov.gitignore;
 
+import org.eclipse.jgit.errors.InvalidPatternException;
+
 public class GitIgnoreParser {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws InvalidPatternException {
 		if(args.length < 2 || args.length % 2 != 0){
 			System.out.println("Usage: (<ignore pattern> <path to test>)+");
 			return;
@@ -22,7 +24,7 @@ public class GitIgnoreParser {
 		}
 	}
 
-	public static FastIgnoreRule createRule(String pattern) {
+	public static FastIgnoreRule createRule(String pattern) throws InvalidPatternException {
 		return new FastIgnoreRule(pattern);
 	}
 }

@@ -71,11 +71,14 @@ public class Strings {
 				|| pattern.indexOf(']') != -1;
 	}
 
-//	static final Pattern BRACKETS_FIX = Pattern.compile("");
+	//	static final Pattern BRACKETS_FIX = Pattern.compile("");
 	static Pattern convert(String subPattern) {
 		String pat = subPattern.replaceAll("\\.", "\\\\.");
 		pat = pat.replaceAll("\\*", ".*");
 		pat = pat.replaceAll("\\?", ".");
+		pat = pat.replaceAll("\\[!", "[^");
+		pat = pat.replaceAll("\\[\\[", "[\\\\[");
+		//		pat = pat.replaceAll("\\[\\]", "\\\\[]");
 		//		BRACKETS_FIX.matcher(pat).replaceAll(replacement);
 		return Pattern.compile(pat);
 	}

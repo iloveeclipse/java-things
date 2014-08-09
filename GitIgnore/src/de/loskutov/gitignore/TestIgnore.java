@@ -172,7 +172,6 @@ public class TestIgnore {
 	@Test
 	public void testQuestionmark(){
 		assertEquals("", matches("a?", "ab"));
-		assertEquals("", matches("a?", "a/"));
 		assertEquals("", matches("a?", "ab/"));
 
 		assertEquals("", matches("a?", "b/ab"));
@@ -194,11 +193,11 @@ public class TestIgnore {
 
 		assertEquals("", matches("/a?/b", "ab/b"));
 		assertEquals("", matches("/a?/b", "/ab/b"));
-		assertEquals("", matches("/a?/b", "/a/b"));
 	}
 
 	@Test
 	public void testQuestionmarkDoNotMatch(){
+		assertEquals("", notMatches("a?", "a/"));
 		assertEquals("", notMatches("a?", "abc"));
 		assertEquals("", notMatches("a?", "abc/"));
 
@@ -220,6 +219,7 @@ public class TestIgnore {
 
 		assertEquals("", notMatches("/a?/b", "abc/b"));
 		assertEquals("", notMatches("/a?/b", "/abc/b"));
+		assertEquals("", notMatches("/a?/b", "/a/b"));
 	}
 
 	@Test

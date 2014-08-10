@@ -15,7 +15,7 @@ public class NameMatcher extends AbstractMatcher {
 
 	NameMatcher(String pattern, boolean dirOnly){
 		super(pattern, dirOnly);
-		beginning = pattern.charAt(0) == '/';
+		beginning = pattern.isEmpty()? false : pattern.charAt(0) == '/';
 		if(!beginning) {
 			this.subPattern = pattern;
 		} else {

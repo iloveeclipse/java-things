@@ -87,11 +87,15 @@ public class Strings {
 			// but this was in org.eclipse.jgit.fnmatch.GroupHead.java ???
 			"word"
 			);
+	private static final String DL = "\\p{javaDigit}\\p{javaLetter}";
 	final static List<String> JAVA_CHAR_CLASSES = Arrays.asList(
-			"\\p{Alnum}",  "\\p{Alpha}",  "\\p{Blank}",  "\\p{Cntrl}",
-			"\\p{Digit}",  "\\p{Graph}",  "\\p{Lower}",  "\\p{Print}",
-			"\\p{Punct}",  "\\p{Space}",  "\\p{Upper}",  "\\p{XDigit}",
-			"\\w"
+			//[:alnum:]      [:alpha:]         [:blank:]         [:cntrl:]
+			"\\p{Alnum}",  "\\p{javaLetter}",  "\\p{Blank}",  "\\p{Cntrl}",
+			//[:digit:]         [:graph:]       [:lower:]         [:print:]
+			"\\p{javaDigit}",  "[\\p{Graph}" + DL + "]",  "\\p{Ll}",  "[\\p{Print}" + DL + "]",
+			//[:punct:]      [:space:]        [:upper:]          [:xdigit:]
+			"\\p{Punct}",  "\\p{Space}",  "\\p{Lu}",  "\\p{XDigit}",
+			"[" + DL + "_]"
 			);
 
 	/**

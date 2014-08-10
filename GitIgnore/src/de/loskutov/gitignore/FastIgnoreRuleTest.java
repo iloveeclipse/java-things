@@ -384,36 +384,37 @@ public class FastIgnoreRuleTest {
 		assertNotMatched("a/**/b", "a/c/bb");
 	}
 
+	@SuppressWarnings("unused")
 	@Test
 	public void testSimpleRules(){
 		try {
-			GitIgnoreParser.createRule(null);
+			new FastIgnoreRule(null);
 			fail("Illegal input allowed!");
 		} catch (IllegalArgumentException e) {
 			// expected
 		}
-		assertFalse(GitIgnoreParser.createRule("/").isMatch("/", false));
-		assertFalse(GitIgnoreParser.createRule("//").isMatch("//", false));
-		assertFalse(GitIgnoreParser.createRule("#").isMatch("#", false));
-		assertFalse(GitIgnoreParser.createRule("").isMatch("", false));
-		assertFalse(GitIgnoreParser.createRule(" ").isMatch(" ", false));
+		assertFalse(new FastIgnoreRule("/").isMatch("/", false));
+		assertFalse(new FastIgnoreRule("//").isMatch("//", false));
+		assertFalse(new FastIgnoreRule("#").isMatch("#", false));
+		assertFalse(new FastIgnoreRule("").isMatch("", false));
+		assertFalse(new FastIgnoreRule(" ").isMatch(" ", false));
 	}
 
 	@Test
 	public void testSplit(){
 		try{
-			split("/").toArray();
+			split("/", '/').toArray();
 			fail("should not allow single slash");
 		} catch(IllegalStateException e){
 			// expected
 		}
 
-		assertArrayEquals(new String[]{"a", "b"}, split("a/b").toArray());
-		assertArrayEquals(new String[]{"a", "b/"}, split("a/b/").toArray());
-		assertArrayEquals(new String[]{"/a", "b"}, split("/a/b").toArray());
-		assertArrayEquals(new String[]{"/a", "b/"}, split("/a/b/").toArray());
-		assertArrayEquals(new String[]{"/a", "b", "c"}, split("/a/b/c").toArray());
-		assertArrayEquals(new String[]{"/a", "b", "c/"}, split("/a/b/c/").toArray());
+		assertArrayEquals(new String[]{"a", "b"}, split("a/b", '/').toArray());
+		assertArrayEquals(new String[]{"a", "b/"}, split("a/b/", '/').toArray());
+		assertArrayEquals(new String[]{"/a", "b"}, split("/a/b", '/').toArray());
+		assertArrayEquals(new String[]{"/a", "b/"}, split("/a/b/", '/').toArray());
+		assertArrayEquals(new String[]{"/a", "b", "c"}, split("/a/b/c", '/').toArray());
+		assertArrayEquals(new String[]{"/a", "b", "c/"}, split("/a/b/c/", '/').toArray());
 	}
 
 

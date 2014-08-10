@@ -78,7 +78,7 @@ public class FileNameMatcherTest {
 			assertEquals(appendCanMatchExpected, matcher.canAppendMatch());
 		} else {
 			boolean isDir = input.endsWith("/");
-			IgnoreMatcher matcher = GitIgnoreParser.createMatcher(pattern, isDir);
+			AbstractMatcher matcher = PathMatcher.createNameMatcher(pattern, null, isDir);
 			assertEquals(matchExpected, matcher.matches(input, isDir));
 		}
 	}
@@ -95,8 +95,9 @@ public class FileNameMatcherTest {
 			assertEquals(matchExpected, matcher.isMatch());
 			assertEquals(appendCanMatchExpected, matcher.canAppendMatch());
 		} else {
-			FastIgnoreRule rule = new FastIgnoreRule(pattern);
-			assertEquals(matchExpected, rule.isMatch(input, input.endsWith("/")));
+			boolean isDir = input.endsWith("/");
+			AbstractMatcher matcher = PathMatcher.createNameMatcher(pattern, Character.valueOf(excludedCharacter), isDir);
+			assertEquals(matchExpected, matcher.matches(input, isDir));
 		}
 	}
 

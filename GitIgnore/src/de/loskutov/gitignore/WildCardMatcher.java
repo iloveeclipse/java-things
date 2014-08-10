@@ -18,13 +18,13 @@ public class WildCardMatcher extends NameMatcher {
 
 	final Pattern p;
 
-	WildCardMatcher(String pattern, boolean dirOnly) throws InvalidPatternException {
-		super(pattern, dirOnly);
+	WildCardMatcher(String pattern, Character pathSeparator, boolean dirOnly) throws InvalidPatternException {
+		super(pattern, pathSeparator, dirOnly);
 		p = convertGlob(subPattern);
 	}
 
 	@Override
-	public boolean matches(String segment, int startIncl, int endExcl, boolean dirOnly){
+	public boolean matches(String segment, int startIncl, int endExcl, boolean dirOnly) {
 		return p.matcher(new SubString(segment, startIncl, endExcl)).matches();
 	}
 
@@ -37,8 +37,7 @@ public class WildCardMatcher extends NameMatcher {
 			this.parent = parent;
 			this.startIncl = startIncl;
 			this.length = endExcl - startIncl;
-			if (startIncl < 0 || endExcl < 0 || length < 0
-					|| startIncl + length > parent.length()) {
+			if (startIncl < 0 || endExcl < 0 || length < 0 || startIncl + length > parent.length()) {
 				throw new IndexOutOfBoundsException(
 						"Trying to create substring on: " + parent
 						+ " with invalid indices: " + startIncl + " / " + endExcl);

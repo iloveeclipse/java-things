@@ -7,16 +7,15 @@ import org.eclipse.jgit.errors.InvalidPatternException;
 
 public class Strings {
 
-	static String stripSlashes(String pattern) {
-		while(pattern.length() > 0 && pattern.charAt(pattern.length() - 1) == '/'){
+	static char getPathSeparator(Character pathSeparator) {
+		return pathSeparator == null ? '/' : pathSeparator.charValue();
+	}
+
+	static String stripTrailing(String pattern, char c) {
+		while(pattern.length() > 0 && pattern.charAt(pattern.length() - 1) == c){
 			pattern = pattern.substring(0, pattern.length() - 1);
 		}
 		return pattern;
-	}
-
-	static boolean hasSegments(String s){
-		int slash = s.indexOf('/', 1);
-		return slash > 0 && slash != s.length() - 1;
 	}
 
 	static int count(String s, char c, boolean ignoreFirstLast){
@@ -35,8 +34,8 @@ public class Strings {
 		return count;
 	}
 
-	static List<String> split(String pattern){
-		int count = count(pattern, '/', true);
+	static List<String> split(String pattern, char slash){
+		int count = count(pattern, slash, true);
 		if(count < 1){
 			throw new IllegalStateException("Pattern must have at least two segments: " + pattern);
 		}
@@ -44,7 +43,7 @@ public class Strings {
 		int right = 0;
 		while (true) {
 			int left = right;
-			right = pattern.indexOf('/', right);
+			right = pattern.indexOf(slash, right);
 			if(right == -1) {
 				if(left < pattern.length()){
 					segments.add(pattern.substring(left));
@@ -98,7 +97,7 @@ public class Strings {
 	 * http://man7.org/linux/man-pages/man7/glob.7.html <li>
 	 * org.eclipse.jgit.fnmatch.FileNameMatcher.java Seems that there are
 	 * various ways to define what "glob" can be.
-	 *
+
 	 * @return Java regex pattern corresponding to given glob pattern
 	 *
 	 * @throws InvalidPatternException

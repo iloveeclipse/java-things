@@ -8,14 +8,17 @@
  *******************************************************************************/
 package de.loskutov.gitignore;
 
+import static de.loskutov.gitignore.Strings.getPathSeparator;
 public class NameMatcher extends AbstractMatcher {
 
 	final boolean beginning;
 	final String subPattern;
+	final char slash;
 
-	NameMatcher(String pattern, boolean dirOnly){
+	NameMatcher(String pattern, Character pathSeparator, boolean dirOnly){
 		super(pattern, dirOnly);
-		beginning = pattern.isEmpty()? false : pattern.charAt(0) == '/';
+		slash = getPathSeparator(pathSeparator);
+		beginning = pattern.isEmpty()? false : pattern.charAt(0) == slash;
 		if(!beginning) {
 			this.subPattern = pattern;
 		} else {
@@ -47,14 +50,14 @@ public class NameMatcher extends AbstractMatcher {
 		return false;
 	}
 
-	private static int getFirstNotSlash(String s, int start) {
-		int slash = s.indexOf('/', start);
-		return slash == start? start + 1 : start;
+	private int getFirstNotSlash(String s, int start) {
+		int slashIdx = s.indexOf(slash, start);
+		return slashIdx == start? start + 1 : start;
 	}
 
-	private static int getFirstSlash(String s, int start) {
-		int slash = s.indexOf('/', start);
-		return slash == -1? s.length() : slash;
+	private int getFirstSlash(String s, int start) {
+		int slashIdx = s.indexOf(slash, start);
+		return slashIdx == -1? s.length() : slashIdx;
 	}
 
 	@Override

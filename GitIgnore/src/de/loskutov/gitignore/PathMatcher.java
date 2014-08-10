@@ -18,17 +18,19 @@ public class PathMatcher extends AbstractMatcher {
 
 	private static final WildMatcher WILD = new WildMatcher();
 	private final List<AbstractMatcher> matchers;
+	private final char slash;
 
-	PathMatcher(String pattern, boolean dirOnly) throws InvalidPatternException {
+	PathMatcher(String pattern, Character pathSeparator, boolean dirOnly) throws InvalidPatternException {
 		super(pattern, dirOnly);
-		matchers = createMatchers(split(pattern), dirOnly);
+		slash = getPathSeparator(pathSeparator);
+		matchers = createMatchers(split(pattern, slash), pathSeparator, dirOnly);
 	}
 
-	static private List<AbstractMatcher> createMatchers(List<String> segments, boolean dirOnly) throws InvalidPatternException {
+	static private List<AbstractMatcher> createMatchers(List<String> segments, Character pathSeparator, boolean dirOnly) throws InvalidPatternException {
 		List<AbstractMatcher> matchers = new ArrayList<AbstractMatcher>(segments.size());
 		for (int i = 0; i < segments.size(); i++) {
 			String segment = segments.get(i);
-			AbstractMatcher matcher = createMatcher(segment, dirOnly);
+			AbstractMatcher matcher = createNameMatcher(segment, pathSeparator, dirOnly);
 			if(matcher == WILD && i > 0 && matchers.get(matchers.size() - 1) == WILD){
 				// collapse wildmatchers following each other: **/** is same as **
 				continue;
@@ -38,14 +40,34 @@ public class PathMatcher extends AbstractMatcher {
 		return matchers;
 	}
 
-	static AbstractMatcher createMatcher(String segment, boolean dirOnly) throws InvalidPatternException {
+	/**
+	 *
+	 * @param pattern
+	 * @param pathSeparator if this parameter isn't null then this character will not
+	 *            match at wildcards(* and ? are wildcards).
+	 * @param dirOnly
+	 * @return
+	 * @throws InvalidPatternException
+	 */
+	public static IgnoreMatcher createPathMatcher(String pattern, Character pathSeparator, boolean dirOnly) throws InvalidPatternException {
+		pattern = pattern.trim();
+		char slash = Strings.getPathSeparator(pathSeparator);
+		// ignore possible leading and trailing slash
+		int slashIdx = pattern.indexOf(slash, 1);
+		if(slashIdx > 0 && slashIdx < pattern.length() - 1){
+			return new PathMatcher(pattern, pathSeparator, dirOnly);
+		}
+		return createNameMatcher(pattern, pathSeparator, dirOnly);
+	}
+
+	static AbstractMatcher createNameMatcher(String segment, Character pathSeparator, boolean dirOnly) throws InvalidPatternException {
 		if(WildMatcher.WILDMATCH.equals(segment)) {
 			return WILD;
 		}
 		if(isWildCard(segment)){
-			return new WildCardMatcher(segment, dirOnly);
+			return new WildCardMatcher(segment, pathSeparator, dirOnly);
 		}
-		return new NameMatcher(segment, dirOnly);
+		return new NameMatcher(segment, pathSeparator, dirOnly);
 	}
 
 	@Override
@@ -65,7 +87,7 @@ public class PathMatcher extends AbstractMatcher {
 		int lastWildmatch = -1;
 		while (true) {
 			int left = right;
-			right = path.indexOf('/', right);
+			right = path.indexOf(slash, right);
 			if(right == -1) {
 				if(left < endExcl){
 					match = matches(matcher, path, left, endExcl, dirOnly);

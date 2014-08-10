@@ -8,12 +8,15 @@
  *******************************************************************************/
 package de.loskutov.gitignore;
 
-import static de.loskutov.gitignore.Strings.stripSlashes;
+import static de.loskutov.gitignore.Strings.stripTrailing;
 
 import org.eclipse.jgit.errors.InvalidPatternException;
 
 public class FastIgnoreRule {
+
+	private static final char PATH_SEPARATOR = '/';
 	private static final NoResultMatcher NO_MATCH = new NoResultMatcher();
+
 	private final IgnoreMatcher matcher;
 	private final boolean inverse;
 	private final boolean isDirectory;
@@ -42,9 +45,9 @@ public class FastIgnoreRule {
 			this.matcher = NO_MATCH;
 			isDirectory = false;
 		} else {
-			isDirectory = pattern.charAt(pattern.length() - 1) == '/';
+			isDirectory = pattern.charAt(pattern.length() - 1) == PATH_SEPARATOR;
 			if(isDirectory) {
-				pattern = stripSlashes(pattern);
+				pattern = stripTrailing(pattern, PATH_SEPARATOR);
 				if(pattern.isEmpty()){
 					this.matcher = NO_MATCH;
 					return;
@@ -52,7 +55,7 @@ public class FastIgnoreRule {
 			}
 			IgnoreMatcher m;
 			try {
-				m = GitIgnoreParser.createMatcher(pattern, isDirectory);
+				m = PathMatcher.createPathMatcher(pattern,  Character.valueOf(PATH_SEPARATOR), isDirectory);
 			} catch (InvalidPatternException e) {
 				// TODO Auto-generated catch block
 				m = NO_MATCH;
@@ -89,7 +92,7 @@ public class FastIgnoreRule {
 		}
 		sb.append(matcher);
 		if (isDirectory) {
-			sb.append('/');
+			sb.append(PATH_SEPARATOR);
 		}
 		return sb.toString();
 
@@ -135,6 +138,5 @@ public class FastIgnoreRule {
 		public boolean matches(String segment, int startIncl, int endExcl, boolean dirOnly) {
 			return false;
 		}
-
 	}
 }

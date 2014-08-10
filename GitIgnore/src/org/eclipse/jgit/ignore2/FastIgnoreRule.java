@@ -73,7 +73,7 @@ public class FastIgnoreRule {
 		if(path.isEmpty()){
 			return false;
 		}
-		boolean match = matcher.matches(path, directory);
+		boolean match = matcher.matches(path);
 		return match;
 	}
 
@@ -131,12 +131,12 @@ public class FastIgnoreRule {
 	static final class NoResultMatcher implements IMatcher {
 
 		@Override
-		public boolean matches(String path, boolean dirOnly) {
+		public boolean matches(String path) {
 			return false;
 		}
 
 		@Override
-		public boolean matches(String segment, int startIncl, int endExcl, boolean dirOnly) {
+		public boolean matches(String segment, int startIncl, int endExcl) {
 			return false;
 		}
 	}

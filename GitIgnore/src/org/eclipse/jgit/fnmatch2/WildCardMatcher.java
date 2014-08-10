@@ -24,7 +24,7 @@ public class WildCardMatcher extends NameMatcher {
 	}
 
 	@Override
-	public boolean matches(String segment, int startIncl, int endExcl, boolean dirOnly) {
+	public boolean matches(String segment, int startIncl, int endExcl) {
 		return p.matcher(new SubString(segment, startIncl, endExcl)).matches();
 	}
 

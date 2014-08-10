@@ -35,13 +35,13 @@ public class NameMatcher extends AbstractMatcher {
 	 * @param path string which is not empty and is trimmed
 	 */
 	@Override
-	public boolean matches(String path, boolean dirOnly) {
+	public boolean matches(String path) {
 		int end = 0;
 		int firstChar = 0;
 		do {
 			firstChar = getFirstNotSlash(path, end);
 			end = getFirstSlash(path, firstChar);
-			boolean match = matches(path, firstChar, end, dirOnly);
+			boolean match = matches(path, firstChar, end);
 			if(match){
 				return isDirectory? end > 0 && end != path.length() : true;
 			}
@@ -61,7 +61,7 @@ public class NameMatcher extends AbstractMatcher {
 	}
 
 	@Override
-	public boolean matches(String segment, int startIncl, int endExcl, boolean dirOnly){
+	public boolean matches(String segment, int startIncl, int endExcl){
 		if(subPattern.length() != (endExcl - startIncl)){
 			return false;
 		}

@@ -9,6 +9,6 @@
 package org.eclipse.jgit.fnmatch2;
 
 public interface IMatcher {
-	boolean matches(String path, boolean dirOnly);
-	boolean matches(String segment, int startIncl, int endExcl, boolean dirOnly);
+	boolean matches(String path);
+	boolean matches(String segment, int startIncl, int endExcl);
 }

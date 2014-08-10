@@ -71,16 +71,16 @@ public class PathMatcher extends AbstractMatcher {
 	}
 
 	@Override
-	public boolean matches(String path, boolean dirOnly) {
-		return matches(path, 0, path.length(), dirOnly);
+	public boolean matches(String path) {
+		return matches(path, 0, path.length());
 	}
 
 	@Override
-	public boolean matches(String segment, int startIncl, int endExcl, boolean dirOnly) {
-		return iterate(segment, startIncl, endExcl, dirOnly);
+	public boolean matches(String segment, int startIncl, int endExcl) {
+		return iterate(segment, startIncl, endExcl);
 	}
 
-	boolean iterate(final String path, final int startIncl, final int endExcl, boolean dirOnly){
+	boolean iterate(final String path, final int startIncl, final int endExcl){
 		int matcher = 0;
 		int right = startIncl;
 		boolean match = false;
@@ -90,7 +90,7 @@ public class PathMatcher extends AbstractMatcher {
 			right = path.indexOf(slash, right);
 			if(right == -1) {
 				if(left < endExcl){
-					match = matches(matcher, path, left, endExcl, dirOnly);
+					match = matches(matcher, path, left, endExcl);
 				}
 				if(match){
 					if(matcher == matchers.size() - 2 && matchers.get(matcher + 1).isWildmatch()){
@@ -100,7 +100,7 @@ public class PathMatcher extends AbstractMatcher {
 					if(matcher < matchers.size() - 1 && matchers.get(matcher).isWildmatch()){
 						// ** can match *nothing*: a/**/b match also a/b
 						matcher ++;
-						match = matches(matcher, path, left, endExcl, dirOnly);
+						match = matches(matcher, path, left, endExcl);
 					} else
 						if(matchers.get(matcher).isDirectory){
 							return false;
@@ -109,7 +109,7 @@ public class PathMatcher extends AbstractMatcher {
 				return match && matcher + 1 == matchers.size();
 			}
 			if(right - left > 0) {
-				match = matches(matcher, path, left, right, dirOnly);
+				match = matches(matcher, path, left, right);
 			} else {
 				// path starts with slash???
 				right ++;
@@ -136,9 +136,9 @@ public class PathMatcher extends AbstractMatcher {
 		}
 	}
 
-	boolean matches(int matcherIdx, String path, int startIncl, int endExcl, boolean dirOnly){
+	boolean matches(int matcherIdx, String path, int startIncl, int endExcl){
 		AbstractMatcher matcher = matchers.get(matcherIdx);
-		return matcher.matches(path, startIncl, endExcl, dirOnly);
+		return matcher.matches(path, startIncl, endExcl);
 	}
 
 

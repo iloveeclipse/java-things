@@ -51,7 +51,6 @@ import java.util.Arrays;
 import org.eclipse.jgit.errors.InvalidPatternException;
 import org.eclipse.jgit.fnmatch.FileNameMatcher;
 import org.eclipse.jgit.fnmatch2.*;
-import org.eclipse.jgit.ignore2.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.*;
@@ -81,7 +80,7 @@ public class FileNameMatcherTest {
 		} else {
 			boolean isDir = input.endsWith("/");
 			AbstractMatcher matcher = PathMatcher.createNameMatcher(pattern, null, isDir);
-			assertEquals(matchExpected, matcher.matches(input, isDir));
+			assertEquals(matchExpected, matcher.matches(input));
 		}
 	}
 
@@ -99,7 +98,7 @@ public class FileNameMatcherTest {
 		} else {
 			boolean isDir = input.endsWith("/");
 			AbstractMatcher matcher = PathMatcher.createNameMatcher(pattern, Character.valueOf(excludedCharacter), isDir);
-			assertEquals(matchExpected, matcher.matches(input, isDir));
+			assertEquals(matchExpected, matcher.matches(input));
 		}
 	}
 

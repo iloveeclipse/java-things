@@ -13,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.*;
 
 import org.eclipse.jgit.ignore.IgnoreRule;
-import org.eclipse.jgit.ignore2.*;
+import org.eclipse.jgit.ignore2.FastIgnoreRule;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
 
@@ -24,64 +24,77 @@ import com.carrotsearch.junitbenchmarks.*;
 public class PerformanceTest extends AbstractBenchmark {
 
 	static List<String> longPaths = Arrays.asList(
-			"0_abcdefghijklmnopqrstuvwxyz_/",
-			"0_abcdefghijklmnopqrstuvwxyz_/1_abcdefghijklmnopqrstuvwxyz_/",
-			"0_abcdefghijklmnopqrstuvwxyz_/1_abcdefghijklmnopqrstuvwxyz_/2_abcdefghijklmnopqrstuvwxyz_/",
-			"0_abcdefghijklmnopqrstuvwxyz_/1_abcdefghijklmnopqrstuvwxyz_/2_abcdefghijklmnopqrstuvwxyz_/3_abcdefghijklmnopqrstuvwxyz_/",
-			"0_abcdefghijklmnopqrstuvwxyz_/1_abcdefghijklmnopqrstuvwxyz_/2_abcdefghijklmnopqrstuvwxyz_/3_abcdefghijklmnopqrstuvwxyz_/4_abcdefghijklmnopqrstuvwxyz_/",
-			"0_abcdefghijklmnopqrstuvwxyz_/1_abcdefghijklmnopqrstuvwxyz_/2_abcdefghijklmnopqrstuvwxyz_/3_abcdefghijklmnopqrstuvwxyz_/4_abcdefghijklmnopqrstuvwxyz_/5_abcdefghijklmnopqrstuvwxyz_/",
-			"0_abcdefghijklmnopqrstuvwxyz_/1_abcdefghijklmnopqrstuvwxyz_/2_abcdefghijklmnopqrstuvwxyz_/3_abcdefghijklmnopqrstuvwxyz_/4_abcdefghijklmnopqrstuvwxyz_/5_abcdefghijklmnopqrstuvwxyz_/6/",
-			"0_abcdefghijklmnopqrstuvwxyz_/1_abcdefghijklmnopqrstuvwxyz_/2_abcdefghijklmnopqrstuvwxyz_/3_abcdefghijklmnopqrstuvwxyz_/4_abcdefghijklmnopqrstuvwxyz_/5_abcdefghijklmnopqrstuvwxyz_/6/7/",
-			"0_abcdefghijklmnopqrstuvwxyz_/1_abcdefghijklmnopqrstuvwxyz_/2_abcdefghijklmnopqrstuvwxyz_/3_abcdefghijklmnopqrstuvwxyz_/4_abcdefghijklmnopqrstuvwxyz_/5_abcdefghijklmnopqrstuvwxyz_/6/7/8/",
-			"0_abcdefghijklmnopqrstuvwxyz_/1_abcdefghijklmnopqrstuvwxyz_/2_abcdefghijklmnopqrstuvwxyz_/3_abcdefghijklmnopqrstuvwxyz_/4_abcdefghijklmnopqrstuvwxyz_/5_abcdefghijklmnopqrstuvwxyz_/6/7/8/9/",
-			"0_abcdefghijklmnopqrstuvwxyz_/1_abcdefghijklmnopqrstuvwxyz_/2_abcdefghijklmnopqrstuvwxyz_/3_abcdefghijklmnopqrstuvwxyz_/4_abcdefghijklmnopqrstuvwxyz_/5_abcdefghijklmnopqrstuvwxyz_/6/7/8/9/10/",
-			"0_abcdefghijklmnopqrstuvwxyz_/1_abcdefghijklmnopqrstuvwxyz_/2_abcdefghijklmnopqrstuvwxyz_/3_abcdefghijklmnopqrstuvwxyz_/4_abcdefghijklmnopqrstuvwxyz_/5_abcdefghijklmnopqrstuvwxyz_/6/7/8/9/10/11/",
-			"0_abcdefghijklmnopqrstuvwxyz_/1_abcdefghijklmnopqrstuvwxyz_/2_abcdefghijklmnopqrstuvwxyz_/3_abcdefghijklmnopqrstuvwxyz_/4_abcdefghijklmnopqrstuvwxyz_/5_abcdefghijklmnopqrstuvwxyz_/6/7/8/9/10/11/12/",
-			"0_abcdefghijklmnopqrstuvwxyz_/1_abcdefghijklmnopqrstuvwxyz_/2_abcdefghijklmnopqrstuvwxyz_/3_abcdefghijklmnopqrstuvwxyz_/4_abcdefghijklmnopqrstuvwxyz_/5_abcdefghijklmnopqrstuvwxyz_/6/7/8/9/10/11/12/13/",
-			"0_abcdefghijklmnopqrstuvwxyz_/1_abcdefghijklmnopqrstuvwxyz_/2_abcdefghijklmnopqrstuvwxyz_/3_abcdefghijklmnopqrstuvwxyz_/4_abcdefghijklmnopqrstuvwxyz_/5_abcdefghijklmnopqrstuvwxyz_/6/7/8/9/10/11/12/13/14/",
-			"0_abcdefghijklmnopqrstuvwxyz_/1_abcdefghijklmnopqrstuvwxyz_/2_abcdefghijklmnopqrstuvwxyz_/3_abcdefghijklmnopqrstuvwxyz_/4_abcdefghijklmnopqrstuvwxyz_/5_abcdefghijklmnopqrstuvwxyz_/6/7/8/9/10/11/12/13/14/15/",
-			"0_abcdefghijklmnopqrstuvwxyz_/1_abcdefghijklmnopqrstuvwxyz_/2_abcdefghijklmnopqrstuvwxyz_/3_abcdefghijklmnopqrstuvwxyz_/4_abcdefghijklmnopqrstuvwxyz_/5_abcdefghijklmnopqrstuvwxyz_/6/7/8/9/10/11/12/13/14/15/16/",
-			"0_abcdefghijklmnopqrstuvwxyz_/1_abcdefghijklmnopqrstuvwxyz_/2_abcdefghijklmnopqrstuvwxyz_/3_abcdefghijklmnopqrstuvwxyz_/4_abcdefghijklmnopqrstuvwxyz_/5_abcdefghijklmnopqrstuvwxyz_/6/7/8/9/10/11/12/13/14/15/16/17/",
-			"0_abcdefghijklmnopqrstuvwxyz_/1_abcdefghijklmnopqrstuvwxyz_/2_abcdefghijklmnopqrstuvwxyz_/3_abcdefghijklmnopqrstuvwxyz_/4_abcdefghijklmnopqrstuvwxyz_/5_abcdefghijklmnopqrstuvwxyz_/6/7/8/9/10/11/12/13/14/15/16/17/18/",
-			"0_abcdefghijklmnopqrstuvwxyz_/1_abcdefghijklmnopqrstuvwxyz_/2_abcdefghijklmnopqrstuvwxyz_/3_abcdefghijklmnopqrstuvwxyz_/4_abcdefghijklmnopqrstuvwxyz_/5_abcdefghijklmnopqrstuvwxyz_/6/7/8/9/10/11/12/13/14/15/16/17/18/19/",
-			"0_abcdefghijklmnopqrstuvwxyz_/1_abcdefghijklmnopqrstuvwxyz_/2_abcdefghijklmnopqrstuvwxyz_/3_abcdefghijklmnopqrstuvwxyz_/4_abcdefghijklmnopqrstuvwxyz_/5_abcdefghijklmnopqrstuvwxyz_/6/7/8/9/10/11/12/13/14/15/16/17/18/19/20/"
-			);
-	static List<String> shortPaths = Arrays.asList(
-			"0_/",
-			"0_/1_/",
-			"0_/1_/2_/",
-			"0_/1_/2_/3_/",
-			"0_/1_/2_/3_/4_/",
-			"0_/1_/2_/3_/4_/5_/",
-			"0_/1_/2_/3_/4_/5_/6/",
-			"0_/1_/2_/3_/4_/5_/6/7/",
-			"0_/1_/2_/3_/4_/5_/6/7/8/",
-			"0_/1_/2_/3_/4_/5_/6/7/8/9/",
-			"0_/1_/2_/3_/4_/5_/6/7/8/9/10/",
-			"0_/1_/2_/3_/4_/5_/6/7/8/9/10/11/",
-			"0_/1_/2_/3_/4_/5_/6/7/8/9/10/11/12/",
-			"0_/1_/2_/3_/4_/5_/6/7/8/9/10/11/12/13/",
-			"0_/1_/2_/3_/4_/5_/6/7/8/9/10/11/12/13/14/",
-			"0_/1_/2_/3_/4_/5_/6/7/8/9/10/11/12/13/14/15/",
-			"0_/1_/2_/3_/4_/5_/6/7/8/9/10/11/12/13/14/15/16/",
-			"0_/1_/2_/3_/4_/5_/6/7/8/9/10/11/12/13/14/15/16/17/",
-			"0_/1_/2_/3_/4_/5_/6/7/8/9/10/11/12/13/14/15/16/17/18/",
-			"0_/1_/2_/3_/4_/5_/6/7/8/9/10/11/12/13/14/15/16/17/18/19/",
-			"0_/1_/2_/3_/4_/5_/6/7/8/9/10/11/12/13/14/15/16/17/18/19/20/"
+			"0_abcdefghijklmnopqrstuvwxyz",
+			"0_abcdefghijklmnopqrstuvwxyz/1_abcdefghijklmnopqrstuvwxyz",
+			"0_abcdefghijklmnopqrstuvwxyz/1_abcdefghijklmnopqrstuvwxyz/2_abcdefghijklmnopqrstuvwxyz",
+			"0_abcdefghijklmnopqrstuvwxyz/1_abcdefghijklmnopqrstuvwxyz/2_abcdefghijklmnopqrstuvwxyz/3_abcdefghijklmnopqrstuvwxyz",
+			"0_abcdefghijklmnopqrstuvwxyz/1_abcdefghijklmnopqrstuvwxyz/2_abcdefghijklmnopqrstuvwxyz/3_abcdefghijklmnopqrstuvwxyz/4_abcdefghijklmnopqrstuvwxyz",
+			"0_abcdefghijklmnopqrstuvwxyz/1_abcdefghijklmnopqrstuvwxyz/2_abcdefghijklmnopqrstuvwxyz/3_abcdefghijklmnopqrstuvwxyz/4_abcdefghijklmnopqrstuvwxyz/5_abcdefghijklmnopqrstuvwxyz",
+			"0_abcdefghijklmnopqrstuvwxyz/1_abcdefghijklmnopqrstuvwxyz/2_abcdefghijklmnopqrstuvwxyz/3_abcdefghijklmnopqrstuvwxyz/4_abcdefghijklmnopqrstuvwxyz/5_abcdefghijklmnopqrstuvwxyz/6",
+			"0_abcdefghijklmnopqrstuvwxyz/1_abcdefghijklmnopqrstuvwxyz/2_abcdefghijklmnopqrstuvwxyz/3_abcdefghijklmnopqrstuvwxyz/4_abcdefghijklmnopqrstuvwxyz/5_abcdefghijklmnopqrstuvwxyz/6/7",
+			"0_abcdefghijklmnopqrstuvwxyz/1_abcdefghijklmnopqrstuvwxyz/2_abcdefghijklmnopqrstuvwxyz/3_abcdefghijklmnopqrstuvwxyz/4_abcdefghijklmnopqrstuvwxyz/5_abcdefghijklmnopqrstuvwxyz/6/7/8",
+			"0_abcdefghijklmnopqrstuvwxyz/1_abcdefghijklmnopqrstuvwxyz/2_abcdefghijklmnopqrstuvwxyz/3_abcdefghijklmnopqrstuvwxyz/4_abcdefghijklmnopqrstuvwxyz/5_abcdefghijklmnopqrstuvwxyz/6/7/8/9",
+			"0_abcdefghijklmnopqrstuvwxyz/1_abcdefghijklmnopqrstuvwxyz/2_abcdefghijklmnopqrstuvwxyz/3_abcdefghijklmnopqrstuvwxyz/4_abcdefghijklmnopqrstuvwxyz/5_abcdefghijklmnopqrstuvwxyz/6/7/8/9/10",
+			"0_abcdefghijklmnopqrstuvwxyz/1_abcdefghijklmnopqrstuvwxyz/2_abcdefghijklmnopqrstuvwxyz/3_abcdefghijklmnopqrstuvwxyz/4_abcdefghijklmnopqrstuvwxyz/5_abcdefghijklmnopqrstuvwxyz/6/7/8/9/10/11",
+			"0_abcdefghijklmnopqrstuvwxyz/1_abcdefghijklmnopqrstuvwxyz/2_abcdefghijklmnopqrstuvwxyz/3_abcdefghijklmnopqrstuvwxyz/4_abcdefghijklmnopqrstuvwxyz/5_abcdefghijklmnopqrstuvwxyz/6/7/8/9/10/11/12",
+			"0_abcdefghijklmnopqrstuvwxyz/1_abcdefghijklmnopqrstuvwxyz/2_abcdefghijklmnopqrstuvwxyz/3_abcdefghijklmnopqrstuvwxyz/4_abcdefghijklmnopqrstuvwxyz/5_abcdefghijklmnopqrstuvwxyz/6/7/8/9/10/11/12/13",
+			"0_abcdefghijklmnopqrstuvwxyz/1_abcdefghijklmnopqrstuvwxyz/2_abcdefghijklmnopqrstuvwxyz/3_abcdefghijklmnopqrstuvwxyz/4_abcdefghijklmnopqrstuvwxyz/5_abcdefghijklmnopqrstuvwxyz/6/7/8/9/10/11/12/13/14",
+			"0_abcdefghijklmnopqrstuvwxyz/1_abcdefghijklmnopqrstuvwxyz/2_abcdefghijklmnopqrstuvwxyz/3_abcdefghijklmnopqrstuvwxyz/4_abcdefghijklmnopqrstuvwxyz/5_abcdefghijklmnopqrstuvwxyz/6/7/8/9/10/11/12/13/14/15",
+			"0_abcdefghijklmnopqrstuvwxyz/1_abcdefghijklmnopqrstuvwxyz/2_abcdefghijklmnopqrstuvwxyz/3_abcdefghijklmnopqrstuvwxyz/4_abcdefghijklmnopqrstuvwxyz/5_abcdefghijklmnopqrstuvwxyz/6/7/8/9/10/11/12/13/14/15/16",
+			"0_abcdefghijklmnopqrstuvwxyz/1_abcdefghijklmnopqrstuvwxyz/2_abcdefghijklmnopqrstuvwxyz/3_abcdefghijklmnopqrstuvwxyz/4_abcdefghijklmnopqrstuvwxyz/5_abcdefghijklmnopqrstuvwxyz/6/7/8/9/10/11/12/13/14/15/16/17",
+			"0_abcdefghijklmnopqrstuvwxyz/1_abcdefghijklmnopqrstuvwxyz/2_abcdefghijklmnopqrstuvwxyz/3_abcdefghijklmnopqrstuvwxyz/4_abcdefghijklmnopqrstuvwxyz/5_abcdefghijklmnopqrstuvwxyz/6/7/8/9/10/11/12/13/14/15/16/17/18",
+			"0_abcdefghijklmnopqrstuvwxyz/1_abcdefghijklmnopqrstuvwxyz/2_abcdefghijklmnopqrstuvwxyz/3_abcdefghijklmnopqrstuvwxyz/4_abcdefghijklmnopqrstuvwxyz/5_abcdefghijklmnopqrstuvwxyz/6/7/8/9/10/11/12/13/14/15/16/17/18/19",
+			"0_abcdefghijklmnopqrstuvwxyz/1_abcdefghijklmnopqrstuvwxyz/2_abcdefghijklmnopqrstuvwxyz/3_abcdefghijklmnopqrstuvwxyz/4_abcdefghijklmnopqrstuvwxyz/5_abcdefghijklmnopqrstuvwxyz/6/7/8/9/10/11/12/13/14/15/16/17/18/19/20"
 			);
 
+	static List<String> shortPaths = Arrays.asList(
+			"0_a",
+			"0_a/1_a",
+			"0_a/1_a/2_a",
+			"0_a/1_a/2_a/3_a",
+			"0_a/1_a/2_a/3_a/4_a",
+			"0_a/1_a/2_a/3_a/4_a/5_a",
+			"0_a/1_a/2_a/3_a/4_a/5_a/6",
+			"0_a/1_a/2_a/3_a/4_a/5_a/6/7",
+			"0_a/1_a/2_a/3_a/4_a/5_a/6/7/8",
+			"0_a/1_a/2_a/3_a/4_a/5_a/6/7/8/9",
+			"0_a/1_a/2_a/3_a/4_a/5_a/6/7/8/9/10",
+			"0_a/1_a/2_a/3_a/4_a/5_a/6/7/8/9/10/11",
+			"0_a/1_a/2_a/3_a/4_a/5_a/6/7/8/9/10/11/12",
+			"0_a/1_a/2_a/3_a/4_a/5_a/6/7/8/9/10/11/12/13",
+			"0_a/1_a/2_a/3_a/4_a/5_a/6/7/8/9/10/11/12/13/14",
+			"0_a/1_a/2_a/3_a/4_a/5_a/6/7/8/9/10/11/12/13/14/15",
+			"0_a/1_a/2_a/3_a/4_a/5_a/6/7/8/9/10/11/12/13/14/15/16",
+			"0_a/1_a/2_a/3_a/4_a/5_a/6/7/8/9/10/11/12/13/14/15/16/17",
+			"0_a/1_a/2_a/3_a/4_a/5_a/6/7/8/9/10/11/12/13/14/15/16/17/18",
+			"0_a/1_a/2_a/3_a/4_a/5_a/6/7/8/9/10/11/12/13/14/15/16/17/18/19",
+			"0_a/1_a/2_a/3_a/4_a/5_a/6/7/8/9/10/11/12/13/14/15/16/17/18/19/20"
+			);
+
+	/** long paths, matching without wildcards */
+	static List<String> simplePatterns;
+	static {
+		simplePatterns = new ArrayList<String>();
+		for (String path : longPaths) {
+			simplePatterns.add(path);
+		}
+	}
+
+	/** long paths, matching with 1 wildcard */
 	static List<String> longPatterns;
 	static {
 		longPatterns = new ArrayList<String>();
 		for (String path : longPaths) {
-			longPatterns.add(path.replaceAll("_", "*"));
+			longPatterns.add(path.replaceAll("0_", "*"));
 		}
 	}
+
+	/** short paths, matching with 1 wildcard */
 	static List<String> shortPatterns;
 	static {
 		shortPatterns = new ArrayList<String>();
 		for (String path : shortPaths) {
-			shortPatterns.add(path.replaceAll("_", "*"));
+			shortPatterns.add(path.replaceAll("0_", "*"));
 		}
 	}
 
@@ -92,21 +105,21 @@ public class PerformanceTest extends AbstractBenchmark {
 			IgnoreRule r1 = new IgnoreRule(pattern);
 			for (int j = i; j < shortPaths.size(); j++) {
 				String path = shortPaths.get(j);
-				boolean match = r1.isMatch(path, true);
-				assertTrue(pattern + " does not match " + path, match);
+				boolean match = r1.isMatch(path, false);
+				assertTrue(path, match);
 			}
 		}
 	}
 
 	@Test
-	public void testFastRuleShort() {
-		for (int i = 0; i < shortPatterns.size(); i++) {
-			String pattern = shortPatterns.get(i);
-			FastIgnoreRule r1 = new FastIgnoreRule(pattern);
-			for (int j = i; j < shortPaths.size(); j++) {
-				String path = shortPaths.get(j);
-				boolean match = r1.isMatch(path, true);
-				assertTrue(pattern + " does not match " + path, match);
+	public void testOldRuleSimple() {
+		for (int i = 0; i < simplePatterns.size(); i++) {
+			String pattern = simplePatterns.get(i);
+			IgnoreRule r1 = new IgnoreRule(pattern);
+			for (int j = i; j < longPaths.size(); j++) {
+				String path = longPaths.get(j);
+				boolean match = r1.isMatch(path, false);
+				assertTrue(path, match);
 			}
 		}
 	}
@@ -118,8 +131,34 @@ public class PerformanceTest extends AbstractBenchmark {
 			IgnoreRule r1 = new IgnoreRule(pattern);
 			for (int j = i; j < longPaths.size(); j++) {
 				String path = longPaths.get(j);
-				boolean match = r1.isMatch(path, true);
-				assertTrue(pattern + " does not match " + path, match);
+				boolean match = r1.isMatch(path, false);
+				assertTrue(path, match);
+			}
+		}
+	}
+
+	@Test
+	public void testFastRuleShort() {
+		for (int i = 0; i < shortPatterns.size(); i++) {
+			String pattern = shortPatterns.get(i);
+			FastIgnoreRule r1 = new FastIgnoreRule(pattern);
+			for (int j = i; j < shortPaths.size(); j++) {
+				String path = shortPaths.get(j);
+				boolean match = r1.isMatch(path, false);
+				assertTrue(path, match);
+			}
+		}
+	}
+
+	@Test
+	public void testFastRuleSimple() {
+		for (int i = 0; i < simplePatterns.size(); i++) {
+			String pattern = simplePatterns.get(i);
+			FastIgnoreRule r1 = new FastIgnoreRule(pattern);
+			for (int j = i; j < longPaths.size(); j++) {
+				String path = longPaths.get(j);
+				boolean match = r1.isMatch(path, false);
+				assertTrue(path, match);
 			}
 		}
 	}
@@ -131,8 +170,8 @@ public class PerformanceTest extends AbstractBenchmark {
 			FastIgnoreRule r1 = new FastIgnoreRule(pattern);
 			for (int j = i; j < longPaths.size(); j++) {
 				String path = longPaths.get(j);
-				boolean match = r1.isMatch(path, true);
-				assertTrue(pattern + " does not match " + path, match);
+				boolean match = r1.isMatch(path, false);
+				assertTrue(path, match);
 			}
 		}
 	}

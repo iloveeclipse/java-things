@@ -78,7 +78,7 @@ public class FastIgnoreRule {
 		return isDirectory;
 	}
 
-	public boolean isInverse() {
+	public boolean getNegation() {
 		return inverse;
 	}
 

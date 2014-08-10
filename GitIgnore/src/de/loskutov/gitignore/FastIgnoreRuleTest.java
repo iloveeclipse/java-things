@@ -12,9 +12,25 @@ package de.loskutov.gitignore;
 import static de.loskutov.gitignore.Strings.split;
 import static org.junit.Assert.*;
 
-import org.junit.Test;
+import java.util.Arrays;
 
+import org.eclipse.jgit.ignore.IgnoreRule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.*;
+import org.junit.runners.Parameterized.Parameter;
+import org.junit.runners.Parameterized.Parameters;
+
+@RunWith(Parameterized.class)
 public class FastIgnoreRuleTest {
+
+	@Parameters(name = "JGit? {0}")
+	public static Iterable<Boolean[]> data(){
+		return Arrays.asList(new Boolean[][]{{Boolean.FALSE}, {Boolean.TRUE}});
+	}
+
+	@Parameter
+	public Boolean useJGitRule;
 
 	@Test
 	public void testSimpleCharClass() {
@@ -99,7 +115,7 @@ public class FastIgnoreRuleTest {
 	public void testDotAsteriskDoNotMatch() {
 		assertNotMatched("*.a", ".ab");
 		assertNotMatched("*.a", "/.ab");
-		assertNotMatched("*.stp", "/test.astp");
+		assertNotMatched("*.a", "/b.ba");
 		assertNotMatched("*.a", "a.ab");
 		assertNotMatched("*.a", "/b.ab");
 		assertNotMatched("*.a", "b.ab");
@@ -395,53 +411,67 @@ public class FastIgnoreRuleTest {
 
 
 	public void assertMatched(String pattern, String path){
-		FastIgnoreRule rule = GitIgnoreParser.createRule(pattern);
-		boolean dir = path.endsWith("/");
-		boolean match = rule.isMatch(path, dir);
+		boolean match = match(pattern, path);
 		String result = path + " is " + (match? "ignored" : "not ignored") + " via '" + pattern + "' rule";
 		if(!match) {
 			System.err.println(result);
 		}
-		if(pattern.endsWith("/")) {
-			assertTrue(rule.dirOnly());
-		} else {
-			assertFalse(rule.dirOnly());
-		}
-
-		rule = GitIgnoreParser.createRule("!" + pattern);
-		assertTrue(rule.isInverse());
-		if(match) {
-			assertFalse(!rule.isMatch(path, dir));
-		} else {
-			assertTrue(!rule.isMatch(path, dir));
-		}
-
 		assertTrue("Expected a match for: " + pattern + " with: " + path, match);
+
+		if(pattern.startsWith("!")){
+			pattern = pattern.substring(1);
+		} else {
+			pattern = "!" + pattern;
+		}
+		match = match(pattern, path);
+		assertFalse("Expected no match for: " + pattern + " with: " + path, match);
 	}
 
 	public void assertNotMatched(String pattern, String path){
-		FastIgnoreRule rule = GitIgnoreParser.createRule(pattern);
-		boolean dir = path.endsWith("/");
-		boolean match = rule.isMatch(path, dir);
+		boolean match = match(pattern, path);
 		String result = path + " is " + (match? "ignored" : "not ignored") + " via '" + pattern + "' rule";
 		if(match) {
 			System.err.println(result);
 		}
+		assertFalse("Expected no match for: " + pattern + " with: " + path, match);
 
-		if(pattern.endsWith("/")) {
-			assertTrue(rule.dirOnly());
+		if(pattern.startsWith("!")){
+			pattern = pattern.substring(1);
 		} else {
-			assertFalse(rule.dirOnly());
+			pattern = "!" + pattern;
 		}
+		match = match(pattern, path);
+		assertTrue("Expected a match for: " + pattern + " with: " + path, match);
+	}
 
-		rule = GitIgnoreParser.createRule("!" + pattern);
-		assertTrue(rule.isInverse());
-		if(match) {
-			assertFalse(!rule.isMatch(path, dir));
-		} else {
-			assertTrue(!rule.isMatch(path, dir));
+	/**
+	 * Check for a match. If target ends with "/", match will assume that the
+	 * target is meant to be a directory.
+	 * @param pattern
+	 * 			  Pattern as it would appear in a .gitignore file
+	 * @param target
+	 * 			  Target file path relative to repository's GIT_DIR
+	 * @return
+	 * 			  Result of {@link IgnoreRule#isMatch(String, boolean)}
+	 */
+	private boolean match(String pattern, String target) {
+		if(useJGitRule.booleanValue()){
+			IgnoreRule r = new IgnoreRule(pattern);
+			//If speed of this test is ever an issue, we can use a presetRule field
+			//to avoid recompiling a pattern each time.
+			boolean match = r.isMatch(target, target.endsWith("/"));
+			if(r.getNegation()){
+				match = !match;
+			}
+			return match;
 		}
-
-		assertFalse("Expected no match for: " + pattern + " with: " + path,	match);
+		FastIgnoreRule r = new FastIgnoreRule(pattern);
+		//If speed of this test is ever an issue, we can use a presetRule field
+		//to avoid recompiling a pattern each time.
+		boolean match = r.isMatch(target, target.endsWith("/"));
+		if(r.getNegation()){
+			match = !match;
+		}
+		return match;
 	}
 }

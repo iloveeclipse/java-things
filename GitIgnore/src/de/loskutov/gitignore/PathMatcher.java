@@ -28,20 +28,24 @@ public class PathMatcher extends AbstractMatcher {
 		List<AbstractMatcher> matchers = new ArrayList<AbstractMatcher>(segments.size());
 		for (int i = 0; i < segments.size(); i++) {
 			String segment = segments.get(i);
-			if(WildMatcher.WILDMATCH.equals(segment)){
+			AbstractMatcher matcher = createMatcher(segment, dirOnly);
+			if(matcher == WILD && i > 0 && matchers.get(matchers.size() - 1) == WILD){
 				// collapse wildmatchers following each other: **/** is same as **
-				if(matchers.size() == 0 || matchers.get(matchers.size() - 1) != WILD) {
-					matchers.add(WILD);
-				}
-			} else {
-				if(isWildCard(segment)){
-					matchers.add(new WildCardMatcher(segment, dirOnly));
-				} else {
-					matchers.add(new NameMatcher(segment, dirOnly));
-				}
+				continue;
 			}
+			matchers.add(matcher);
 		}
 		return matchers;
+	}
+
+	static AbstractMatcher createMatcher(String segment, boolean dirOnly) throws InvalidPatternException {
+		if(WildMatcher.WILDMATCH.equals(segment)) {
+			return WILD;
+		}
+		if(isWildCard(segment)){
+			return new WildCardMatcher(segment, dirOnly);
+		}
+		return new NameMatcher(segment, dirOnly);
 	}
 
 	@Override

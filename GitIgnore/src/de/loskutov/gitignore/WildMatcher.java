@@ -12,7 +12,7 @@ public final class WildMatcher extends AbstractMatcher {
 
 	static final String WILDMATCH = "**";
 
-	public WildMatcher() {
+	WildMatcher() {
 		super(WILDMATCH, false);
 	}
 

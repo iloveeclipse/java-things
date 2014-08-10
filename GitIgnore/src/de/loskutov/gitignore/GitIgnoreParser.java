@@ -8,8 +8,6 @@
  *******************************************************************************/
 package de.loskutov.gitignore;
 
-import static de.loskutov.gitignore.Strings.isWildCard;
-
 import org.eclipse.jgit.errors.InvalidPatternException;
 
 public class GitIgnoreParser {
@@ -38,9 +36,6 @@ public class GitIgnoreParser {
 		if(slash > 0 && slash < pattern.length() - 1){
 			return new PathMatcher(pattern, dirOnly);
 		}
-		if(isWildCard(pattern)){
-			return new WildCardMatcher(pattern, dirOnly);
-		}
-		return new NameMatcher(pattern, dirOnly);
+		return PathMatcher.createMatcher(pattern, dirOnly);
 	}
 }

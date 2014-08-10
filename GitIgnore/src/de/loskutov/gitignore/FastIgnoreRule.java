@@ -8,7 +8,7 @@
  *******************************************************************************/
 package de.loskutov.gitignore;
 
-import static de.loskutov.gitignore.Strings.*;
+import static de.loskutov.gitignore.Strings.stripSlashes;
 
 import org.eclipse.jgit.errors.InvalidPatternException;
 
@@ -66,10 +66,9 @@ public class FastIgnoreRule {
 			return false;
 		}
 		path = path.trim();
-		// XXX ???
-		//		if(path.isEmpty()){
-		//			return false;
-		//		}
+		if(path.isEmpty()){
+			return false;
+		}
 		boolean match = matcher.matches(path, directory);
 		return match;
 	}
@@ -129,8 +128,7 @@ public class FastIgnoreRule {
 
 		@Override
 		public boolean matches(String path, boolean dirOnly) {
-			// XXX ???
-			return path.length() == 0;
+			return false;
 		}
 
 		@Override

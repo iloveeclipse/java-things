@@ -77,8 +77,9 @@ public class FileNameMatcherTest {
 			assertEquals(matchExpected, matcher.isMatch());
 			assertEquals(appendCanMatchExpected, matcher.canAppendMatch());
 		} else {
-			FastIgnoreRule rule = new FastIgnoreRule(pattern);
-			assertEquals(matchExpected, rule.isMatch(input, input.endsWith("/")));
+			boolean isDir = input.endsWith("/");
+			IgnoreMatcher matcher = GitIgnoreParser.createMatcher(pattern, isDir);
+			assertEquals(matchExpected, matcher.matches(input, isDir));
 		}
 	}
 

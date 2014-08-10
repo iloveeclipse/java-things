@@ -395,8 +395,8 @@ public class FastIgnoreRuleTest {
 		assertFalse(GitIgnoreParser.createRule("/").isMatch("/", false));
 		assertFalse(GitIgnoreParser.createRule("//").isMatch("//", false));
 		assertFalse(GitIgnoreParser.createRule("#").isMatch("#", false));
-		assertTrue(GitIgnoreParser.createRule("").isMatch("", false));
-		assertTrue(GitIgnoreParser.createRule(" ").isMatch(" ", false));
+		assertFalse(GitIgnoreParser.createRule("").isMatch("", false));
+		assertFalse(GitIgnoreParser.createRule(" ").isMatch(" ", false));
 	}
 
 	@Test

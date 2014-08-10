@@ -107,11 +107,10 @@ public class PathMatcher extends AbstractMatcher {
 					return true;
 				}
 			} else {
-				if (matchers.get(0).isBeginning()) {
-					return false;
-				}
 				if(lastWildmatch != -1){
 					matcher = lastWildmatch + 1;
+				} else {
+					return false;
 				}
 			}
 			right ++;

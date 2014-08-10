@@ -98,17 +98,26 @@ public class Strings {
 			"[" + DL + "_]"
 			);
 
+	// XXX Collating symbols [.a.] or equivalence class expressions [=a=] are not supported (yet?)
+	// Have no idea if this was simply not implemented in JGit or CLI git don't support this
+	final static Pattern UNSUPPORTED = Pattern.compile("\\[[.=]\\w+[.=]\\]");
+
 	/**
 	 * Conversion from glob to Java regex following two sources: <li>
 	 * http://man7.org/linux/man-pages/man7/glob.7.html <li>
 	 * org.eclipse.jgit.fnmatch.FileNameMatcher.java Seems that there are
 	 * various ways to define what "glob" can be.
-
-	 * @return Java regex pattern corresponding to given glob pattern
 	 *
+	 * @return Java regex pattern corresponding to given glob pattern
 	 * @throws InvalidPatternException
 	 */
 	static Pattern convertGlob(String pattern) throws InvalidPatternException {
+		if(UNSUPPORTED.matcher(pattern).find()){
+			throw new InvalidPatternException(
+					"Collating symbols [.a.] or equivalence class expressions [=a=] are not supported yet",
+					pattern);
+		}
+
 		StringBuilder sb = new StringBuilder(pattern.length());
 
 		int in_brackets = 0;

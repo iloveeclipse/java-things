@@ -174,9 +174,11 @@ public class Strings {
 					sb.append('\\').append('[');
 					ignoreLastBracket = true;
 				} else {
-					in_brackets ++;
+					if(!seenEscape){
+						in_brackets ++;
+						ignoreLastBracket = false;
+					}
 					sb.append('[');
-					ignoreLastBracket = false;
 				}
 				break;
 

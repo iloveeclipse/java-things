@@ -40,13 +40,14 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package de.loskutov.gitignore;
+package org.eclipse.jgit.ignore2.tests;
 
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
 
 import org.eclipse.jgit.ignore.IgnoreRule;
+import org.eclipse.jgit.ignore2.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.*;

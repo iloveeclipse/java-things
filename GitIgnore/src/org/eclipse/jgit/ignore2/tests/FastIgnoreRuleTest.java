@@ -6,16 +6,17 @@
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributor:  Andrey Loskutov - initial API and implementation
  *******************************************************************************/
-package de.loskutov.gitignore;
+package org.eclipse.jgit.ignore2.tests;
 
 
-import static de.loskutov.gitignore.Strings.split;
+import static org.eclipse.jgit.fnmatch2.Strings.split;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 
 import java.util.Arrays;
 
 import org.eclipse.jgit.ignore.IgnoreRule;
+import org.eclipse.jgit.ignore2.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.*;

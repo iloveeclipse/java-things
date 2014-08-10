@@ -6,9 +6,9 @@
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributor:  Andrey Loskutov - initial API and implementation
  *******************************************************************************/
-package de.loskutov.gitignore;
+package org.eclipse.jgit.fnmatch2;
 
-import static de.loskutov.gitignore.Strings.getPathSeparator;
+import static org.eclipse.jgit.fnmatch2.Strings.getPathSeparator;
 public class NameMatcher extends AbstractMatcher {
 
 	final boolean beginning;

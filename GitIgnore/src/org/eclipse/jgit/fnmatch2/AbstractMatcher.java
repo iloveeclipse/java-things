@@ -6,10 +6,10 @@
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributor:  Andrey Loskutov - initial API and implementation
  *******************************************************************************/
-package de.loskutov.gitignore;
+package org.eclipse.jgit.fnmatch2;
 
 
-public abstract class AbstractMatcher implements IgnoreMatcher {
+public abstract class AbstractMatcher implements IMatcher {
 	final boolean isDirectory;
 
 	final String pattern;

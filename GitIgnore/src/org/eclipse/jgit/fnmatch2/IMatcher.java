@@ -6,29 +6,9 @@
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributor:  Andrey Loskutov - initial API and implementation
  *******************************************************************************/
-package de.loskutov.gitignore;
+package org.eclipse.jgit.fnmatch2;
 
-public final class WildMatcher extends AbstractMatcher {
-
-	static final String WILDMATCH = "**";
-
-	WildMatcher() {
-		super(WILDMATCH, false);
-	}
-
-	@Override
-	public final boolean matches(String path, boolean dirOnly) {
-		return true;
-	}
-
-	@Override
-	public final boolean matches(String segment, int startIncl, int endExcl, boolean dirOnly) {
-		return true;
-	}
-
-	@Override
-	public final boolean isWildmatch() {
-		return true;
-	}
-
+public interface IMatcher {
+	boolean matches(String path, boolean dirOnly);
+	boolean matches(String segment, int startIncl, int endExcl, boolean dirOnly);
 }

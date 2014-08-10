@@ -3,6 +3,9 @@ Bundle-ManifestVersion: 2
 Bundle-Name: GitIgnore
 Bundle-SymbolicName: GitIgnore
 Bundle-Version: 1.0.0.qualifier
-Export-Package: de.loskutov.gitignore
 Require-Bundle: org.junit4;resolution:=optional,
  org.eclipse.jgit;bundle-version="3.5.0";resolution:=optional
+Export-Package: org.eclipse.jgit.fnmatch2,
+ org.eclipse.jgit.ignore2,
+ org.eclipse.jgit.ignore2.tests
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

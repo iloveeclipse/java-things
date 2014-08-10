@@ -6,18 +6,19 @@
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributor:  Andrey Loskutov - initial API and implementation
  *******************************************************************************/
-package de.loskutov.gitignore;
+package org.eclipse.jgit.ignore2;
 
-import static de.loskutov.gitignore.Strings.stripTrailing;
+import static org.eclipse.jgit.fnmatch2.Strings.stripTrailing;
 
 import org.eclipse.jgit.errors.InvalidPatternException;
+import org.eclipse.jgit.fnmatch2.*;
 
 public class FastIgnoreRule {
 
 	private static final char PATH_SEPARATOR = '/';
 	private static final NoResultMatcher NO_MATCH = new NoResultMatcher();
 
-	private final IgnoreMatcher matcher;
+	private final IMatcher matcher;
 	private final boolean inverse;
 	private final boolean isDirectory;
 
@@ -53,7 +54,7 @@ public class FastIgnoreRule {
 					return;
 				}
 			}
-			IgnoreMatcher m;
+			IMatcher m;
 			try {
 				m = PathMatcher.createPathMatcher(pattern,  Character.valueOf(PATH_SEPARATOR), isDirectory);
 			} catch (InvalidPatternException e) {
@@ -127,7 +128,7 @@ public class FastIgnoreRule {
 		return matcher.equals(other.matcher);
 	}
 
-	static final class NoResultMatcher implements IgnoreMatcher {
+	static final class NoResultMatcher implements IMatcher {
 
 		@Override
 		public boolean matches(String path, boolean dirOnly) {

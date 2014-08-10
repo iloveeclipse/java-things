@@ -1,4 +1,4 @@
-package de.loskutov.gitignore;
+package org.eclipse.jgit.fnmatch2;
 
 import static java.lang.Character.isLetter;
 
@@ -13,7 +13,7 @@ public class Strings {
 		return pathSeparator == null ? '/' : pathSeparator.charValue();
 	}
 
-	static String stripTrailing(String pattern, char c) {
+	public static String stripTrailing(String pattern, char c) {
 		while(pattern.length() > 0 && pattern.charAt(pattern.length() - 1) == c){
 			pattern = pattern.substring(0, pattern.length() - 1);
 		}
@@ -36,7 +36,7 @@ public class Strings {
 		return count;
 	}
 
-	static List<String> split(String pattern, char slash){
+	public static List<String> split(String pattern, char slash){
 		int count = count(pattern, slash, true);
 		if(count < 1){
 			throw new IllegalStateException("Pattern must have at least two segments: " + pattern);

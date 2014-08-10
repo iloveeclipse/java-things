@@ -42,7 +42,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package de.loskutov.gitignore;
+package org.eclipse.jgit.ignore2.tests;
 
 import static org.junit.Assert.*;
 
@@ -50,6 +50,8 @@ import java.util.Arrays;
 
 import org.eclipse.jgit.errors.InvalidPatternException;
 import org.eclipse.jgit.fnmatch.FileNameMatcher;
+import org.eclipse.jgit.fnmatch2.*;
+import org.eclipse.jgit.ignore2.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.*;

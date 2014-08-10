@@ -6,9 +6,9 @@
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributor:  Andrey Loskutov - initial API and implementation
  *******************************************************************************/
-package de.loskutov.gitignore;
+package org.eclipse.jgit.fnmatch2;
 
-import static de.loskutov.gitignore.Strings.*;
+import static org.eclipse.jgit.fnmatch2.Strings.*;
 
 import java.util.*;
 
@@ -49,7 +49,7 @@ public class PathMatcher extends AbstractMatcher {
 	 * @return
 	 * @throws InvalidPatternException
 	 */
-	public static IgnoreMatcher createPathMatcher(String pattern, Character pathSeparator, boolean dirOnly) throws InvalidPatternException {
+	public static IMatcher createPathMatcher(String pattern, Character pathSeparator, boolean dirOnly) throws InvalidPatternException {
 		pattern = pattern.trim();
 		char slash = Strings.getPathSeparator(pathSeparator);
 		// ignore possible leading and trailing slash
@@ -60,7 +60,7 @@ public class PathMatcher extends AbstractMatcher {
 		return createNameMatcher(pattern, pathSeparator, dirOnly);
 	}
 
-	static AbstractMatcher createNameMatcher(String segment, Character pathSeparator, boolean dirOnly) throws InvalidPatternException {
+	public static AbstractMatcher createNameMatcher(String segment, Character pathSeparator, boolean dirOnly) throws InvalidPatternException {
 		if(WildMatcher.WILDMATCH.equals(segment)) {
 			return WILD;
 		}

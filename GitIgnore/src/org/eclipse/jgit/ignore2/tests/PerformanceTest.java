@@ -6,13 +6,14 @@
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributor:  Andrey Loskutov - initial API and implementation
  *******************************************************************************/
-package de.loskutov.gitignore;
+package org.eclipse.jgit.ignore2.tests;
 
 import static org.junit.Assert.assertTrue;
 
 import java.util.*;
 
 import org.eclipse.jgit.ignore.IgnoreRule;
+import org.eclipse.jgit.ignore2.*;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
 
@@ -20,7 +21,7 @@ import com.carrotsearch.junitbenchmarks.*;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @BenchmarkOptions(benchmarkRounds = 2000, warmupRounds = 1000)
-public class TestPerformance extends AbstractBenchmark {
+public class PerformanceTest extends AbstractBenchmark {
 
 	static List<String> longPaths = Arrays.asList(
 			"0_abcdefghijklmnopqrstuvwxyz_/",

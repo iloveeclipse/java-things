@@ -348,15 +348,16 @@ public class IgnoreMatcherTest {
 	 * 			  Result of {@link IgnoreRule#isMatch(String, boolean)}
 	 */
 	private boolean match(String pattern, String target) {
+		boolean isDirectory = target.endsWith("/");
 		if(useJGitRule.booleanValue()){
 			IgnoreRule r = new IgnoreRule(pattern);
 			//If speed of this test is ever an issue, we can use a presetRule field
 			//to avoid recompiling a pattern each time.
-			return r.isMatch(target, target.endsWith("/"));
+			return r.isMatch(target, isDirectory);
 		}
 		FastIgnoreRule r = new FastIgnoreRule(pattern);
 		//If speed of this test is ever an issue, we can use a presetRule field
 		//to avoid recompiling a pattern each time.
-		return r.isMatch(target, target.endsWith("/"));
+		return r.isMatch(target, isDirectory);
 	}
 }

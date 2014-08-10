@@ -1,5 +1,7 @@
 package de.loskutov.gitignore;
 
+import static java.lang.Character.isLetter;
+
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -142,7 +144,7 @@ public class Strings {
 
 			case ':':
 				if(in_brackets > 0) {
-					if(lookBehind(sb) == '[') {
+					if(lookBehind(sb) == '[' && isLetter(lookAhead(pattern, i))) {
 						in_char_class = true;
 					}
 				}
@@ -190,33 +192,33 @@ public class Strings {
 					ignoreLastBracket = true;
 					break;
 				}
-				if(in_brackets > 0) {
-					char lookBehind = lookBehind(sb);
-					if((lookBehind == '[' && !ignoreLastBracket)
-							|| lookBehind == '^'
-							|| (!in_char_class && lookAhead(pattern, i) == ']')) {
-						sb.append('\\');
-						sb.append(']');
-						ignoreLastBracket = true;
-					} else {
-						ignoreLastBracket = false;
-						if(!in_char_class) {
-							in_brackets --;
-							sb.append(']');
-						} else {
-							in_char_class = false;
-							String charCl = checkPosixCharClass(charClass);
-							// delete last \[:: chars and set the pattern
-							if(charCl != null){
-								sb.setLength(sb.length() - 4);
-								sb.append(charCl);
-							}
-							reset(charClass);
-						}
-					}
-				} else {
+				if(in_brackets <= 0) {
 					sb.append('\\').append(']');
 					ignoreLastBracket = true;
+					break;
+				}
+				char lookBehind = lookBehind(sb);
+				if((lookBehind == '[' && !ignoreLastBracket)
+						|| lookBehind == '^'
+						|| (!in_char_class && lookAhead(pattern, i) == ']')) {
+					sb.append('\\');
+					sb.append(']');
+					ignoreLastBracket = true;
+				} else {
+					ignoreLastBracket = false;
+					if(!in_char_class) {
+						in_brackets --;
+						sb.append(']');
+					} else {
+						in_char_class = false;
+						String charCl = checkPosixCharClass(charClass);
+						// delete last \[:: chars and set the pattern
+						if(charCl != null){
+							sb.setLength(sb.length() - 4);
+							sb.append(charCl);
+						}
+						reset(charClass);
+					}
 				}
 				break;
 

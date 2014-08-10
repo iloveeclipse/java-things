@@ -9,6 +9,26 @@
 package org.eclipse.jgit.fnmatch2;
 
 public interface IMatcher {
+
+	/**
+	 * Matches entire given string
+	 *
+	 * @param path
+	 *            string which is not null, but might be empty
+	 * @return true if this matcher pattern matches given string
+	 */
 	boolean matches(String path);
+
+	/**
+	 * Matches only part of given string
+	 *
+	 * @param path
+	 *            string which is not null, but might be empty
+	 * @param startIncl
+	 *            start index, inclusive
+	 * @param endExcl
+	 *            end index, exclusive
+	 * @return true if this matcher pattern matches given string
+	 */
 	boolean matches(String segment, int startIncl, int endExcl);
 }

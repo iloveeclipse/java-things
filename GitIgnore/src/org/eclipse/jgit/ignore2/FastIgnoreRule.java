@@ -12,7 +12,13 @@ import static org.eclipse.jgit.fnmatch2.Strings.stripTrailing;
 
 import org.eclipse.jgit.errors.InvalidPatternException;
 import org.eclipse.jgit.fnmatch2.*;
+import org.eclipse.jgit.ignore.IgnoreRule;
 
+/**
+ * "Fast" git ignore rule implementation (compared with {@link IgnoreRule}).
+ * <p>
+ * This class is immutable and thread safe.
+ */
 public class FastIgnoreRule {
 
 	private static final char PATH_SEPARATOR = '/';
@@ -20,15 +26,23 @@ public class FastIgnoreRule {
 
 	private final IMatcher matcher;
 	private final boolean inverse;
-	private final boolean isDirectory;
+	private final boolean dirOnly;
 
+	/**
+	 *
+	 * @param pattern
+	 *            ignore pattern as described in <a href=
+	 *            "https://www.kernel.org/pub/software/scm/git/docs/gitignore.html"
+	 *            >git manual</a>. If pattern is invalid or is not a pattern
+	 *            (comment), this rule doesn't match anything.
+	 */
 	public FastIgnoreRule(String pattern) {
 		if(pattern == null){
 			throw new IllegalArgumentException("Pattern must be not null!");
 		}
 		pattern = pattern.trim();
 		if(pattern.isEmpty()){
-			isDirectory = false;
+			dirOnly = false;
 			inverse = false;
 			this.matcher = NO_MATCH;
 			return;
@@ -37,17 +51,17 @@ public class FastIgnoreRule {
 		if(inverse){
 			pattern = pattern.substring(1);
 			if(pattern.isEmpty()){
-				isDirectory = false;
+				dirOnly = false;
 				this.matcher = NO_MATCH;
 				return;
 			}
 		}
 		if(pattern.charAt(0) == '#'){
 			this.matcher = NO_MATCH;
-			isDirectory = false;
+			dirOnly = false;
 		} else {
-			isDirectory = pattern.charAt(pattern.length() - 1) == PATH_SEPARATOR;
-			if(isDirectory) {
+			dirOnly = pattern.charAt(pattern.length() - 1) == PATH_SEPARATOR;
+			if(dirOnly) {
 				pattern = stripTrailing(pattern, PATH_SEPARATOR);
 				if(pattern.isEmpty()){
 					this.matcher = NO_MATCH;
@@ -56,9 +70,8 @@ public class FastIgnoreRule {
 			}
 			IMatcher m;
 			try {
-				m = PathMatcher.createPathMatcher(pattern,  Character.valueOf(PATH_SEPARATOR), isDirectory);
+				m = PathMatcher.createPathMatcher(pattern,  Character.valueOf(PATH_SEPARATOR), dirOnly);
 			} catch (InvalidPatternException e) {
-				// TODO Auto-generated catch block
 				m = NO_MATCH;
 			}
 			this.matcher = m;
@@ -77,12 +90,40 @@ public class FastIgnoreRule {
 		return match;
 	}
 
-	public boolean dirOnly() {
-		return isDirectory;
+	/**
+	 * @return
+	 * 			  True if the pattern is just a file name and not a path
+	 */
+	public boolean getNameOnly() {
+		return !(matcher instanceof PathMatcher);
 	}
 
+	/**
+	 *
+	 * @return
+	 * 			  True if the pattern should match directories only
+	 */
+	public boolean dirOnly() {
+		return dirOnly;
+	}
+
+	/**
+	 * Indicates whether the rule is non-negation or negation.
+	 * @return
+	 * 			  True if the pattern had a "!" in front of it
+	 */
 	public boolean getNegation() {
 		return inverse;
+	}
+
+	/**
+	 * Indicates whether the rule is non-negation or negation.
+	 *
+	 * @return
+	 * 			  True if the target is to be ignored, false otherwise.
+	 */
+	public boolean getResult() {
+		return !inverse;
 	}
 
 	@Override
@@ -92,7 +133,7 @@ public class FastIgnoreRule {
 			sb.append('!');
 		}
 		sb.append(matcher);
-		if (isDirectory) {
+		if (dirOnly) {
 			sb.append(PATH_SEPARATOR);
 		}
 		return sb.toString();
@@ -104,7 +145,7 @@ public class FastIgnoreRule {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (inverse ? 1231 : 1237);
-		result = prime * result + (isDirectory ? 1231 : 1237);
+		result = prime * result + (dirOnly ? 1231 : 1237);
 		result = prime * result + ((matcher == null) ? 0 : matcher.hashCode());
 		return result;
 	}
@@ -122,7 +163,7 @@ public class FastIgnoreRule {
 		if(inverse != other.inverse) {
 			return false;
 		}
-		if(isDirectory != other.isDirectory) {
+		if(dirOnly != other.dirOnly) {
 			return false;
 		}
 		return matcher.equals(other.matcher);

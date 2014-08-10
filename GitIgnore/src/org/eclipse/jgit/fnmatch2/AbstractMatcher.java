@@ -8,23 +8,23 @@
  *******************************************************************************/
 package org.eclipse.jgit.fnmatch2;
 
-
+/**
+ * Base class for default methods as {@link #toString()} and such.
+ * <p>
+ * This class is immutable and thread safe.
+ */
 public abstract class AbstractMatcher implements IMatcher {
-	final boolean isDirectory;
 
+	final boolean dirOnly;
 	final String pattern;
 
+	/**
+	 * @param pattern string to parse
+	 * @param dirOnly true if this matcher should match only directories
+	 */
 	AbstractMatcher(String pattern, boolean dirOnly) {
 		this.pattern = pattern;
-		isDirectory = dirOnly;
-	}
-
-	public boolean isBeginning() {
-		return false;
-	}
-
-	public boolean isWildmatch(){
-		return false;
+		this.dirOnly = dirOnly;
 	}
 
 	@Override

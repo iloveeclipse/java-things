@@ -14,6 +14,12 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jgit.errors.InvalidPatternException;
 
+/**
+ * Matcher build from path segments containing wildcards. This matcher converts
+ * glob wildcards to Java {@link Pattern}'s.
+ * <p>
+ * This class is immutable and thread safe.
+ */
 public class WildCardMatcher extends NameMatcher {
 
 	final Pattern p;
@@ -28,6 +34,10 @@ public class WildCardMatcher extends NameMatcher {
 		return p.matcher(new SubString(segment, startIncl, endExcl)).matches();
 	}
 
+	/**
+	 * Substring objects share common string to avoid generation of multiple smaller {@link String}
+	 * instances during matching.
+	 */
 	final static class SubString implements CharSequence {
 		private final String parent;
 		private final int startIncl;

@@ -9,11 +9,16 @@
 package org.eclipse.jgit.fnmatch2;
 
 import static org.eclipse.jgit.fnmatch2.Strings.getPathSeparator;
+
+/**
+ * Matcher built from patterns for file names (single path segments).
+ * This class is immutable and thread safe.
+ */
 public class NameMatcher extends AbstractMatcher {
 
 	final boolean beginning;
-	final String subPattern;
 	final char slash;
+	final String subPattern;
 
 	NameMatcher(String pattern, Character pathSeparator, boolean dirOnly){
 		super(pattern, dirOnly);
@@ -27,14 +32,6 @@ public class NameMatcher extends AbstractMatcher {
 	}
 
 	@Override
-	public boolean isBeginning() {
-		return beginning;
-	}
-
-	/**
-	 * @param path string which is not empty and is trimmed
-	 */
-	@Override
 	public boolean matches(String path) {
 		int end = 0;
 		int firstChar = 0;
@@ -43,21 +40,11 @@ public class NameMatcher extends AbstractMatcher {
 			end = getFirstSlash(path, firstChar);
 			boolean match = matches(path, firstChar, end);
 			if(match){
-				return isDirectory? end > 0 && end != path.length() : true;
+				return dirOnly? end > 0 && end != path.length() : true;
 			}
 		}
 		while(!beginning && end != path.length());
 		return false;
-	}
-
-	private int getFirstNotSlash(String s, int start) {
-		int slashIdx = s.indexOf(slash, start);
-		return slashIdx == start? start + 1 : start;
-	}
-
-	private int getFirstSlash(String s, int start) {
-		int slashIdx = s.indexOf(slash, start);
-		return slashIdx == -1? s.length() : slashIdx;
 	}
 
 	@Override
@@ -74,6 +61,16 @@ public class NameMatcher extends AbstractMatcher {
 			}
 		}
 		return true;
+	}
+
+	private int getFirstNotSlash(String s, int start) {
+		int slashIdx = s.indexOf(slash, start);
+		return slashIdx == start? start + 1 : start;
+	}
+
+	private int getFirstSlash(String s, int start) {
+		int slashIdx = s.indexOf(slash, start);
+		return slashIdx == -1? s.length() : slashIdx;
 	}
 
 }

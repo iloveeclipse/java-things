@@ -14,10 +14,15 @@ import java.util.*;
 
 import org.eclipse.jgit.errors.InvalidPatternException;
 
+/**
+ * Matcher built by patterns consists of multiple path segments.
+ * <p>
+ * This class is immutable and thread safe.
+ */
 public class PathMatcher extends AbstractMatcher {
 
-	private static final WildMatcher WILD = new WildMatcher();
-	private final List<AbstractMatcher> matchers;
+	private static final WildMatcher WILD = WildMatcher.INSTANCE;
+	private final List<IMatcher> matchers;
 	private final char slash;
 
 	PathMatcher(String pattern, Character pathSeparator, boolean dirOnly) throws InvalidPatternException {
@@ -26,11 +31,11 @@ public class PathMatcher extends AbstractMatcher {
 		matchers = createMatchers(split(pattern, slash), pathSeparator, dirOnly);
 	}
 
-	static private List<AbstractMatcher> createMatchers(List<String> segments, Character pathSeparator, boolean dirOnly) throws InvalidPatternException {
-		List<AbstractMatcher> matchers = new ArrayList<AbstractMatcher>(segments.size());
+	static private List<IMatcher> createMatchers(List<String> segments, Character pathSeparator, boolean dirOnly) throws InvalidPatternException {
+		List<IMatcher> matchers = new ArrayList<IMatcher>(segments.size());
 		for (int i = 0; i < segments.size(); i++) {
 			String segment = segments.get(i);
-			AbstractMatcher matcher = createNameMatcher(segment, pathSeparator, dirOnly);
+			IMatcher matcher = createNameMatcher0(segment, pathSeparator, dirOnly);
 			if(matcher == WILD && i > 0 && matchers.get(matchers.size() - 1) == WILD){
 				// collapse wildmatchers following each other: **/** is same as **
 				continue;
@@ -57,10 +62,10 @@ public class PathMatcher extends AbstractMatcher {
 		if(slashIdx > 0 && slashIdx < pattern.length() - 1){
 			return new PathMatcher(pattern, pathSeparator, dirOnly);
 		}
-		return createNameMatcher(pattern, pathSeparator, dirOnly);
+		return createNameMatcher0(pattern, pathSeparator, dirOnly);
 	}
 
-	public static AbstractMatcher createNameMatcher(String segment, Character pathSeparator, boolean dirOnly) throws InvalidPatternException {
+	private static IMatcher createNameMatcher0(String segment, Character pathSeparator, boolean dirOnly) throws InvalidPatternException {
 		if(WildMatcher.WILDMATCH.equals(segment)) {
 			return WILD;
 		}
@@ -68,6 +73,10 @@ public class PathMatcher extends AbstractMatcher {
 			return new WildCardMatcher(segment, pathSeparator, dirOnly);
 		}
 		return new NameMatcher(segment, pathSeparator, dirOnly);
+	}
+
+	public static IMatcher createNameMatcher(String segment, Character pathSeparator) throws InvalidPatternException {
+		return createNameMatcher0(segment, pathSeparator, false);
 	}
 
 	@Override
@@ -93,16 +102,16 @@ public class PathMatcher extends AbstractMatcher {
 					match = matches(matcher, path, left, endExcl);
 				}
 				if(match){
-					if(matcher == matchers.size() - 2 && matchers.get(matcher + 1).isWildmatch()){
+					if(matcher == matchers.size() - 2 && matchers.get(matcher + 1) == WILD){
 						// ** can match *nothing*: a/b/** match also a/b
 						return true;
 					}
-					if(matcher < matchers.size() - 1 && matchers.get(matcher).isWildmatch()){
+					if(matcher < matchers.size() - 1 && matchers.get(matcher) == WILD){
 						// ** can match *nothing*: a/**/b match also a/b
 						matcher ++;
 						match = matches(matcher, path, left, endExcl);
 					} else
-						if(matchers.get(matcher).isDirectory){
+						if(dirOnly){
 							return false;
 						}
 				}
@@ -116,7 +125,7 @@ public class PathMatcher extends AbstractMatcher {
 				continue;
 			}
 			if(match){
-				if(matchers.get(matcher).isWildmatch()){
+				if(matchers.get(matcher) == WILD){
 					lastWildmatch = matcher;
 					// reset index as ** can match *nothing*: a/**/b match also a/b
 					right = left - 1;
@@ -137,9 +146,7 @@ public class PathMatcher extends AbstractMatcher {
 	}
 
 	boolean matches(int matcherIdx, String path, int startIncl, int endExcl){
-		AbstractMatcher matcher = matchers.get(matcherIdx);
+		IMatcher matcher = matchers.get(matcherIdx);
 		return matcher.matches(path, startIncl, endExcl);
 	}
-
-
 }

@@ -7,6 +7,10 @@ import java.util.regex.Pattern;
 
 import org.eclipse.jgit.errors.InvalidPatternException;
 
+/**
+ * Various {@link String} related utility methods, written mostly to avoid generation of
+ * new String objects (e.g. via splitting Strings etc).
+ */
 public class Strings {
 
 	static char getPathSeparator(Character pathSeparator) {
@@ -20,7 +24,7 @@ public class Strings {
 		return pattern;
 	}
 
-	static int count(String s, char c, boolean ignoreFirstLast){
+	private static int count(String s, char c, boolean ignoreFirstLast){
 		int start = 0;
 		int count = 0;
 		while (true) {
@@ -72,6 +76,7 @@ public class Strings {
 		return pattern.indexOf('*') != -1
 				|| pattern.indexOf('?') != -1
 				|| pattern.indexOf('[') != -1
+				// required to match escaped backslashes '\\\\'
 				|| pattern.indexOf('\\') != -1
 				|| pattern.indexOf(']') != -1;
 	}

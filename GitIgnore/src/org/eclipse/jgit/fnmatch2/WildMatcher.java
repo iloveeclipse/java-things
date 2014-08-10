@@ -8,11 +8,18 @@
  *******************************************************************************/
 package org.eclipse.jgit.fnmatch2;
 
+/**
+ * Wildmatch matcher for "double star" (<code>**</code>) pattern only.
+ * This matcher matches any path.
+ * <p>
+ * This class is immutable and thread safe.
+ */
 public final class WildMatcher extends AbstractMatcher {
 
 	static final String WILDMATCH = "**";
+	static final WildMatcher INSTANCE = new WildMatcher();
 
-	WildMatcher() {
+	private WildMatcher() {
 		super(WILDMATCH, false);
 	}
 
@@ -23,11 +30,6 @@ public final class WildMatcher extends AbstractMatcher {
 
 	@Override
 	public final boolean matches(String segment, int startIncl, int endExcl) {
-		return true;
-	}
-
-	@Override
-	public final boolean isWildmatch() {
 		return true;
 	}
 

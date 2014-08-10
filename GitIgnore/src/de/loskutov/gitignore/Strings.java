@@ -185,6 +185,11 @@ public class Strings {
 				break;
 
 			case ']':
+				if(seenEscape){
+					sb.append(']');
+					ignoreLastBracket = true;
+					break;
+				}
 				if(in_brackets > 0) {
 					char lookBehind = lookBehind(sb);
 					if((lookBehind == '[' && !ignoreLastBracket)

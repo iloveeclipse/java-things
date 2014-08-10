@@ -52,26 +52,13 @@ public class FastIgnoreRule {
 			}
 			IgnoreMatcher m;
 			try {
-				m = createMatcher(pattern, isDirectory);
+				m = GitIgnoreParser.createMatcher(pattern, isDirectory);
 			} catch (InvalidPatternException e) {
 				// TODO Auto-generated catch block
 				m = NO_MATCH;
 			}
 			this.matcher = m;
 		}
-	}
-
-	private static IgnoreMatcher createMatcher(String pattern, boolean dirOnly) throws InvalidPatternException {
-		pattern = pattern.trim();
-		// ignore possible leading and trailing slash
-		int slash = pattern.indexOf('/', 1);
-		if(slash > 0 && slash < pattern.length() - 1){
-			return new PathMatcher(pattern, dirOnly);
-		}
-		if(isWildCard(pattern)){
-			return new WildCardMatcher(pattern, dirOnly);
-		}
-		return new NameMatcher(pattern, dirOnly);
 	}
 
 	public boolean isMatch(String path, boolean directory) {

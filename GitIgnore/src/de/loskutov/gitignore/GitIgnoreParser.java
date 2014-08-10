@@ -8,10 +8,13 @@
  *******************************************************************************/
 package de.loskutov.gitignore;
 
+import static de.loskutov.gitignore.Strings.isWildCard;
+
 import org.eclipse.jgit.errors.InvalidPatternException;
 
 public class GitIgnoreParser {
-	public static void main(String[] args) throws InvalidPatternException {
+
+	public static void main(String[] args) {
 		if(args.length < 2 || args.length % 2 != 0){
 			System.out.println("Usage: (<ignore pattern> <path to test>)+");
 			return;
@@ -24,7 +27,20 @@ public class GitIgnoreParser {
 		}
 	}
 
-	public static FastIgnoreRule createRule(String pattern) throws InvalidPatternException {
+	public static FastIgnoreRule createRule(String pattern) {
 		return new FastIgnoreRule(pattern);
+	}
+
+	public static IgnoreMatcher createMatcher(String pattern, boolean dirOnly) throws InvalidPatternException {
+		pattern = pattern.trim();
+		// ignore possible leading and trailing slash
+		int slash = pattern.indexOf('/', 1);
+		if(slash > 0 && slash < pattern.length() - 1){
+			return new PathMatcher(pattern, dirOnly);
+		}
+		if(isWildCard(pattern)){
+			return new WildCardMatcher(pattern, dirOnly);
+		}
+		return new NameMatcher(pattern, dirOnly);
 	}
 }

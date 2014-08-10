@@ -12,357 +12,357 @@ package de.loskutov.gitignore;
 import static de.loskutov.gitignore.Strings.split;
 import static org.junit.Assert.*;
 
-import org.eclipse.jgit.errors.InvalidPatternException;
 import org.junit.Test;
 
-public class TestIgnore {
+public class FastIgnoreRuleTest {
 
 	@Test
-	public void testSimpleCharClass() throws InvalidPatternException{
-		assertEquals("", matches("[a]", "a"));
-		assertEquals("", matches("[a]", "a/"));
-		assertEquals("", matches("[a]", "a/b"));
+	public void testSimpleCharClass() {
+		assertMatched("[a]", "a");
+		assertMatched("[a]", "a/");
+		assertMatched("[a]", "a/b");
 
-		assertEquals("", matches("[a]", "b/a"));
-		assertEquals("", matches("[a]", "b/a/"));
-		assertEquals("", matches("[a]", "b/a/b"));
+		assertMatched("[a]", "b/a");
+		assertMatched("[a]", "b/a/");
+		assertMatched("[a]", "b/a/b");
 
-		assertEquals("", matches("[a]", "/a/"));
-		assertEquals("", matches("[a]", "/a/b"));
+		assertMatched("[a]", "/a/");
+		assertMatched("[a]", "/a/b");
 
-		assertEquals("", matches("[a]", "c/a/b"));
-		assertEquals("", matches("[a]", "c/b/a"));
+		assertMatched("[a]", "c/a/b");
+		assertMatched("[a]", "c/b/a");
 
-		assertEquals("", matches("/[a]", "a"));
-		assertEquals("", matches("/[a]", "a/"));
-		assertEquals("", matches("/[a]", "a/b"));
-		assertEquals("", matches("/[a]", "/a"));
-		assertEquals("", matches("/[a]", "/a/"));
-		assertEquals("", matches("/[a]", "/a/b"));
+		assertMatched("/[a]", "a");
+		assertMatched("/[a]", "a/");
+		assertMatched("/[a]", "a/b");
+		assertMatched("/[a]", "/a");
+		assertMatched("/[a]", "/a/");
+		assertMatched("/[a]", "/a/b");
 
-		assertEquals("", matches("[a]/", "a/"));
-		assertEquals("", matches("[a]/", "a/b"));
-		assertEquals("", matches("[a]/", "/a/"));
-		assertEquals("", matches("[a]/", "/a/b"));
+		assertMatched("[a]/", "a/");
+		assertMatched("[a]/", "a/b");
+		assertMatched("[a]/", "/a/");
+		assertMatched("[a]/", "/a/b");
 
-		assertEquals("", matches("/[a]/", "a/"));
-		assertEquals("", matches("/[a]/", "a/b"));
-		assertEquals("", matches("/[a]/", "/a/"));
-		assertEquals("", matches("/[a]/", "/a/b"));
+		assertMatched("/[a]/", "a/");
+		assertMatched("/[a]/", "a/b");
+		assertMatched("/[a]/", "/a/");
+		assertMatched("/[a]/", "/a/b");
 	}
 
 	@Test
-	public void testCharClass() throws InvalidPatternException{
-		assertEquals("", matches("[v-z]", "x"));
-		assertEquals("", matches("[v-z]", "x/"));
-		assertEquals("", matches("[v-z]", "x/b"));
+	public void testCharClass() {
+		assertMatched("[v-z]", "x");
+		assertMatched("[v-z]", "x/");
+		assertMatched("[v-z]", "x/b");
 
-		assertEquals("", matches("[v-z]", "b/x"));
-		assertEquals("", matches("[v-z]", "b/x/"));
-		assertEquals("", matches("[v-z]", "b/x/b"));
+		assertMatched("[v-z]", "b/x");
+		assertMatched("[v-z]", "b/x/");
+		assertMatched("[v-z]", "b/x/b");
 
-		assertEquals("", matches("[v-z]", "/x/"));
-		assertEquals("", matches("[v-z]", "/x/b"));
+		assertMatched("[v-z]", "/x/");
+		assertMatched("[v-z]", "/x/b");
 
-		assertEquals("", matches("[v-z]", "c/x/b"));
-		assertEquals("", matches("[v-z]", "c/b/x"));
+		assertMatched("[v-z]", "c/x/b");
+		assertMatched("[v-z]", "c/b/x");
 
-		assertEquals("", matches("/[v-z]", "x"));
-		assertEquals("", matches("/[v-z]", "x/"));
-		assertEquals("", matches("/[v-z]", "x/b"));
-		assertEquals("", matches("/[v-z]", "/x"));
-		assertEquals("", matches("/[v-z]", "/x/"));
-		assertEquals("", matches("/[v-z]", "/x/b"));
+		assertMatched("/[v-z]", "x");
+		assertMatched("/[v-z]", "x/");
+		assertMatched("/[v-z]", "x/b");
+		assertMatched("/[v-z]", "/x");
+		assertMatched("/[v-z]", "/x/");
+		assertMatched("/[v-z]", "/x/b");
 
-		assertEquals("", matches("[v-z]/", "x/"));
-		assertEquals("", matches("[v-z]/", "x/b"));
-		assertEquals("", matches("[v-z]/", "/x/"));
-		assertEquals("", matches("[v-z]/", "/x/b"));
+		assertMatched("[v-z]/", "x/");
+		assertMatched("[v-z]/", "x/b");
+		assertMatched("[v-z]/", "/x/");
+		assertMatched("[v-z]/", "/x/b");
 
-		assertEquals("", matches("/[v-z]/", "x/"));
-		assertEquals("", matches("/[v-z]/", "x/b"));
-		assertEquals("", matches("/[v-z]/", "/x/"));
-		assertEquals("", matches("/[v-z]/", "/x/b"));
+		assertMatched("/[v-z]/", "x/");
+		assertMatched("/[v-z]/", "x/b");
+		assertMatched("/[v-z]/", "/x/");
+		assertMatched("/[v-z]/", "/x/b");
 	}
 
 	@Test
-	public void testDotAsterisk() throws InvalidPatternException{
-		assertEquals("", matches("*.a", ".a"));
-		assertEquals("", matches("*.a", "/.a"));
-		assertEquals("", matches("*.a", "a.a"));
-		assertEquals("", matches("*.a", "/b.a"));
-		assertEquals("", matches("*.a", "b.a"));
-		assertEquals("", matches("*.a", "/a/b.a"));
-		assertEquals("", matches("*.a", "/b/.a"));
+	public void testDotAsterisk() {
+		assertMatched("*.a", ".a");
+		assertMatched("*.a", "/.a");
+		assertMatched("*.a", "a.a");
+		assertMatched("*.a", "/b.a");
+		assertMatched("*.a", "b.a");
+		assertMatched("*.a", "/a/b.a");
+		assertMatched("*.a", "/b/.a");
 	}
 
 	@Test
-	public void testDotAsteriskDoNotMatch() throws InvalidPatternException{
-		assertEquals("", notMatches("*.a", ".ab"));
-		assertEquals("", notMatches("*.a", "/.ab"));
-		assertEquals("", notMatches("*.stp", "/test.astp"));
-		assertEquals("", notMatches("*.a", "a.ab"));
-		assertEquals("", notMatches("*.a", "/b.ab"));
-		assertEquals("", notMatches("*.a", "b.ab"));
-		assertEquals("", notMatches("*.a", "/a/b.ab"));
-		assertEquals("", notMatches("*.a", "/b/.ab"));
+	public void testDotAsteriskDoNotMatch() {
+		assertNotMatched("*.a", ".ab");
+		assertNotMatched("*.a", "/.ab");
+		assertNotMatched("*.stp", "/test.astp");
+		assertNotMatched("*.a", "a.ab");
+		assertNotMatched("*.a", "/b.ab");
+		assertNotMatched("*.a", "b.ab");
+		assertNotMatched("*.a", "/a/b.ab");
+		assertNotMatched("*.a", "/b/.ab");
 	}
 
 	@Test
-	public void testAsteriskDotMatch() throws InvalidPatternException{
-		assertEquals("", matches("a.*", "a."));
-		assertEquals("", matches("a.*", "a./"));
-		assertEquals("", matches("a.*", "a.b"));
+	public void testAsteriskDotMatch() {
+		assertMatched("a.*", "a.");
+		assertMatched("a.*", "a./");
+		assertMatched("a.*", "a.b");
 
-		assertEquals("", matches("a.*", "b/a.b"));
-		assertEquals("", matches("a.*", "b/a.b/"));
-		assertEquals("", matches("a.*", "b/a.b/b"));
+		assertMatched("a.*", "b/a.b");
+		assertMatched("a.*", "b/a.b/");
+		assertMatched("a.*", "b/a.b/b");
 
-		assertEquals("", matches("a.*", "/a.b/"));
-		assertEquals("", matches("a.*", "/a.b/b"));
+		assertMatched("a.*", "/a.b/");
+		assertMatched("a.*", "/a.b/b");
 
-		assertEquals("", matches("a.*", "c/a.b/b"));
-		assertEquals("", matches("a.*", "c/b/a.b"));
+		assertMatched("a.*", "c/a.b/b");
+		assertMatched("a.*", "c/b/a.b");
 
-		assertEquals("", matches("/a.*", "a.b"));
-		assertEquals("", matches("/a.*", "a.b/"));
-		assertEquals("", matches("/a.*", "a.b/b"));
-		assertEquals("", matches("/a.*", "/a.b"));
-		assertEquals("", matches("/a.*", "/a.b/"));
-		assertEquals("", matches("/a.*", "/a.b/b"));
+		assertMatched("/a.*", "a.b");
+		assertMatched("/a.*", "a.b/");
+		assertMatched("/a.*", "a.b/b");
+		assertMatched("/a.*", "/a.b");
+		assertMatched("/a.*", "/a.b/");
+		assertMatched("/a.*", "/a.b/b");
 
-		assertEquals("", matches("/a.*/b", "a.b/b"));
-		assertEquals("", matches("/a.*/b", "/a.b/b"));
-		assertEquals("", matches("/a.*/b", "/a.bc/b"));
-		assertEquals("", matches("/a.*/b", "/a./b"));
+		assertMatched("/a.*/b", "a.b/b");
+		assertMatched("/a.*/b", "/a.b/b");
+		assertMatched("/a.*/b", "/a.bc/b");
+		assertMatched("/a.*/b", "/a./b");
 	}
 
 	@Test
-	public void testAsterisk() throws InvalidPatternException{
-		assertEquals("", matches("a*", "a"));
-		assertEquals("", matches("a*", "a/"));
-		assertEquals("", matches("a*", "ab"));
+	public void testAsterisk() {
+		assertMatched("a*", "a");
+		assertMatched("a*", "a/");
+		assertMatched("a*", "ab");
 
-		assertEquals("", matches("a*", "b/ab"));
-		assertEquals("", matches("a*", "b/ab/"));
-		assertEquals("", matches("a*", "b/ab/b"));
+		assertMatched("a*", "b/ab");
+		assertMatched("a*", "b/ab/");
+		assertMatched("a*", "b/ab/b");
 
-		assertEquals("", matches("a*", "b/abc"));
-		assertEquals("", matches("a*", "b/abc/"));
-		assertEquals("", matches("a*", "b/abc/b"));
+		assertMatched("a*", "b/abc");
+		assertMatched("a*", "b/abc/");
+		assertMatched("a*", "b/abc/b");
 
-		assertEquals("", matches("a*", "/abc/"));
-		assertEquals("", matches("a*", "/abc/b"));
+		assertMatched("a*", "/abc/");
+		assertMatched("a*", "/abc/b");
 
-		assertEquals("", matches("a*", "c/abc/b"));
-		assertEquals("", matches("a*", "c/b/abc"));
+		assertMatched("a*", "c/abc/b");
+		assertMatched("a*", "c/b/abc");
 
-		assertEquals("", matches("/a*", "abc"));
-		assertEquals("", matches("/a*", "abc/"));
-		assertEquals("", matches("/a*", "abc/b"));
-		assertEquals("", matches("/a*", "/abc"));
-		assertEquals("", matches("/a*", "/abc/"));
-		assertEquals("", matches("/a*", "/abc/b"));
+		assertMatched("/a*", "abc");
+		assertMatched("/a*", "abc/");
+		assertMatched("/a*", "abc/b");
+		assertMatched("/a*", "/abc");
+		assertMatched("/a*", "/abc/");
+		assertMatched("/a*", "/abc/b");
 
-		assertEquals("", matches("/a*/b", "abc/b"));
-		assertEquals("", matches("/a*/b", "/abc/b"));
-		assertEquals("", matches("/a*/b", "/abcd/b"));
-		assertEquals("", matches("/a*/b", "/a/b"));
+		assertMatched("/a*/b", "abc/b");
+		assertMatched("/a*/b", "/abc/b");
+		assertMatched("/a*/b", "/abcd/b");
+		assertMatched("/a*/b", "/a/b");
 	}
 
 	@Test
-	public void testQuestionmark() throws InvalidPatternException{
-		assertEquals("", matches("a?", "ab"));
-		assertEquals("", matches("a?", "ab/"));
+	public void testQuestionmark() {
+		assertMatched("a?", "ab");
+		assertMatched("a?", "ab/");
 
-		assertEquals("", matches("a?", "b/ab"));
-		assertEquals("", matches("a?", "b/ab/"));
-		assertEquals("", matches("a?", "b/ab/b"));
+		assertMatched("a?", "b/ab");
+		assertMatched("a?", "b/ab/");
+		assertMatched("a?", "b/ab/b");
 
-		assertEquals("", matches("a?", "/ab/"));
-		assertEquals("", matches("a?", "/ab/b"));
+		assertMatched("a?", "/ab/");
+		assertMatched("a?", "/ab/b");
 
-		assertEquals("", matches("a?", "c/ab/b"));
-		assertEquals("", matches("a?", "c/b/ab"));
+		assertMatched("a?", "c/ab/b");
+		assertMatched("a?", "c/b/ab");
 
-		assertEquals("", matches("/a?", "ab"));
-		assertEquals("", matches("/a?", "ab/"));
-		assertEquals("", matches("/a?", "ab/b"));
-		assertEquals("", matches("/a?", "/ab"));
-		assertEquals("", matches("/a?", "/ab/"));
-		assertEquals("", matches("/a?", "/ab/b"));
+		assertMatched("/a?", "ab");
+		assertMatched("/a?", "ab/");
+		assertMatched("/a?", "ab/b");
+		assertMatched("/a?", "/ab");
+		assertMatched("/a?", "/ab/");
+		assertMatched("/a?", "/ab/b");
 
-		assertEquals("", matches("/a?/b", "ab/b"));
-		assertEquals("", matches("/a?/b", "/ab/b"));
+		assertMatched("/a?/b", "ab/b");
+		assertMatched("/a?/b", "/ab/b");
 	}
 
 	@Test
-	public void testQuestionmarkDoNotMatch() throws InvalidPatternException{
-		assertEquals("", notMatches("a?", "a/"));
-		assertEquals("", notMatches("a?", "abc"));
-		assertEquals("", notMatches("a?", "abc/"));
+	public void testQuestionmarkDoNotMatch() {
+		assertNotMatched("a?", "a/");
+		assertNotMatched("a?", "abc");
+		assertNotMatched("a?", "abc/");
 
-		assertEquals("", notMatches("a?", "b/abc"));
-		assertEquals("", notMatches("a?", "b/abc/"));
+		assertNotMatched("a?", "b/abc");
+		assertNotMatched("a?", "b/abc/");
 
-		assertEquals("", notMatches("a?", "/abc/"));
-		assertEquals("", notMatches("a?", "/abc/b"));
+		assertNotMatched("a?", "/abc/");
+		assertNotMatched("a?", "/abc/b");
 
-		assertEquals("", notMatches("a?", "c/abc/b"));
-		assertEquals("", notMatches("a?", "c/b/abc"));
+		assertNotMatched("a?", "c/abc/b");
+		assertNotMatched("a?", "c/b/abc");
 
-		assertEquals("", notMatches("/a?", "abc"));
-		assertEquals("", notMatches("/a?", "abc/"));
-		assertEquals("", notMatches("/a?", "abc/b"));
-		assertEquals("", notMatches("/a?", "/abc"));
-		assertEquals("", notMatches("/a?", "/abc/"));
-		assertEquals("", notMatches("/a?", "/abc/b"));
+		assertNotMatched("/a?", "abc");
+		assertNotMatched("/a?", "abc/");
+		assertNotMatched("/a?", "abc/b");
+		assertNotMatched("/a?", "/abc");
+		assertNotMatched("/a?", "/abc/");
+		assertNotMatched("/a?", "/abc/b");
 
-		assertEquals("", notMatches("/a?/b", "abc/b"));
-		assertEquals("", notMatches("/a?/b", "/abc/b"));
-		assertEquals("", notMatches("/a?/b", "/a/b"));
+		assertNotMatched("/a?/b", "abc/b");
+		assertNotMatched("/a?/b", "/abc/b");
+		assertNotMatched("/a?/b", "/a/b");
 	}
 
 	@Test
-	public void testSimplePatterns() throws InvalidPatternException{
-		assertEquals("", matches("a", "a"));
-		assertEquals("", matches("a", "a/"));
-		assertEquals("", matches("a", "a/b"));
+	public void testSimplePatterns() {
+		assertMatched("a", "a");
+		assertMatched("a", "a/");
+		assertMatched("a", "a/b");
 
-		assertEquals("", matches("a", "b/a"));
-		assertEquals("", matches("a", "b/a/"));
-		assertEquals("", matches("a", "b/a/b"));
+		assertMatched("a", "b/a");
+		assertMatched("a", "b/a/");
+		assertMatched("a", "b/a/b");
 
-		assertEquals("", matches("a", "/a/"));
-		assertEquals("", matches("a", "/a/b"));
+		assertMatched("a", "/a/");
+		assertMatched("a", "/a/b");
 
-		assertEquals("", matches("a", "c/a/b"));
-		assertEquals("", matches("a", "c/b/a"));
+		assertMatched("a", "c/a/b");
+		assertMatched("a", "c/b/a");
 
-		assertEquals("", matches("/a", "a"));
-		assertEquals("", matches("/a", "a/"));
-		assertEquals("", matches("/a", "a/b"));
-		assertEquals("", matches("/a", "/a"));
-		assertEquals("", matches("/a", "/a/"));
-		assertEquals("", matches("/a", "/a/b"));
+		assertMatched("/a", "a");
+		assertMatched("/a", "a/");
+		assertMatched("/a", "a/b");
+		assertMatched("/a", "/a");
+		assertMatched("/a", "/a/");
+		assertMatched("/a", "/a/b");
 
-		assertEquals("", matches("a/", "a/"));
-		assertEquals("", matches("a/", "a/b"));
-		assertEquals("", matches("a/", "/a/"));
-		assertEquals("", matches("a/", "/a/b"));
+		assertMatched("a/", "a/");
+		assertMatched("a/", "a/b");
+		assertMatched("a/", "/a/");
+		assertMatched("a/", "/a/b");
 
-		assertEquals("", matches("/a/", "a/"));
-		assertEquals("", matches("/a/", "a/b"));
-		assertEquals("", matches("/a/", "/a/"));
-		assertEquals("", matches("/a/", "/a/b"));
+		assertMatched("/a/", "a/");
+		assertMatched("/a/", "a/b");
+		assertMatched("/a/", "/a/");
+		assertMatched("/a/", "/a/b");
 
 	}
 
 	@Test
-	public void testSimplePatternsDoNotMatch() throws InvalidPatternException{
-		assertEquals("", notMatches("ab", "a"));
-		assertEquals("", notMatches("abc", "a/"));
-		assertEquals("", notMatches("abc", "a/b"));
+	public void testSimplePatternsDoNotMatch() {
+		assertNotMatched("ab", "a");
+		assertNotMatched("abc", "a/");
+		assertNotMatched("abc", "a/b");
 
-		assertEquals("", notMatches("a", "ab"));
-		assertEquals("", notMatches("a", "ba"));
-		assertEquals("", notMatches("a", "aa"));
+		assertNotMatched("a", "ab");
+		assertNotMatched("a", "ba");
+		assertNotMatched("a", "aa");
 
-		assertEquals("", notMatches("a", "b/ab"));
-		assertEquals("", notMatches("a", "b/ba"));
+		assertNotMatched("a", "b/ab");
+		assertNotMatched("a", "b/ba");
 
-		assertEquals("", notMatches("a", "b/ba"));
-		assertEquals("", notMatches("a", "b/ab"));
+		assertNotMatched("a", "b/ba");
+		assertNotMatched("a", "b/ab");
 
-		assertEquals("", notMatches("a", "b/ba/"));
-		assertEquals("", notMatches("a", "b/ba/b"));
+		assertNotMatched("a", "b/ba/");
+		assertNotMatched("a", "b/ba/b");
 
-		assertEquals("", notMatches("a", "/aa"));
-		assertEquals("", notMatches("a", "aa/"));
-		assertEquals("", notMatches("a", "/aa/"));
+		assertNotMatched("a", "/aa");
+		assertNotMatched("a", "aa/");
+		assertNotMatched("a", "/aa/");
 
-		assertEquals("", notMatches("/a", "b/a"));
-		assertEquals("", notMatches("/a", "/b/a/"));
+		assertNotMatched("/a", "b/a");
+		assertNotMatched("/a", "/b/a/");
 
-		assertEquals("", notMatches("a/", "a"));
-		assertEquals("", notMatches("a/", "b/a"));
-		assertEquals("", notMatches("/a/", "a"));
-		assertEquals("", notMatches("/a/", "/a"));
-		assertEquals("", notMatches("/a/", "b/a"));
+		assertNotMatched("a/", "a");
+		assertNotMatched("a/", "b/a");
+
+		assertNotMatched("/a/", "a");
+		assertNotMatched("/a/", "/a");
+		assertNotMatched("/a/", "b/a");
 	}
 
 	@Test
-	public void testSegments() throws InvalidPatternException{
-		assertEquals("", matches("/a/b", "a/b"));
-		assertEquals("", matches("/a/b", "/a/b"));
-		assertEquals("", matches("/a/b", "/a/b/"));
-		assertEquals("", matches("/a/b", "/a/b/c"));
+	public void testSegments() {
+		assertMatched("/a/b", "a/b");
+		assertMatched("/a/b", "/a/b");
+		assertMatched("/a/b", "/a/b/");
+		assertMatched("/a/b", "/a/b/c");
 
-		assertEquals("", matches("a/b", "a/b"));
-		assertEquals("", matches("a/b", "/a/b"));
-		assertEquals("", matches("a/b", "/a/b/"));
-		assertEquals("", matches("a/b", "/a/b/c"));
+		assertMatched("a/b", "a/b");
+		assertMatched("a/b", "/a/b");
+		assertMatched("a/b", "/a/b/");
+		assertMatched("a/b", "/a/b/c");
 
-		assertEquals("", matches("a/b", "c/a/b"));
-		assertEquals("", matches("a/b", "c/a/b/"));
-		assertEquals("", matches("a/b", "c/a/b/c"));
+		assertMatched("a/b", "c/a/b");
+		assertMatched("a/b", "c/a/b/");
+		assertMatched("a/b", "c/a/b/c");
 
-		assertEquals("", matches("a/b/", "a/b/"));
-		assertEquals("", matches("a/b/", "/a/b/"));
-		assertEquals("", matches("a/b/", "/a/b/c"));
+		assertMatched("a/b/", "a/b/");
+		assertMatched("a/b/", "/a/b/");
+		assertMatched("a/b/", "/a/b/c");
 
-		assertEquals("", matches("a/b/", "c/a/b/"));
-		assertEquals("", matches("a/b/", "c/a/b/c"));
+		assertMatched("a/b/", "c/a/b/");
+		assertMatched("a/b/", "c/a/b/c");
 	}
 
 	@Test
-	public void testSegmentsDoNotMatch() throws InvalidPatternException{
-		assertEquals("", notMatches("a/b", "/a/bb"));
-		assertEquals("", notMatches("a/b", "/aa/b"));
-		assertEquals("", notMatches("a/b", "a/bb"));
-		assertEquals("", notMatches("a/b", "aa/b"));
-		assertEquals("", notMatches("a/b", "c/aa/b"));
-		assertEquals("", notMatches("a/b", "c/a/bb"));
-		assertEquals("", notMatches("a/b/", "/a/b"));
-		assertEquals("", notMatches("/a/b/", "/a/b"));
-		assertEquals("", notMatches("/a/b", "c/a/b"));
-		assertEquals("", notMatches("/a/b/", "c/a/b"));
-		assertEquals("", notMatches("/a/b/", "c/a/b/"));
+	public void testSegmentsDoNotMatch() {
+		assertNotMatched("a/b", "/a/bb");
+		assertNotMatched("a/b", "/aa/b");
+		assertNotMatched("a/b", "a/bb");
+		assertNotMatched("a/b", "aa/b");
+		assertNotMatched("a/b", "c/aa/b");
+		assertNotMatched("a/b", "c/a/bb");
+		assertNotMatched("a/b/", "/a/b");
+		assertNotMatched("/a/b/", "/a/b");
+		assertNotMatched("/a/b", "c/a/b");
+		assertNotMatched("/a/b/", "c/a/b");
+		assertNotMatched("/a/b/", "c/a/b/");
 	}
 
 	@Test
-	public void testWildmatch() throws InvalidPatternException{
-		assertEquals("", matches("**/a/b", "a/b"));
-		assertEquals("", matches("**/a/b", "c/a/b"));
-		assertEquals("", matches("**/a/b", "c/d/a/b"));
-		assertEquals("", matches("**/**/a/b", "c/d/a/b"));
+	public void testWildmatch() {
+		assertMatched("**/a/b", "a/b");
+		assertMatched("**/a/b", "c/a/b");
+		assertMatched("**/a/b", "c/d/a/b");
+		assertMatched("**/**/a/b", "c/d/a/b");
 
-		assertEquals("", matches("a/b/**", "a/b"));
-		assertEquals("", matches("a/b/**", "a/b/c"));
-		assertEquals("", matches("a/b/**", "a/b/c/d/"));
-		assertEquals("", matches("a/b/**/**", "a/b/c/d"));
+		assertMatched("a/b/**", "a/b");
+		assertMatched("a/b/**", "a/b/c");
+		assertMatched("a/b/**", "a/b/c/d/");
+		assertMatched("a/b/**/**", "a/b/c/d");
 
-		assertEquals("", matches("**/a/**/b", "c/d/a/b"));
-		assertEquals("", matches("**/a/**/b", "c/d/a/e/b"));
-		assertEquals("", matches("**/**/a/**/**/b", "c/d/a/e/b"));
+		assertMatched("**/a/**/b", "c/d/a/b");
+		assertMatched("**/a/**/b", "c/d/a/e/b");
+		assertMatched("**/**/a/**/**/b", "c/d/a/e/b");
 
-		assertEquals("", matches("a/**/b", "a/b"));
-		assertEquals("", matches("a/**/b", "a/c/b"));
-		assertEquals("", matches("a/**/b", "a/c/d/b"));
-		assertEquals("", matches("a/**/**/b", "a/c/d/b"));
+		assertMatched("a/**/b", "a/b");
+		assertMatched("a/**/b", "a/c/b");
+		assertMatched("a/**/b", "a/c/d/b");
+		assertMatched("a/**/**/b", "a/c/d/b");
 
-		assertEquals("", matches("a/**/b/**/c", "a/c/b/d/c"));
-		assertEquals("", matches("a/**/**/b/**/**/c", "a/c/b/d/c"));
+		assertMatched("a/**/b/**/c", "a/c/b/d/c");
+		assertMatched("a/**/**/b/**/**/c", "a/c/b/d/c");
 	}
 
 	@Test
-	public void testWildmatchDoNotMatch() throws InvalidPatternException{
-		assertEquals("", notMatches("**/a/b", "a/c/b"));
-		assertEquals("", notMatches("a/**/b", "a/c/bb"));
+	public void testWildmatchDoNotMatch() {
+		assertNotMatched("**/a/b", "a/c/b");
+		assertNotMatched("a/**/b", "a/c/bb");
 	}
 
 	@Test
-	public void testSimpleRules() throws InvalidPatternException{
+	public void testSimpleRules(){
 		try {
 			GitIgnoreParser.createRule(null);
 			fail("Illegal input allowed!");
@@ -394,17 +394,14 @@ public class TestIgnore {
 	}
 
 
-	String matches(String pattern, String path) throws InvalidPatternException{
+	public void assertMatched(String pattern, String path){
 		FastIgnoreRule rule = GitIgnoreParser.createRule(pattern);
 		boolean dir = path.endsWith("/");
 		boolean match = rule.isMatch(path, dir);
 		String result = path + " is " + (match? "ignored" : "not ignored") + " via '" + pattern + "' rule";
-		if(match) {
-			System.out.println(result);
-		} else {
+		if(!match) {
 			System.err.println(result);
 		}
-
 		if(pattern.endsWith("/")) {
 			assertTrue(rule.dirOnly());
 		} else {
@@ -419,21 +416,16 @@ public class TestIgnore {
 			assertTrue(!rule.isMatch(path, dir));
 		}
 
-		if(match){
-			return "";
-		}
-		return result;
+		assertTrue("Expected a match for: " + pattern + " with: " + path, match);
 	}
 
-	String notMatches(String pattern, String path) throws InvalidPatternException{
+	public void assertNotMatched(String pattern, String path){
 		FastIgnoreRule rule = GitIgnoreParser.createRule(pattern);
 		boolean dir = path.endsWith("/");
 		boolean match = rule.isMatch(path, dir);
 		String result = path + " is " + (match? "ignored" : "not ignored") + " via '" + pattern + "' rule";
 		if(match) {
 			System.err.println(result);
-		} else {
-			System.out.println(result);
 		}
 
 		if(pattern.endsWith("/")) {
@@ -450,9 +442,6 @@ public class TestIgnore {
 			assertTrue(!rule.isMatch(path, dir));
 		}
 
-		if(!match){
-			return "";
-		}
-		return result;
+		assertFalse("Expected no match for: " + pattern + " with: " + path,	match);
 	}
 }

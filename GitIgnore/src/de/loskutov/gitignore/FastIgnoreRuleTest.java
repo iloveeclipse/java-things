@@ -11,6 +11,7 @@ package de.loskutov.gitignore;
 
 import static de.loskutov.gitignore.Strings.split;
 import static org.junit.Assert.*;
+import static org.junit.Assume.*;
 
 import java.util.Arrays;
 
@@ -346,29 +347,35 @@ public class FastIgnoreRuleTest {
 		assertNotMatched("/a/b/", "c/a/b/");
 	}
 
+	@SuppressWarnings("boxing")
 	@Test
 	public void testWildmatch() {
-		assertMatched("**/a/b", "a/b");
-		assertMatched("**/a/b", "c/a/b");
-		assertMatched("**/a/b", "c/d/a/b");
-		assertMatched("**/**/a/b", "c/d/a/b");
+		if(useJGitRule){
+			System.err.println("IgnoreRule can't understand wildmatch rules, skipping testWildmatch!");
+		}
 
-		assertMatched("a/b/**", "a/b");
-		assertMatched("a/b/**", "a/b/c");
-		assertMatched("a/b/**", "a/b/c/d/");
-		assertMatched("a/b/**/**", "a/b/c/d");
+		Boolean assume = useJGitRule;
+		assertMatched("**/a/b", "a/b", assume);
+		assertMatched("**/a/b", "c/a/b", assume);
+		assertMatched("**/a/b", "c/d/a/b", assume);
+		assertMatched("**/**/a/b", "c/d/a/b", assume);
 
-		assertMatched("**/a/**/b", "c/d/a/b");
-		assertMatched("**/a/**/b", "c/d/a/e/b");
-		assertMatched("**/**/a/**/**/b", "c/d/a/e/b");
+		assertMatched("a/b/**", "a/b", assume);
+		assertMatched("a/b/**", "a/b/c", assume);
+		assertMatched("a/b/**", "a/b/c/d/", assume);
+		assertMatched("a/b/**/**", "a/b/c/d", assume);
 
-		assertMatched("a/**/b", "a/b");
-		assertMatched("a/**/b", "a/c/b");
-		assertMatched("a/**/b", "a/c/d/b");
-		assertMatched("a/**/**/b", "a/c/d/b");
+		assertMatched("**/a/**/b", "c/d/a/b", assume);
+		assertMatched("**/a/**/b", "c/d/a/e/b", assume);
+		assertMatched("**/**/a/**/**/b", "c/d/a/e/b", assume);
 
-		assertMatched("a/**/b/**/c", "a/c/b/d/c");
-		assertMatched("a/**/**/b/**/**/c", "a/c/b/d/c");
+		assertMatched("a/**/b", "a/b", assume);
+		assertMatched("a/**/b", "a/c/b", assume);
+		assertMatched("a/**/b", "a/c/d/b", assume);
+		assertMatched("a/**/**/b", "a/c/d/b", assume);
+
+		assertMatched("a/**/b/**/c", "a/c/b/d/c", assume);
+		assertMatched("a/**/**/b/**/**/c", "a/c/b/d/c", assume);
 	}
 
 	@Test
@@ -410,13 +417,17 @@ public class FastIgnoreRuleTest {
 	}
 
 
-	public void assertMatched(String pattern, String path){
+	public void assertMatched(String pattern, String path, Boolean... assume){
 		boolean match = match(pattern, path);
 		String result = path + " is " + (match? "ignored" : "not ignored") + " via '" + pattern + "' rule";
 		if(!match) {
 			System.err.println(result);
 		}
-		assertTrue("Expected a match for: " + pattern + " with: " + path, match);
+		if(assume.length == 0) {
+			assertTrue("Expected a match for: " + pattern + " with: " + path, match);
+		} else {
+			assumeTrue("Expected a match for: " + pattern + " with: " + path, match);
+		}
 
 		if(pattern.startsWith("!")){
 			pattern = pattern.substring(1);
@@ -424,7 +435,11 @@ public class FastIgnoreRuleTest {
 			pattern = "!" + pattern;
 		}
 		match = match(pattern, path);
-		assertFalse("Expected no match for: " + pattern + " with: " + path, match);
+		if(assume.length == 0) {
+			assertFalse("Expected no match for: " + pattern + " with: " + path, match);
+		} else {
+			assumeFalse("Expected no match for: " + pattern + " with: " + path, match);
+		}
 	}
 
 	public void assertNotMatched(String pattern, String path){

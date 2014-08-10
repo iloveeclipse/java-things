@@ -60,7 +60,7 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class FileNameMatcherTest {
 
-	@Parameters
+	@Parameters(name = "JGit? {0}")
 	public static Iterable<Boolean[]> data(){
 		return Arrays.asList(new Boolean[][]{{Boolean.FALSE}, {Boolean.TRUE}});
 	}

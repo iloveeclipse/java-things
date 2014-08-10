@@ -17,6 +17,7 @@ import org.eclipse.jgit.errors.InvalidPatternException;
 public class WildCardMatcher extends NameMatcher {
 
 	final Pattern p;
+
 	WildCardMatcher(String pattern, boolean dirOnly) throws InvalidPatternException {
 		super(pattern, dirOnly);
 		p = convertGlob(subPattern);

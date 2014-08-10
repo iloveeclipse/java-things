@@ -13,8 +13,7 @@ public final class WildMatcher extends AbstractMatcher {
 	static final String WILDMATCH = "**";
 
 	public WildMatcher() {
-		isDirectory = false;
-		pattern = WILDMATCH;
+		super(WILDMATCH, false);
 	}
 
 	@Override

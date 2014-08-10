@@ -8,10 +8,16 @@
  *******************************************************************************/
 package de.loskutov.gitignore;
 
-public abstract class AbstractMatcher implements IgnoreMatcher {
-	boolean isDirectory;
 
-	String pattern;
+public abstract class AbstractMatcher implements IgnoreMatcher {
+	final boolean isDirectory;
+
+	final String pattern;
+
+	AbstractMatcher(String pattern, boolean dirOnly) {
+		this.pattern = pattern;
+		isDirectory = dirOnly;
+	}
 
 	public boolean isBeginning() {
 		return false;

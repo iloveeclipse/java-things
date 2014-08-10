@@ -19,9 +19,8 @@ public class PathMatcher extends AbstractMatcher {
 	private static final WildMatcher WILD = new WildMatcher();
 	private final List<AbstractMatcher> matchers;
 
-	PathMatcher(String pattern, boolean dirOnly) throws InvalidPatternException{
-		this.pattern = pattern;
-		isDirectory = dirOnly;
+	PathMatcher(String pattern, boolean dirOnly) throws InvalidPatternException {
+		super(pattern, dirOnly);
 		matchers = createMatchers(split(pattern), dirOnly);
 	}
 

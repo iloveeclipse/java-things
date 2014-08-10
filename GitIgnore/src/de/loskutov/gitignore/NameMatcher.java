@@ -14,9 +14,8 @@ public class NameMatcher extends AbstractMatcher {
 	final String subPattern;
 
 	NameMatcher(String pattern, boolean dirOnly){
-		this.pattern = pattern;
+		super(pattern, dirOnly);
 		beginning = pattern.charAt(0) == '/';
-		isDirectory = dirOnly;
 		if(!beginning) {
 			this.subPattern = pattern;
 		} else {

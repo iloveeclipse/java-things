@@ -33,15 +33,9 @@ public class PathMatcher extends AbstractMatcher {
 				if(matchers.size() == 0 || matchers.get(matchers.size() - 1) != WILD) {
 					matchers.add(WILD);
 				}
-			} else if(isWildCard(segment)){
-				if(i != segments.size() - 1) {
-					matchers.add(new WildCardMatcher(segment, false));
-				} else {
-					matchers.add(new WildCardMatcher(segment, dirOnly));
-				}
 			} else {
-				if(i != segments.size() - 1) {
-					matchers.add(new NameMatcher(segment, false));
+				if(isWildCard(segment)){
+					matchers.add(new WildCardMatcher(segment, dirOnly));
 				} else {
 					matchers.add(new NameMatcher(segment, dirOnly));
 				}

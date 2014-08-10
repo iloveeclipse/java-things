@@ -162,8 +162,11 @@ public class Strings {
 				break;
 
 			case '\\':
-				if(in_brackets > 0 && (lookAhead(pattern, i) == ']' || lookAhead(pattern, i) == '[')) {
-					ignoreLastBracket = true;
+				if(in_brackets > 0) {
+					char lookAhead = lookAhead(pattern, i);
+					if (lookAhead == ']' || lookAhead == '[') {
+						ignoreLastBracket = true;
+					}
 				}
 				sb.append(c);
 				break;
@@ -183,8 +186,9 @@ public class Strings {
 
 			case ']':
 				if(in_brackets > 0) {
-					if((lookBehind(sb) == '[' && !ignoreLastBracket)
-							|| lookBehind(sb) == '^'
+					char lookBehind = lookBehind(sb);
+					if((lookBehind == '[' && !ignoreLastBracket)
+							|| lookBehind == '^'
 							|| (!in_char_class && lookAhead(pattern, i) == ']')) {
 						sb.append('\\');
 						sb.append(']');

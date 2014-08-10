@@ -68,8 +68,10 @@ public class Strings {
 	}
 
 	static boolean isWildCard(String pattern) {
-		return pattern.indexOf('*') != -1 || pattern.indexOf('?') != -1
+		return pattern.indexOf('*') != -1
+				|| pattern.indexOf('?') != -1
 				|| pattern.indexOf('[') != -1
+				|| pattern.indexOf('\\') != -1
 				|| pattern.indexOf(']') != -1;
 	}
 
@@ -105,6 +107,7 @@ public class Strings {
 		StringBuilder sb = new StringBuilder(pattern.length());
 
 		int in_brackets = 0;
+		boolean seenEscape = false;
 		boolean ignoreLastBracket = false;
 		boolean in_char_class = false;
 		// 6 is the length of the longest posix char class "xdigit"
@@ -115,7 +118,7 @@ public class Strings {
 			switch (c) {
 
 			case '*':
-				if(in_brackets > 0) {
+				if(seenEscape || in_brackets > 0) {
 					sb.append(c);
 				} else {
 					sb.append('.').append(c);
@@ -123,7 +126,7 @@ public class Strings {
 				break;
 
 			case '.':
-				if(in_brackets > 0) {
+				if(seenEscape || in_brackets > 0) {
 					sb.append(c);
 				} else {
 					sb.append('\\').append('.');
@@ -131,7 +134,7 @@ public class Strings {
 				break;
 
 			case '?':
-				if(in_brackets > 0) {
+				if(seenEscape || in_brackets > 0) {
 					sb.append(c);
 				} else {
 					sb.append('.');
@@ -140,7 +143,7 @@ public class Strings {
 
 			case ':':
 				if(in_brackets > 0) {
-					if(sb.charAt(sb.length()-1) == '[') {
+					if(lookBehind(sb) == '[') {
 						in_char_class = true;
 					}
 				}
@@ -149,7 +152,7 @@ public class Strings {
 
 			case '-':
 				if(in_brackets > 0) {
-					if(pattern.charAt(i + 1) == ']') {
+					if(lookAhead(pattern, i) == ']') {
 						sb.append('\\').append(c);
 					} else {
 						sb.append(c);
@@ -160,7 +163,7 @@ public class Strings {
 				break;
 
 			case '\\':
-				if(in_brackets > 0 && (pattern.charAt(i + 1) == ']' || pattern.charAt(i + 1) == '[')) {
+				if(in_brackets > 0 && (lookAhead(pattern, i) == ']' || lookAhead(pattern, i) == '[')) {
 					ignoreLastBracket = true;
 				}
 				sb.append(c);
@@ -168,15 +171,8 @@ public class Strings {
 
 			case '[':
 				if(in_brackets > 0) {
-					if(sb.charAt(sb.length()-1) == '['
-							|| pattern.charAt(i + 1) == ':'){
-						in_brackets ++;
-						sb.append('[');
-						ignoreLastBracket = false;
-					} else {
-						sb.append('\\').append('[');
-						ignoreLastBracket = true;
-					}
+					sb.append('\\').append('[');
+					ignoreLastBracket = true;
 				} else {
 					in_brackets ++;
 					sb.append('[');
@@ -186,22 +182,23 @@ public class Strings {
 
 			case ']':
 				if(in_brackets > 0) {
-					if((sb.charAt(sb.length()-1) == '[' && !ignoreLastBracket)
-							||sb.charAt(sb.length()-1) == '^') {
+					if((lookBehind(sb) == '[' && !ignoreLastBracket)
+							|| lookBehind(sb) == '^'
+							|| (!in_char_class && lookAhead(pattern, i) == ']')) {
 						sb.append('\\');
 						sb.append(']');
 						ignoreLastBracket = true;
 					} else {
-						in_brackets --;
 						ignoreLastBracket = false;
 						if(!in_char_class) {
+							in_brackets --;
 							sb.append(']');
 						} else {
 							in_char_class = false;
 							String charCl = checkPosixCharClass(charClass);
-							// delete last [:: chars and set the pattern
+							// delete last \[:: chars and set the pattern
 							if(charCl != null){
-								sb.setLength(sb.length() - 3);
+								sb.setLength(sb.length() - 4);
 								sb.append(charCl);
 							}
 							reset(charClass);
@@ -215,7 +212,7 @@ public class Strings {
 
 			case '!':
 				if(in_brackets > 0) {
-					if(sb.charAt(sb.length()-1) == '[') {
+					if(lookBehind(sb) == '[') {
 						sb.append('^');
 					} else {
 						sb.append(c);
@@ -232,12 +229,33 @@ public class Strings {
 					sb.append(c);
 				}
 				break;
-			}
-		}
+			} // end switch
+
+			seenEscape = c == '\\';
+
+		} // end for
+
 		if(in_brackets > 0){
 			throw new InvalidPatternException("Not closed bracket?", pattern);
 		}
 		return Pattern.compile(sb.toString());
+	}
+
+	/**
+	 * @return zero of the buffer is empty, otherwise the last character from buffer
+	 */
+	private static char lookBehind(StringBuilder sb) {
+		return sb.length() > 0? sb.charAt(sb.length() - 1) : 0;
+	}
+
+	/**
+	 * @param pattern
+	 * @param i current pointer in the pattern
+	 * @return zero of the index is out of range, otherwise the next character from given position
+	 */
+	private static char lookAhead(String pattern, int i) {
+		int idx = i + 1;
+		return idx >= pattern.length()? 0 : pattern.charAt(idx);
 	}
 
 	private static void setNext(char[] buffer, char c){

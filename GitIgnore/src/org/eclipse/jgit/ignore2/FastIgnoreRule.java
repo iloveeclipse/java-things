@@ -100,7 +100,6 @@ public class FastIgnoreRule {
 		if(path == null){
 			return false;
 		}
-		path = path.trim();
 		if (path.length() == 0) {
 			return false;
 		}

@@ -45,12 +45,13 @@
 package org.eclipse.jgit.ignore2.tests;
 
 import static org.junit.Assert.*;
+import static org.junit.Assume.*;
 
 import java.util.Arrays;
 
 import org.eclipse.jgit.errors.InvalidPatternException;
-import org.eclipse.jgit.fnmatch.FileNameMatcher;
-import org.eclipse.jgit.fnmatch2.*;
+import org.eclipse.jgit.ignore.IgnoreRule;
+import org.eclipse.jgit.ignore2.FastIgnoreRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.*;
@@ -67,259 +68,266 @@ public class FileNameMatcherTest {
 	}
 
 	@Parameter
-	public Boolean useJGitMatcher;
+	public Boolean useJGitRule;
 
 	private void assertMatch(final String pattern, final String input,
-			final boolean matchExpected, final boolean appendCanMatchExpected)
+			final boolean matchExpected, Boolean ... assume)
 					throws InvalidPatternException {
-		if(useJGitMatcher.booleanValue()){
-			final FileNameMatcher matcher = new FileNameMatcher(pattern, null);
-			matcher.append(input);
-			assertEquals(matchExpected, matcher.isMatch());
-			assertEquals(appendCanMatchExpected, matcher.canAppendMatch());
+		boolean assumeDir = input.endsWith("/");
+		if(useJGitRule.booleanValue()){
+			final IgnoreRule matcher = new IgnoreRule(pattern);
+			if(assume.length == 0 || !assume[0].booleanValue()) {
+				assertEquals(matchExpected, matcher.isMatch(input, assumeDir));
+			} else  {
+				assumeTrue(matchExpected == matcher.isMatch(input, assumeDir));
+			}
 		} else {
-			IMatcher matcher = PathMatcher.createNameMatcher(pattern, null);
-			boolean assumeDir = input.endsWith("/");
-			assertEquals(matchExpected, matcher.matches(input, assumeDir));
+			FastIgnoreRule matcher = new FastIgnoreRule(pattern);
+			if(assume.length == 0 || !assume[0].booleanValue()) {
+				assertEquals(matchExpected, matcher.isMatch(input, assumeDir));
+			} else {
+				assumeTrue(matchExpected == matcher.isMatch(input, assumeDir));
+			}
 		}
 	}
 
 	private void assertFileNameMatch(final String pattern,
 			final String input,
-			final char excludedCharacter, final boolean matchExpected,
-			final boolean appendCanMatchExpected)
+			final char excludedCharacter, final boolean matchExpected)
 					throws InvalidPatternException {
-		if(useJGitMatcher.booleanValue()){
-			final FileNameMatcher matcher = new FileNameMatcher(pattern,
-					new Character(excludedCharacter));
-			matcher.append(input);
-			assertEquals(matchExpected, matcher.isMatch());
-			assertEquals(appendCanMatchExpected, matcher.canAppendMatch());
+		boolean assumeDir = input.endsWith("/");
+		if(useJGitRule.booleanValue()){
+			final IgnoreRule matcher = new IgnoreRule(pattern);
+			assertEquals(matchExpected, matcher.isMatch(input, assumeDir));
 		} else {
-			IMatcher matcher = PathMatcher.createNameMatcher(pattern, Character.valueOf(excludedCharacter));
-			boolean assumeDir = input.endsWith("/");
-			assertEquals(matchExpected, matcher.matches(input, assumeDir));
+			FastIgnoreRule matcher = new FastIgnoreRule(pattern);
+			assertEquals(matchExpected, matcher.isMatch(input, assumeDir));
 		}
 	}
 
 	@Test
 	public void testVerySimplePatternCase0() throws Exception {
-		assertMatch("", "", true, false);
+		if(useJGitRule){
+			System.err.println("IgnoreRule can't understand blank lines, skipping");
+		}
+		Boolean assume = useJGitRule;
+		assertMatch("", "", false, assume);
 	}
 
 	@Test
 	public void testVerySimplePatternCase1() throws Exception {
-		assertMatch("ab", "a", false, true);
+		assertMatch("ab", "a", false);
 	}
 
 	@Test
 	public void testVerySimplePatternCase2() throws Exception {
-		assertMatch("ab", "ab", true, false);
+		assertMatch("ab", "ab", true);
 	}
 
 	@Test
 	public void testVerySimplePatternCase3() throws Exception {
-		assertMatch("ab", "ac", false, false);
+		assertMatch("ab", "ac", false);
 	}
 
 	@Test
 	public void testVerySimplePatternCase4() throws Exception {
-		assertMatch("ab", "abc", false, false);
+		assertMatch("ab", "abc", false);
 	}
 
 	@Test
 	public void testVerySimpleWirdcardCase0() throws Exception {
-		assertMatch("?", "a", true, false);
+		assertMatch("?", "a", true);
 	}
 
 	@Test
 	public void testVerySimpleWildCardCase1() throws Exception {
-		assertMatch("??", "a", false, true);
+		assertMatch("??", "a", false);
 	}
 
 	@Test
 	public void testVerySimpleWildCardCase2() throws Exception {
-		assertMatch("??", "ab", true, false);
+		assertMatch("??", "ab", true);
 	}
 
 	@Test
 	public void testVerySimpleWildCardCase3() throws Exception {
-		assertMatch("??", "abc", false, false);
+		assertMatch("??", "abc", false);
 	}
 
 	@Test
 	public void testVerySimpleStarCase0() throws Exception {
-		assertMatch("*", "", true, true);
+		// can't happen, but blank lines should never match
+		assertMatch("*", "", false);
 	}
 
 	@Test
 	public void testVerySimpleStarCase1() throws Exception {
-		assertMatch("*", "a", true, true);
+		assertMatch("*", "a", true);
 	}
 
 	@Test
 	public void testVerySimpleStarCase2() throws Exception {
-		assertMatch("*", "ab", true, true);
+		assertMatch("*", "ab", true);
 	}
 
 	@Test
 	public void testSimpleStarCase0() throws Exception {
-		assertMatch("a*b", "a", false, true);
+		assertMatch("a*b", "a", false);
 	}
 
 	@Test
 	public void testSimpleStarCase1() throws Exception {
-		assertMatch("a*c", "ac", true, true);
+		assertMatch("a*c", "ac", true);
 	}
 
 	@Test
 	public void testSimpleStarCase2() throws Exception {
-		assertMatch("a*c", "ab", false, true);
+		assertMatch("a*c", "ab", false);
 	}
 
 	@Test
 	public void testSimpleStarCase3() throws Exception {
-		assertMatch("a*c", "abc", true, true);
+		assertMatch("a*c", "abc", true);
 	}
 
 	@Test
 	public void testManySolutionsCase0() throws Exception {
-		assertMatch("a*a*a", "aaa", true, true);
+		assertMatch("a*a*a", "aaa", true);
 	}
 
 	@Test
 	public void testManySolutionsCase1() throws Exception {
-		assertMatch("a*a*a", "aaaa", true, true);
+		assertMatch("a*a*a", "aaaa", true);
 	}
 
 	@Test
 	public void testManySolutionsCase2() throws Exception {
-		assertMatch("a*a*a", "ababa", true, true);
+		assertMatch("a*a*a", "ababa", true);
 	}
 
 	@Test
 	public void testManySolutionsCase3() throws Exception {
-		assertMatch("a*a*a", "aaaaaaaa", true, true);
+		assertMatch("a*a*a", "aaaaaaaa", true);
 	}
 
 	@Test
 	public void testManySolutionsCase4() throws Exception {
-		assertMatch("a*a*a", "aaaaaaab", false, true);
+		assertMatch("a*a*a", "aaaaaaab", false);
 	}
 
 	@Test
 	public void testVerySimpleGroupCase0() throws Exception {
-		assertMatch("[ab]", "a", true, false);
+		assertMatch("[ab]", "a", true);
 	}
 
 	@Test
 	public void testVerySimpleGroupCase1() throws Exception {
-		assertMatch("[ab]", "b", true, false);
+		assertMatch("[ab]", "b", true);
 	}
 
 	@Test
 	public void testVerySimpleGroupCase2() throws Exception {
-		assertMatch("[ab]", "ab", false, false);
+		assertMatch("[ab]", "ab", false);
 	}
 
 	@Test
 	public void testVerySimpleGroupRangeCase0() throws Exception {
-		assertMatch("[b-d]", "a", false, false);
+		assertMatch("[b-d]", "a", false);
 	}
 
 	@Test
 	public void testVerySimpleGroupRangeCase1() throws Exception {
-		assertMatch("[b-d]", "b", true, false);
+		assertMatch("[b-d]", "b", true);
 	}
 
 	@Test
 	public void testVerySimpleGroupRangeCase2() throws Exception {
-		assertMatch("[b-d]", "c", true, false);
+		assertMatch("[b-d]", "c", true);
 	}
 
 	@Test
 	public void testVerySimpleGroupRangeCase3() throws Exception {
-		assertMatch("[b-d]", "d", true, false);
+		assertMatch("[b-d]", "d", true);
 	}
 
 	@Test
 	public void testVerySimpleGroupRangeCase4() throws Exception {
-		assertMatch("[b-d]", "e", false, false);
+		assertMatch("[b-d]", "e", false);
 	}
 
 	@Test
 	public void testVerySimpleGroupRangeCase5() throws Exception {
-		assertMatch("[b-d]", "-", false, false);
+		assertMatch("[b-d]", "-", false);
 	}
 
 	@Test
 	public void testTwoGroupsCase0() throws Exception {
-		assertMatch("[b-d][ab]", "bb", true, false);
+		assertMatch("[b-d][ab]", "bb", true);
 	}
 
 	@Test
 	public void testTwoGroupsCase1() throws Exception {
-		assertMatch("[b-d][ab]", "ca", true, false);
+		assertMatch("[b-d][ab]", "ca", true);
 	}
 
 	@Test
 	public void testTwoGroupsCase2() throws Exception {
-		assertMatch("[b-d][ab]", "fa", false, false);
+		assertMatch("[b-d][ab]", "fa", false);
 	}
 
 	@Test
 	public void testTwoGroupsCase3() throws Exception {
-		assertMatch("[b-d][ab]", "bc", false, false);
+		assertMatch("[b-d][ab]", "bc", false);
 	}
 
 	@Test
 	public void testTwoRangesInOneGroupCase0() throws Exception {
-		assertMatch("[b-ce-e]", "a", false, false);
+		assertMatch("[b-ce-e]", "a", false);
 	}
 
 	@Test
 	public void testTwoRangesInOneGroupCase1() throws Exception {
-		assertMatch("[b-ce-e]", "b", true, false);
+		assertMatch("[b-ce-e]", "b", true);
 	}
 
 	@Test
 	public void testTwoRangesInOneGroupCase2() throws Exception {
-		assertMatch("[b-ce-e]", "c", true, false);
+		assertMatch("[b-ce-e]", "c", true);
 	}
 
 	@Test
 	public void testTwoRangesInOneGroupCase3() throws Exception {
-		assertMatch("[b-ce-e]", "d", false, false);
+		assertMatch("[b-ce-e]", "d", false);
 	}
 
 	@Test
 	public void testTwoRangesInOneGroupCase4() throws Exception {
-		assertMatch("[b-ce-e]", "e", true, false);
+		assertMatch("[b-ce-e]", "e", true);
 	}
 
 	@Test
 	public void testTwoRangesInOneGroupCase5() throws Exception {
-		assertMatch("[b-ce-e]", "f", false, false);
+		assertMatch("[b-ce-e]", "f", false);
 	}
 
 	@Test
 	public void testIncompleteRangesInOneGroupCase0() throws Exception {
-		assertMatch("a[b-]", "ab", true, false);
+		assertMatch("a[b-]", "ab", true);
 	}
 
 	@Test
 	public void testIncompleteRangesInOneGroupCase1() throws Exception {
-		assertMatch("a[b-]", "ac", false, false);
+		assertMatch("a[b-]", "ac", false);
 	}
 
 	@Test
 	public void testIncompleteRangesInOneGroupCase2() throws Exception {
-		assertMatch("a[b-]", "a-", true, false);
+		assertMatch("a[b-]", "a-", true);
 	}
 
 	@Test
 	public void testCombinedRangesInOneGroupCase0() throws Exception {
-		assertMatch("[a-c-e]", "b", true, false);
+		assertMatch("[a-c-e]", "b", true);
 	}
 
 	/**
@@ -331,566 +339,573 @@ public class FileNameMatcherTest {
 	 */
 	@Test
 	public void testCombinedRangesInOneGroupCase1() throws Exception {
-		assertMatch("[a-c-e]", "d", false, false);
+		assertMatch("[a-c-e]", "d", false);
 	}
 
 	@Test
 	public void testCombinedRangesInOneGroupCase2() throws Exception {
-		assertMatch("[a-c-e]", "e", true, false);
+		assertMatch("[a-c-e]", "e", true);
 	}
 
 	@Test
 	public void testInversedGroupCase0() throws Exception {
-		assertMatch("[!b-c]", "a", true, false);
+		assertMatch("[!b-c]", "a", true);
 	}
 
 	@Test
 	public void testInversedGroupCase1() throws Exception {
-		assertMatch("[!b-c]", "b", false, false);
+		assertMatch("[!b-c]", "b", false);
 	}
 
 	@Test
 	public void testInversedGroupCase2() throws Exception {
-		assertMatch("[!b-c]", "c", false, false);
+		assertMatch("[!b-c]", "c", false);
 	}
 
 	@Test
 	public void testInversedGroupCase3() throws Exception {
-		assertMatch("[!b-c]", "d", true, false);
+		assertMatch("[!b-c]", "d", true);
 	}
 
 	@Test
 	public void testAlphaGroupCase0() throws Exception {
-		assertMatch("[[:alpha:]]", "d", true, false);
+		assertMatch("[[:alpha:]]", "d", true);
 	}
 
 	@Test
 	public void testAlphaGroupCase1() throws Exception {
-		assertMatch("[[:alpha:]]", ":", false, false);
+		assertMatch("[[:alpha:]]", ":", false);
 	}
 
 	@Test
 	public void testAlphaGroupCase2() throws Exception {
 		// \u00f6 = 'o' with dots on it
-		assertMatch("[[:alpha:]]", "\u00f6", true, false);
+		assertMatch("[[:alpha:]]", "\u00f6", true);
 	}
 
 	@Test
 	public void test2AlphaGroupsCase0() throws Exception {
 		// \u00f6 = 'o' with dots on it
-		assertMatch("[[:alpha:]][[:alpha:]]", "a\u00f6", true, false);
-		assertMatch("[[:alpha:]][[:alpha:]]", "a1", false, false);
+		assertMatch("[[:alpha:]][[:alpha:]]", "a\u00f6", true);
+		assertMatch("[[:alpha:]][[:alpha:]]", "a1", false);
 	}
 
 	@Test
 	public void testAlnumGroupCase0() throws Exception {
-		assertMatch("[[:alnum:]]", "a", true, false);
+		assertMatch("[[:alnum:]]", "a", true);
 	}
 
 	@Test
 	public void testAlnumGroupCase1() throws Exception {
-		assertMatch("[[:alnum:]]", "1", true, false);
+		assertMatch("[[:alnum:]]", "1", true);
 	}
 
 	@Test
 	public void testAlnumGroupCase2() throws Exception {
-		assertMatch("[[:alnum:]]", ":", false, false);
+		assertMatch("[[:alnum:]]", ":", false);
 	}
 
 	@Test
 	public void testBlankGroupCase0() throws Exception {
-		assertMatch("[[:blank:]]", " ", true, false);
+		assertMatch("[[:blank:]]", " ", true);
 	}
 
 	@Test
 	public void testBlankGroupCase1() throws Exception {
-		assertMatch("[[:blank:]]", "\t", true, false);
+		assertMatch("[[:blank:]]", "\t", true);
 	}
 
 	@Test
 	public void testBlankGroupCase2() throws Exception {
-		assertMatch("[[:blank:]]", "\r", false, false);
+		assertMatch("[[:blank:]]", "\r", false);
 	}
 
 	@Test
 	public void testBlankGroupCase3() throws Exception {
-		assertMatch("[[:blank:]]", "\n", false, false);
+		assertMatch("[[:blank:]]", "\n", false);
 	}
 
 	@Test
 	public void testBlankGroupCase4() throws Exception {
-		assertMatch("[[:blank:]]", "a", false, false);
+		assertMatch("[[:blank:]]", "a", false);
 	}
 
 	@Test
 	public void testCntrlGroupCase0() throws Exception {
-		assertMatch("[[:cntrl:]]", "a", false, false);
+		assertMatch("[[:cntrl:]]", "a", false);
 	}
 
 	@Test
 	public void testCntrlGroupCase1() throws Exception {
-		assertMatch("[[:cntrl:]]", String.valueOf((char) 7), true, false);
+		assertMatch("[[:cntrl:]]", String.valueOf((char) 7), true);
 	}
 
 	@Test
 	public void testDigitGroupCase0() throws Exception {
-		assertMatch("[[:digit:]]", "0", true, false);
+		assertMatch("[[:digit:]]", "0", true);
 	}
 
 	@Test
 	public void testDigitGroupCase1() throws Exception {
-		assertMatch("[[:digit:]]", "5", true, false);
+		assertMatch("[[:digit:]]", "5", true);
 	}
 
 	@Test
 	public void testDigitGroupCase2() throws Exception {
-		assertMatch("[[:digit:]]", "9", true, false);
+		assertMatch("[[:digit:]]", "9", true);
 	}
 
 	@Test
 	public void testDigitGroupCase3() throws Exception {
 		// \u06f9 = EXTENDED ARABIC-INDIC DIGIT NINE
-		assertMatch("[[:digit:]]", "\u06f9", true, false);
+		assertMatch("[[:digit:]]", "\u06f9", true);
 	}
 
 	@Test
 	public void testDigitGroupCase4() throws Exception {
-		assertMatch("[[:digit:]]", "a", false, false);
+		assertMatch("[[:digit:]]", "a", false);
 	}
 
 	@Test
 	public void testDigitGroupCase5() throws Exception {
-		assertMatch("[[:digit:]]", "]", false, false);
+		assertMatch("[[:digit:]]", "]", false);
 	}
 
 	@Test
 	public void testGraphGroupCase0() throws Exception {
-		assertMatch("[[:graph:]]", "]", true, false);
+		assertMatch("[[:graph:]]", "]", true);
 	}
 
 	@Test
 	public void testGraphGroupCase1() throws Exception {
-		assertMatch("[[:graph:]]", "a", true, false);
+		assertMatch("[[:graph:]]", "a", true);
 	}
 
 	@Test
 	public void testGraphGroupCase2() throws Exception {
-		assertMatch("[[:graph:]]", ".", true, false);
+		assertMatch("[[:graph:]]", ".", true);
 	}
 
 	@Test
 	public void testGraphGroupCase3() throws Exception {
-		assertMatch("[[:graph:]]", "0", true, false);
+		assertMatch("[[:graph:]]", "0", true);
 	}
 
 	@Test
 	public void testGraphGroupCase4() throws Exception {
-		assertMatch("[[:graph:]]", " ", false, false);
+		assertMatch("[[:graph:]]", " ", false);
 	}
 
 	@Test
 	public void testGraphGroupCase5() throws Exception {
 		// \u00f6 = 'o' with dots on it
-		assertMatch("[[:graph:]]", "\u00f6", true, false);
+		assertMatch("[[:graph:]]", "\u00f6", true);
 	}
 
 	@Test
 	public void testLowerGroupCase0() throws Exception {
-		assertMatch("[[:lower:]]", "a", true, false);
+		assertMatch("[[:lower:]]", "a", true);
 	}
 
 	@Test
 	public void testLowerGroupCase1() throws Exception {
-		assertMatch("[[:lower:]]", "h", true, false);
+		assertMatch("[[:lower:]]", "h", true);
 	}
 
 	@Test
 	public void testLowerGroupCase2() throws Exception {
-		assertMatch("[[:lower:]]", "A", false, false);
+		assertMatch("[[:lower:]]", "A", false);
 	}
 
 	@Test
 	public void testLowerGroupCase3() throws Exception {
-		assertMatch("[[:lower:]]", "H", false, false);
+		assertMatch("[[:lower:]]", "H", false);
 	}
 
 	@Test
 	public void testLowerGroupCase4() throws Exception {
 		// \u00e4 = small 'a' with dots on it
-		assertMatch("[[:lower:]]", "\u00e4", true, false);
+		assertMatch("[[:lower:]]", "\u00e4", true);
 	}
 
 	@Test
 	public void testLowerGroupCase5() throws Exception {
-		assertMatch("[[:lower:]]", ".", false, false);
+		assertMatch("[[:lower:]]", ".", false);
 	}
 
 	@Test
 	public void testPrintGroupCase0() throws Exception {
-		assertMatch("[[:print:]]", "]", true, false);
+		assertMatch("[[:print:]]", "]", true);
 	}
 
 	@Test
 	public void testPrintGroupCase1() throws Exception {
-		assertMatch("[[:print:]]", "a", true, false);
+		assertMatch("[[:print:]]", "a", true);
 	}
 
 	@Test
 	public void testPrintGroupCase2() throws Exception {
-		assertMatch("[[:print:]]", ".", true, false);
+		assertMatch("[[:print:]]", ".", true);
 	}
 
 	@Test
 	public void testPrintGroupCase3() throws Exception {
-		assertMatch("[[:print:]]", "0", true, false);
+		assertMatch("[[:print:]]", "0", true);
 	}
 
 	@Test
 	public void testPrintGroupCase4() throws Exception {
-		assertMatch("[[:print:]]", " ", true, false);
+		assertMatch("[[:print:]]", " ", true);
 	}
 
 	@Test
 	public void testPrintGroupCase5() throws Exception {
 		// \u00f6 = 'o' with dots on it
-		assertMatch("[[:print:]]", "\u00f6", true, false);
+		assertMatch("[[:print:]]", "\u00f6", true);
 	}
 
 	@Test
 	public void testPunctGroupCase0() throws Exception {
-		assertMatch("[[:punct:]]", ".", true, false);
+		assertMatch("[[:punct:]]", ".", true);
 	}
 
 	@Test
 	public void testPunctGroupCase1() throws Exception {
-		assertMatch("[[:punct:]]", "@", true, false);
+		assertMatch("[[:punct:]]", "@", true);
 	}
 
 	@Test
 	public void testPunctGroupCase2() throws Exception {
-		assertMatch("[[:punct:]]", " ", false, false);
+		assertMatch("[[:punct:]]", " ", false);
 	}
 
 	@Test
 	public void testPunctGroupCase3() throws Exception {
-		assertMatch("[[:punct:]]", "a", false, false);
+		assertMatch("[[:punct:]]", "a", false);
 	}
 
 	@Test
 	public void testSpaceGroupCase0() throws Exception {
-		assertMatch("[[:space:]]", " ", true, false);
+		assertMatch("[[:space:]]", " ", true);
 	}
 
 	@Test
 	public void testSpaceGroupCase1() throws Exception {
-		assertMatch("[[:space:]]", "\t", true, false);
+		assertMatch("[[:space:]]", "\t", true);
 	}
 
 	@Test
 	public void testSpaceGroupCase2() throws Exception {
-		assertMatch("[[:space:]]", "\r", true, false);
+		assertMatch("[[:space:]]", "\r", true);
 	}
 
 	@Test
 	public void testSpaceGroupCase3() throws Exception {
-		assertMatch("[[:space:]]", "\n", true, false);
+		assertMatch("[[:space:]]", "\n", true);
 	}
 
 	@Test
 	public void testSpaceGroupCase4() throws Exception {
-		assertMatch("[[:space:]]", "a", false, false);
+		assertMatch("[[:space:]]", "a", false);
 	}
 
 	@Test
 	public void testUpperGroupCase0() throws Exception {
-		assertMatch("[[:upper:]]", "a", false, false);
+		assertMatch("[[:upper:]]", "a", false);
 	}
 
 	@Test
 	public void testUpperGroupCase1() throws Exception {
-		assertMatch("[[:upper:]]", "h", false, false);
+		assertMatch("[[:upper:]]", "h", false);
 	}
 
 	@Test
 	public void testUpperGroupCase2() throws Exception {
-		assertMatch("[[:upper:]]", "A", true, false);
+		assertMatch("[[:upper:]]", "A", true);
 	}
 
 	@Test
 	public void testUpperGroupCase3() throws Exception {
-		assertMatch("[[:upper:]]", "H", true, false);
+		assertMatch("[[:upper:]]", "H", true);
 	}
 
 	@Test
 	public void testUpperGroupCase4() throws Exception {
 		// \u00c4 = 'A' with dots on it
-		assertMatch("[[:upper:]]", "\u00c4", true, false);
+		assertMatch("[[:upper:]]", "\u00c4", true);
 	}
 
 	@Test
 	public void testUpperGroupCase5() throws Exception {
-		assertMatch("[[:upper:]]", ".", false, false);
+		assertMatch("[[:upper:]]", ".", false);
 	}
 
 	@Test
 	public void testXDigitGroupCase0() throws Exception {
-		assertMatch("[[:xdigit:]]", "a", true, false);
+		assertMatch("[[:xdigit:]]", "a", true);
 	}
 
 	@Test
 	public void testXDigitGroupCase1() throws Exception {
-		assertMatch("[[:xdigit:]]", "d", true, false);
+		assertMatch("[[:xdigit:]]", "d", true);
 	}
 
 	@Test
 	public void testXDigitGroupCase2() throws Exception {
-		assertMatch("[[:xdigit:]]", "f", true, false);
+		assertMatch("[[:xdigit:]]", "f", true);
 	}
 
 	@Test
 	public void testXDigitGroupCase3() throws Exception {
-		assertMatch("[[:xdigit:]]", "0", true, false);
+		assertMatch("[[:xdigit:]]", "0", true);
 	}
 
 	@Test
 	public void testXDigitGroupCase4() throws Exception {
-		assertMatch("[[:xdigit:]]", "5", true, false);
+		assertMatch("[[:xdigit:]]", "5", true);
 	}
 
 	@Test
 	public void testXDigitGroupCase5() throws Exception {
-		assertMatch("[[:xdigit:]]", "9", true, false);
+		assertMatch("[[:xdigit:]]", "9", true);
 	}
 
 	@Test
 	public void testXDigitGroupCase6() throws Exception {
-		assertMatch("[[:xdigit:]]", "۹", false, false);
+		assertMatch("[[:xdigit:]]", "۹", false);
 	}
 
 	@Test
 	public void testXDigitGroupCase7() throws Exception {
-		assertMatch("[[:xdigit:]]", ".", false, false);
+		assertMatch("[[:xdigit:]]", ".", false);
 	}
 
 	@Test
 	public void testWordroupCase0() throws Exception {
-		assertMatch("[[:word:]]", "g", true, false);
+		assertMatch("[[:word:]]", "g", true);
 	}
 
 	@Test
 	public void testWordroupCase1() throws Exception {
 		// \u00f6 = 'o' with dots on it
-		assertMatch("[[:word:]]", "\u00f6", true, false);
+		assertMatch("[[:word:]]", "\u00f6", true);
 	}
 
 	@Test
 	public void testWordroupCase2() throws Exception {
-		assertMatch("[[:word:]]", "5", true, false);
+		assertMatch("[[:word:]]", "5", true);
 	}
 
 	@Test
 	public void testWordroupCase3() throws Exception {
-		assertMatch("[[:word:]]", "_", true, false);
+		assertMatch("[[:word:]]", "_", true);
 	}
 
 	@Test
 	public void testWordroupCase4() throws Exception {
-		assertMatch("[[:word:]]", " ", false, false);
+		assertMatch("[[:word:]]", " ", false);
 	}
 
 	@Test
 	public void testWordroupCase5() throws Exception {
-		assertMatch("[[:word:]]", ".", false, false);
+		assertMatch("[[:word:]]", ".", false);
 	}
 
 	@Test
 	public void testMixedGroupCase0() throws Exception {
-		assertMatch("[A[:lower:]C3-5]", "A", true, false);
+		assertMatch("[A[:lower:]C3-5]", "A", true);
 	}
 
 	@Test
 	public void testMixedGroupCase1() throws Exception {
-		assertMatch("[A[:lower:]C3-5]", "C", true, false);
+		assertMatch("[A[:lower:]C3-5]", "C", true);
 	}
 
 	@Test
 	public void testMixedGroupCase2() throws Exception {
-		assertMatch("[A[:lower:]C3-5]", "e", true, false);
+		assertMatch("[A[:lower:]C3-5]", "e", true);
 	}
 
 	@Test
 	public void testMixedGroupCase3() throws Exception {
-		assertMatch("[A[:lower:]C3-5]", "3", true, false);
+		assertMatch("[A[:lower:]C3-5]", "3", true);
 	}
 
 	@Test
 	public void testMixedGroupCase4() throws Exception {
-		assertMatch("[A[:lower:]C3-5]", "4", true, false);
+		assertMatch("[A[:lower:]C3-5]", "4", true);
 	}
 
 	@Test
 	public void testMixedGroupCase5() throws Exception {
-		assertMatch("[A[:lower:]C3-5]", "5", true, false);
+		assertMatch("[A[:lower:]C3-5]", "5", true);
 	}
 
 	@Test
 	public void testMixedGroupCase6() throws Exception {
-		assertMatch("[A[:lower:]C3-5]", "B", false, false);
+		assertMatch("[A[:lower:]C3-5]", "B", false);
 	}
 
 	@Test
 	public void testMixedGroupCase7() throws Exception {
-		assertMatch("[A[:lower:]C3-5]", "2", false, false);
+		assertMatch("[A[:lower:]C3-5]", "2", false);
 	}
 
 	@Test
 	public void testMixedGroupCase8() throws Exception {
-		assertMatch("[A[:lower:]C3-5]", "6", false, false);
+		assertMatch("[A[:lower:]C3-5]", "6", false);
 	}
 
 	@Test
 	public void testMixedGroupCase9() throws Exception {
-		assertMatch("[A[:lower:]C3-5]", ".", false, false);
+		assertMatch("[A[:lower:]C3-5]", ".", false);
 	}
 
 	@Test
 	public void testSpecialGroupCase0() throws Exception {
-		assertMatch("[[]", "[", true, false);
+		assertMatch("[[]", "[", true);
 	}
 
 	@Test
 	public void testSpecialGroupCase1() throws Exception {
-		assertMatch("[]]", "]", true, false);
+		assertMatch("[]]", "]", true);
 	}
 
 	@Test
 	public void testSpecialGroupCase2() throws Exception {
-		assertMatch("[]a]", "]", true, false);
+		assertMatch("[]a]", "]", true);
 	}
 
 	@Test
 	public void testSpecialGroupCase3() throws Exception {
-		assertMatch("[a[]", "[", true, false);
+		assertMatch("[a[]", "[", true);
 	}
 
 	@Test
 	public void testSpecialGroupCase4() throws Exception {
-		assertMatch("[a[]", "a", true, false);
+		assertMatch("[a[]", "a", true);
 	}
 
 	@Test
 	public void testSpecialGroupCase5() throws Exception {
-		assertMatch("[!]]", "]", false, false);
+		assertMatch("[!]]", "]", false);
 	}
 
 	@Test
 	public void testSpecialGroupCase6() throws Exception {
-		assertMatch("[!]]", "x", true, false);
+		assertMatch("[!]]", "x", true);
 	}
 
 	@Test
 	public void testSpecialGroupCase7() throws Exception {
-		assertMatch("[:]]", ":]", true, false);
+		assertMatch("[:]]", ":]", true);
 	}
 
 	@Test
 	public void testSpecialGroupCase8() throws Exception {
-		assertMatch("[:]]", ":", false, true);
+		assertMatch("[:]]", ":", false);
 	}
 
 	@Test
 	public void testSpecialGroupCase9() throws Exception {
-		try {
-			assertMatch("[[:]", ":", true, true);
-			fail("InvalidPatternException expected");
-		} catch (InvalidPatternException e) {
-			// expected
+		if(useJGitRule){
+			System.err.println("IgnoreRule can't understand [[:], skipping");
 		}
+		Boolean assume = useJGitRule;
+		// Second bracket is threated literally, so both [ and : should match
+		assertMatch("[[:]", ":", true, assume);
+		assertMatch("[[:]", "[", true, assume);
 	}
 
 	@Test
 	public void testUnsupportedGroupCase0() throws Exception {
-		try {
-			assertMatch("[[=a=]]", "b", false, false);
-			fail("InvalidPatternException expected");
-		} catch (InvalidPatternException e) {
-			assertTrue(e.getMessage().contains("[=a=]"));
-		}
+		assertMatch("[[=a=]]", "a", false);
+		assertMatch("[[=a=]]", "=", false);
+		assertMatch("[=a=]", "a", true);
+		assertMatch("[=a=]", "=", true);
+	}
+
+	@Test
+	public void testUnsupportedGroupCase01() throws Exception {
+		assertMatch("[.a.]*[.a.]", "aha", true);
 	}
 
 	@Test
 	public void testUnsupportedGroupCase1() throws Exception {
-		try {
-			assertMatch("[[.a.]]", "b", false, false);
-			fail("InvalidPatternException expected");
-		} catch (InvalidPatternException e) {
-			assertTrue(e.getMessage().contains("[.a.]"));
-		}
+		assertMatch("[[.a.]]", "a", false);
+		assertMatch("[[.a.]]", ".", false);
+		assertMatch("[.a.]", "a", true);
+		assertMatch("[.a.]", ".", true);
 	}
 
 	@Test
 	public void testEscapedBracket1() throws Exception {
-		assertMatch("\\[", "[", true, false);
+		assertMatch("\\[", "[", true);
 	}
 
 	@Test
 	public void testEscapedBracket2() throws Exception {
-		assertMatch("\\[[a]", "[", false, true);
+		assertMatch("\\[[a]", "[", false);
 	}
 
 	@Test
 	public void testEscapedBracket3() throws Exception {
-		assertMatch("\\[[a]", "a", false, false);
+		assertMatch("\\[[a]", "a", false);
 	}
 
 	@Test
 	public void testEscapedBracket4() throws Exception {
-		assertMatch("\\[[a]", "[a", true, false);
+		assertMatch("\\[[a]", "[a", true);
 	}
 
 	@Test
 	public void testEscapedBracket5() throws Exception {
-		assertMatch("[a\\]]", "]", true, false);
+		assertMatch("[a\\]]", "]", true);
 	}
 
 	@Test
 	public void testEscapedBracket6() throws Exception {
-		assertMatch("[a\\]]", "a", true, false);
+		assertMatch("[a\\]]", "a", true);
 	}
 
 	@Test
 	public void testEscapedBackslash() throws Exception {
-		assertMatch("a\\\\b", "a\\b", true, false);
+		if(useJGitRule){
+			System.err.println("IgnoreRule can't understand escaped backslashes, skipping");
+		}
+		Boolean assume = useJGitRule;
+		// In Git CLI a\\b matches a\b file
+		assertMatch("a\\\\b", "a\\b", true, assume);
 	}
 
 	@Test
 	public void testMultipleEscapedCharacters1() throws Exception {
-		assertMatch("\\]a?c\\*\\[d\\?\\]", "]abc*[d?]", true, false);
+		assertMatch("\\]a?c\\*\\[d\\?\\]", "]abc*[d?]", true);
 	}
 
 	@Test
 	public void testFilePathSimpleCase() throws Exception {
-		assertFileNameMatch("a/b", "a/b", '/', true, false);
+		assertFileNameMatch("a/b", "a/b", '/', true);
 	}
 
 	@Test
 	public void testFilePathCase0() throws Exception {
-		assertFileNameMatch("a*b", "a/b", '/', false, false);
+		assertFileNameMatch("a*b", "a/b", '/', false);
 	}
 
 	@Test
 	public void testFilePathCase1() throws Exception {
-		assertFileNameMatch("a?b", "a/b", '/', false, false);
+		assertFileNameMatch("a?b", "a/b", '/', false);
 	}
 
 	@Test
 	public void testFilePathCase2() throws Exception {
-		assertFileNameMatch("a*b", "a\\b", '\\', false, false);
+		assertFileNameMatch("a*b", "a\\b", '\\', true);
 	}
 
 	@Test
 	public void testFilePathCase3() throws Exception {
-		assertFileNameMatch("a?b", "a\\b", '\\', false, false);
+		assertFileNameMatch("a?b", "a\\b", '\\', true);
 	}
 
 

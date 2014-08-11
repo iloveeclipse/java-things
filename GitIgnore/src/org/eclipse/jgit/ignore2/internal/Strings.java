@@ -241,8 +241,7 @@ public class Strings {
 				}
 				char lookBehind = lookBehind(sb);
 				if((lookBehind == '[' && !ignoreLastBracket)
-						|| lookBehind == '^'
-						|| (!in_char_class && lookAhead(pattern, i) == ']')) {
+						|| lookBehind == '^') {
 					sb.append('\\');
 					sb.append(']');
 					ignoreLastBracket = true;

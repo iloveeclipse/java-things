@@ -6,6 +6,5 @@ Bundle-Version: 1.0.0.qualifier
 Require-Bundle: org.junit4;resolution:=optional,
  org.eclipse.jgit;bundle-version="3.5.0";resolution:=optional
 Export-Package: org.eclipse.jgit.fnmatch2,
- org.eclipse.jgit.ignore2,
- org.eclipse.jgit.ignore2.tests
+ org.eclipse.jgit.ignore2
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

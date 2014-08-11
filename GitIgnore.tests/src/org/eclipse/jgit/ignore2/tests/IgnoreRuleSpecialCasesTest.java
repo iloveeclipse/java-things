@@ -60,7 +60,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 @SuppressWarnings("boxing")
 @RunWith(Parameterized.class)
-public class FileNameMatcherTest {
+public class IgnoreRuleSpecialCasesTest {
 
 	@Parameters(name = "JGit? {0}")
 	public static Iterable<Boolean[]> data(){

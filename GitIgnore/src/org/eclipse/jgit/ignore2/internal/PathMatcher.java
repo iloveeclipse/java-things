@@ -6,9 +6,9 @@
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributor:  Andrey Loskutov - initial API and implementation
  *******************************************************************************/
-package org.eclipse.jgit.fnmatch2;
+package org.eclipse.jgit.ignore2.internal;
 
-import static org.eclipse.jgit.fnmatch2.Strings.*;
+import static org.eclipse.jgit.ignore2.internal.Strings.*;
 
 import java.util.*;
 

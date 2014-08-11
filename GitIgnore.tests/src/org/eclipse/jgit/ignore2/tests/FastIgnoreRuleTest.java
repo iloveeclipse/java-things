@@ -9,7 +9,7 @@
 package org.eclipse.jgit.ignore2.tests;
 
 
-import static org.eclipse.jgit.fnmatch2.Strings.split;
+import static org.eclipse.jgit.ignore2.internal.Strings.split;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 

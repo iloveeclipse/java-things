@@ -1,4 +1,4 @@
-package org.eclipse.jgit.fnmatch2;
+package org.eclipse.jgit.ignore2.internal;
 
 import static java.lang.Character.isLetter;
 

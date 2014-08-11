@@ -8,11 +8,12 @@
  *******************************************************************************/
 package org.eclipse.jgit.ignore2;
 
-import static org.eclipse.jgit.fnmatch2.Strings.stripTrailing;
+import static org.eclipse.jgit.ignore2.internal.Strings.stripTrailing;
 
 import org.eclipse.jgit.errors.InvalidPatternException;
-import org.eclipse.jgit.fnmatch2.*;
 import org.eclipse.jgit.ignore.IgnoreRule;
+import org.eclipse.jgit.ignore2.internal.IMatcher;
+import org.eclipse.jgit.ignore2.internal.PathMatcher;
 
 /**
  * "Fast" git ignore rule implementation (compared with {@link IgnoreRule}).

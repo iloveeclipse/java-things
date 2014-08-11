@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributor:  Andrey Loskutov - initial API and implementation
  *******************************************************************************/
-package org.eclipse.jgit.fnmatch2;
+package org.eclipse.jgit.ignore2.internal;
 
 /**
  * Wildmatch matcher for "double star" (<code>**</code>) pattern only. This

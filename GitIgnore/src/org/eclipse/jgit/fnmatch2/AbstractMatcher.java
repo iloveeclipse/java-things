@@ -12,6 +12,8 @@ package org.eclipse.jgit.fnmatch2;
  * Base class for default methods as {@link #toString()} and such.
  * <p>
  * This class is immutable and thread safe.
+ *
+ * @since 3.5
  */
 public abstract class AbstractMatcher implements IMatcher {
 

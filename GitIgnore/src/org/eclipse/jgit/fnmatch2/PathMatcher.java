@@ -46,12 +46,13 @@ public class PathMatcher extends AbstractMatcher {
 	}
 
 	/**
-	 *
+	 * 
 	 * @param pattern
-	 * @param pathSeparator if this parameter isn't null then this character will not
+	 * @param pathSeparator
+	 *            if this parameter isn't null then this character will not
 	 *            match at wildcards(* and ? are wildcards).
 	 * @param dirOnly
-	 * @return
+	 * @return never null
 	 * @throws InvalidPatternException
 	 */
 	public static IMatcher createPathMatcher(String pattern, Character pathSeparator, boolean dirOnly) throws InvalidPatternException {
@@ -75,16 +76,24 @@ public class PathMatcher extends AbstractMatcher {
 		return new NameMatcher(segment, pathSeparator, dirOnly);
 	}
 
+	/**
+	 * Creates file name matcher
+	 *
+	 * @param segment
+	 *            pattern
+	 * @param pathSeparator
+	 *            path separator or null to use default
+	 * @return non null file name matcher
+	 * @throws InvalidPatternException
+	 */
 	public static IMatcher createNameMatcher(String segment, Character pathSeparator) throws InvalidPatternException {
 		return createNameMatcher0(segment, pathSeparator, false);
 	}
 
-	@Override
 	public boolean matches(String path) {
 		return matches(path, 0, path.length());
 	}
 
-	@Override
 	public boolean matches(String segment, int startIncl, int endExcl) {
 		return iterate(segment, startIncl, endExcl);
 	}

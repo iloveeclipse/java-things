@@ -54,17 +54,14 @@ public class WildCardMatcher extends NameMatcher {
 			}
 		}
 
-		@Override
 		public final int length() {
 			return length;
 		}
 
-		@Override
 		public final char charAt(int index) {
 			return parent.charAt(startIncl + index);
 		}
 
-		@Override
 		public final CharSequence subSequence(int start, int end) {
 			return new SubString(parent, startIncl + start, startIncl + end);
 		}

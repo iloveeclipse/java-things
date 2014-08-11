@@ -18,6 +18,8 @@ import org.eclipse.jgit.ignore.IgnoreRule;
  * "Fast" git ignore rule implementation (compared with {@link IgnoreRule}).
  * <p>
  * This class is immutable and thread safe.
+ *
+ * @since 3.5
  */
 public class FastIgnoreRule {
 
@@ -41,7 +43,7 @@ public class FastIgnoreRule {
 			throw new IllegalArgumentException("Pattern must be not null!");
 		}
 		pattern = pattern.trim();
-		if(pattern.isEmpty()){
+		if (pattern.length() == 0) {
 			dirOnly = false;
 			inverse = false;
 			this.matcher = NO_MATCH;
@@ -50,7 +52,7 @@ public class FastIgnoreRule {
 		inverse = pattern.charAt(0) == '!';
 		if(inverse){
 			pattern = pattern.substring(1);
-			if(pattern.isEmpty()){
+			if (pattern.length() == 0) {
 				dirOnly = false;
 				this.matcher = NO_MATCH;
 				return;
@@ -63,7 +65,7 @@ public class FastIgnoreRule {
 			dirOnly = pattern.charAt(pattern.length() - 1) == PATH_SEPARATOR;
 			if(dirOnly) {
 				pattern = stripTrailing(pattern, PATH_SEPARATOR);
-				if(pattern.isEmpty()){
+				if (pattern.length() == 0) {
 					this.matcher = NO_MATCH;
 					return;
 				}
@@ -78,12 +80,28 @@ public class FastIgnoreRule {
 		}
 	}
 
+	/**
+	 * Returns true if a match was made. <br>
+	 * This function does NOT return the actual ignore status of the target!
+	 * Please consult {@link #getResult()} for the negation status. The actual
+	 * ignore status may be true or false depending on whether this rule is an
+	 * ignore rule or a negation rule.
+	 *
+	 * @param path
+	 *            Name pattern of the file, relative to the base directory of
+	 *            this rule
+	 * @param directory
+	 *            Whether the target file is a directory or not
+	 * @return True if a match was made. This does not necessarily mean that the
+	 *         target is ignored. Call {@link IgnoreRule#getResult()
+	 *         getResult()} for the result.
+	 */
 	public boolean isMatch(String path, boolean directory) {
 		if(path == null){
 			return false;
 		}
 		path = path.trim();
-		if(path.isEmpty()){
+		if (path.length() == 0) {
 			return false;
 		}
 		boolean match = matcher.matches(path);
@@ -171,12 +189,10 @@ public class FastIgnoreRule {
 
 	static final class NoResultMatcher implements IMatcher {
 
-		@Override
 		public boolean matches(String path) {
 			return false;
 		}
 
-		@Override
 		public boolean matches(String segment, int startIncl, int endExcl) {
 			return false;
 		}

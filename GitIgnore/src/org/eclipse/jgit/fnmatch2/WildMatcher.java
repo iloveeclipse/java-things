@@ -23,12 +23,10 @@ public final class WildMatcher extends AbstractMatcher {
 		super(WILDMATCH, false);
 	}
 
-	@Override
 	public final boolean matches(String path) {
 		return true;
 	}
 
-	@Override
 	public final boolean matches(String segment, int startIncl, int endExcl) {
 		return true;
 	}

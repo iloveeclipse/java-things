@@ -8,8 +8,10 @@ import java.util.regex.Pattern;
 import org.eclipse.jgit.errors.InvalidPatternException;
 
 /**
- * Various {@link String} related utility methods, written mostly to avoid generation of
- * new String objects (e.g. via splitting Strings etc).
+ * Various {@link String} related utility methods, written mostly to avoid
+ * generation of new String objects (e.g. via splitting Strings etc).
+ *
+ * @since 3.5
  */
 public class Strings {
 
@@ -17,6 +19,13 @@ public class Strings {
 		return pathSeparator == null ? '/' : pathSeparator.charValue();
 	}
 
+	/**
+	 * @param pattern
+	 *            non null
+	 * @param c
+	 *            character to remove
+	 * @return new string with all trailing characters removed
+	 */
 	public static String stripTrailing(String pattern, char c) {
 		while(pattern.length() > 0 && pattern.charAt(pattern.length() - 1) == c){
 			pattern = pattern.substring(0, pattern.length() - 1);
@@ -40,6 +49,15 @@ public class Strings {
 		return count;
 	}
 
+	/**
+	 * Splits given string to substrings by given separator
+	 * 
+	 * @param pattern
+	 *            non null
+	 * @param slash
+	 *            separator char
+	 * @return list of substrings
+	 */
 	public static List<String> split(String pattern, char slash){
 		int count = count(pattern, slash, true);
 		if(count < 1){
@@ -112,7 +130,10 @@ public class Strings {
 	 * http://man7.org/linux/man-pages/man7/glob.7.html <li>
 	 * org.eclipse.jgit.fnmatch.FileNameMatcher.java Seems that there are
 	 * various ways to define what "glob" can be.
-	 *
+	 * 
+	 * @param pattern
+	 *            non null pattern
+	 * 
 	 * @return Java regex pattern corresponding to given glob pattern
 	 * @throws InvalidPatternException
 	 */
@@ -272,10 +293,12 @@ public class Strings {
 	}
 
 	/**
-	 * @return zero of the buffer is empty, otherwise the last character from buffer
+	 * @param buffer
+	 * @return zero of the buffer is empty, otherwise the last character from
+	 *         buffer
 	 */
-	private static char lookBehind(StringBuilder sb) {
-		return sb.length() > 0? sb.charAt(sb.length() - 1) : 0;
+	private static char lookBehind(StringBuilder buffer) {
+		return buffer.length() > 0 ? buffer.charAt(buffer.length() - 1) : 0;
 	}
 
 	/**

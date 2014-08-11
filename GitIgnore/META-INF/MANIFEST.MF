@@ -8,4 +8,4 @@ Require-Bundle: org.junit4;resolution:=optional,
 Export-Package: org.eclipse.jgit.fnmatch2,
  org.eclipse.jgit.ignore2,
  org.eclipse.jgit.ignore2.tests
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

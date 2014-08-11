@@ -8,6 +8,11 @@
  *******************************************************************************/
 package org.eclipse.jgit.fnmatch2;
 
+/**
+ * Generic string matcher
+ *
+ * @since 3.5
+ */
 public interface IMatcher {
 
 	/**
@@ -22,7 +27,7 @@ public interface IMatcher {
 	/**
 	 * Matches only part of given string
 	 *
-	 * @param path
+	 * @param segment
 	 *            string which is not null, but might be empty
 	 * @param startIncl
 	 *            start index, inclusive

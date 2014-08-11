@@ -23,7 +23,7 @@ public class NameMatcher extends AbstractMatcher {
 	NameMatcher(String pattern, Character pathSeparator, boolean dirOnly){
 		super(pattern, dirOnly);
 		slash = getPathSeparator(pathSeparator);
-		beginning = pattern.isEmpty()? false : pattern.charAt(0) == slash;
+		beginning = pattern.length() == 0 ? false : pattern.charAt(0) == slash;
 		if(!beginning) {
 			this.subPattern = pattern;
 		} else {
@@ -31,7 +31,6 @@ public class NameMatcher extends AbstractMatcher {
 		}
 	}
 
-	@Override
 	public boolean matches(String path) {
 		int end = 0;
 		int firstChar = 0;
@@ -47,7 +46,6 @@ public class NameMatcher extends AbstractMatcher {
 		return false;
 	}
 
-	@Override
 	public boolean matches(String segment, int startIncl, int endExcl){
 		if(subPattern.length() != (endExcl - startIncl)){
 			return false;

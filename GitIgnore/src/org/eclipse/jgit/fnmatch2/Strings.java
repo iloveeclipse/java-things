@@ -51,7 +51,7 @@ public class Strings {
 
 	/**
 	 * Splits given string to substrings by given separator
-	 * 
+	 *
 	 * @param pattern
 	 *            non null
 	 * @param slash
@@ -61,7 +61,8 @@ public class Strings {
 	public static List<String> split(String pattern, char slash){
 		int count = count(pattern, slash, true);
 		if(count < 1){
-			throw new IllegalStateException("Pattern must have at least two segments: " + pattern);
+			throw new IllegalStateException(
+					"Pattern must have at least two segments: " + pattern); //$NON-NLS-1$
 		}
 		List<String> segments = new ArrayList<String>(count);
 		int right = 0;
@@ -101,46 +102,47 @@ public class Strings {
 
 	final static List<String> POSIX_CHAR_CLASSES = Arrays.asList(
 			//[:alnum:] [:alpha:] [:blank:] [:cntrl:]
-			"alnum",  "alpha",  "blank",  "cntrl",
+			"alnum", "alpha", "blank", "cntrl", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			//[:digit:] [:graph:] [:lower:] [:print:]
-			"digit",  "graph",  "lower",  "print",
+			"digit", "graph", "lower", "print", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			//[:punct:] [:space:] [:upper:] [:xdigit:]
-			"punct",  "space",  "upper",  "xdigit",
+			"punct", "space", "upper", "xdigit", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			//[:word:] XXX I don't see it in http://man7.org/linux/man-pages/man7/glob.7.html
 			// but this was in org.eclipse.jgit.fnmatch.GroupHead.java ???
-			"word"
-			);
-	private static final String DL = "\\p{javaDigit}\\p{javaLetter}";
-	final static List<String> JAVA_CHAR_CLASSES = Arrays.asList(
-			//[:alnum:]      [:alpha:]         [:blank:]         [:cntrl:]
-			"\\p{Alnum}",  "\\p{javaLetter}",  "\\p{Blank}",  "\\p{Cntrl}",
-			//[:digit:]         [:graph:]       [:lower:]         [:print:]
-			"\\p{javaDigit}",  "[\\p{Graph}" + DL + "]",  "\\p{Ll}",  "[\\p{Print}" + DL + "]",
-			//[:punct:]      [:space:]        [:upper:]          [:xdigit:]
-			"\\p{Punct}",  "\\p{Space}",  "\\p{Lu}",  "\\p{XDigit}",
-			"[" + DL + "_]"
+			"word" //$NON-NLS-1$
 			);
 
-	// XXX Collating symbols [.a.] or equivalence class expressions [=a=] are not supported (yet?)
-	// Have no idea if this was simply not implemented in JGit or CLI git don't support this
-	final static Pattern UNSUPPORTED = Pattern.compile("\\[[.=]\\w+[.=]\\]");
+	private static final String DL = "\\p{javaDigit}\\p{javaLetter}"; //$NON-NLS-1$
+	final static List<String> JAVA_CHAR_CLASSES = Arrays.asList(
+			//[:alnum:]      [:alpha:]         [:blank:]         [:cntrl:]
+			"\\p{Alnum}", "\\p{javaLetter}", "\\p{Blank}", "\\p{Cntrl}", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			//[:digit:]         [:graph:]       [:lower:]         [:print:]
+					"\\p{javaDigit}", "[\\p{Graph}" + DL + "]", "\\p{Ll}", "[\\p{Print}" + DL + "]", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+			//[:punct:]      [:space:]        [:upper:]          [:xdigit:]
+					"\\p{Punct}", "\\p{Space}", "\\p{Lu}", "\\p{XDigit}", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+					"[" + DL + "_]" //$NON-NLS-1$ //$NON-NLS-2$
+			);
+
+	// Collating symbols [.a.] or equivalence class expressions [=a=] are not
+	// supported by CLI git (at least not by 1.9.1), but they are not rejected!
+	final static Pattern UNSUPPORTED = Pattern.compile("\\[[.=]\\w+[.=]\\]"); //$NON-NLS-1$
 
 	/**
 	 * Conversion from glob to Java regex following two sources: <li>
 	 * http://man7.org/linux/man-pages/man7/glob.7.html <li>
 	 * org.eclipse.jgit.fnmatch.FileNameMatcher.java Seems that there are
 	 * various ways to define what "glob" can be.
-	 * 
+	 *
 	 * @param pattern
 	 *            non null pattern
-	 * 
+	 *
 	 * @return Java regex pattern corresponding to given glob pattern
 	 * @throws InvalidPatternException
 	 */
 	static Pattern convertGlob(String pattern) throws InvalidPatternException {
-		if(UNSUPPORTED.matcher(pattern).find()){
+		if (UNSUPPORTED.matcher(pattern).find()) {
 			throw new InvalidPatternException(
-					"Collating symbols [.a.] or equivalence class expressions [=a=] are not supported yet",
+					"Collating symbols [.a.] or equivalence class expressions [=a=] are not supported yet", //$NON-NLS-1$
 					pattern);
 		}
 

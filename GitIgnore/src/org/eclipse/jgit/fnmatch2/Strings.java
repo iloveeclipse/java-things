@@ -123,9 +123,10 @@ public class Strings {
 					"[" + DL + "_]" //$NON-NLS-1$ //$NON-NLS-2$
 			);
 
-	// Collating symbols [.a.] or equivalence class expressions [=a=] are not
-	// supported by CLI git (at least not by 1.9.1), but they are not rejected!
-	final static Pattern UNSUPPORTED = Pattern.compile("\\[[.=]\\w+[.=]\\]"); //$NON-NLS-1$
+	// Collating symbols [[.a.]] or equivalence class expressions [[=a=]] are
+	// not supported by CLI git (at least not by 1.9.1)
+	final static Pattern UNSUPPORTED = Pattern
+			.compile("\\[\\[[.=]\\w+[.=]\\]\\]"); //$NON-NLS-1$
 
 	/**
 	 * Conversion from glob to Java regex following two sources: <li>
@@ -142,7 +143,7 @@ public class Strings {
 	static Pattern convertGlob(String pattern) throws InvalidPatternException {
 		if (UNSUPPORTED.matcher(pattern).find()) {
 			throw new InvalidPatternException(
-					"Collating symbols [.a.] or equivalence class expressions [=a=] are not supported yet", //$NON-NLS-1$
+					"Collating symbols [[.a.]] or equivalence class expressions [[=a=]] are not supported", //$NON-NLS-1$
 					pattern);
 		}
 
@@ -168,7 +169,7 @@ public class Strings {
 				break;
 
 			case '.':
-				if(seenEscape || in_brackets > 0) {
+				if (seenEscape) {
 					sb.append(c);
 				} else {
 					sb.append('\\').append('.');
@@ -289,7 +290,7 @@ public class Strings {
 		} // end for
 
 		if(in_brackets > 0){
-			throw new InvalidPatternException("Not closed bracket?", pattern);
+			throw new InvalidPatternException("Not closed bracket?", pattern); //$NON-NLS-1$
 		}
 		return Pattern.compile(sb.toString());
 	}

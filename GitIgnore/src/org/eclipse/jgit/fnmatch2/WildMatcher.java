@@ -25,11 +25,12 @@ public final class WildMatcher extends AbstractMatcher {
 		super(WILDMATCH, false);
 	}
 
-	public final boolean matches(String path) {
+	public final boolean matches(String path, boolean assumeDirectory) {
 		return true;
 	}
 
-	public final boolean matches(String segment, int startIncl, int endExcl) {
+	public final boolean matches(String segment, int startIncl, int endExcl,
+			boolean assumeDirectory) {
 		return true;
 	}
 

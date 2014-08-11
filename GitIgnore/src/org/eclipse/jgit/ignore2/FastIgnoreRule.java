@@ -104,7 +104,7 @@ public class FastIgnoreRule {
 		if (path.length() == 0) {
 			return false;
 		}
-		boolean match = matcher.matches(path);
+		boolean match = matcher.matches(path, directory);
 		return match;
 	}
 
@@ -189,11 +189,12 @@ public class FastIgnoreRule {
 
 	static final class NoResultMatcher implements IMatcher {
 
-		public boolean matches(String path) {
+		public boolean matches(String path, boolean assumeDirectory) {
 			return false;
 		}
 
-		public boolean matches(String segment, int startIncl, int endExcl) {
+		public boolean matches(String segment, int startIncl, int endExcl,
+				boolean assumeDirectory) {
 			return false;
 		}
 	}

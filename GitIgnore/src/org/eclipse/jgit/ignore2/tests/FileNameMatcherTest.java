@@ -79,7 +79,8 @@ public class FileNameMatcherTest {
 			assertEquals(appendCanMatchExpected, matcher.canAppendMatch());
 		} else {
 			IMatcher matcher = PathMatcher.createNameMatcher(pattern, null);
-			assertEquals(matchExpected, matcher.matches(input));
+			boolean assumeDir = input.endsWith("/");
+			assertEquals(matchExpected, matcher.matches(input, assumeDir));
 		}
 	}
 
@@ -96,7 +97,8 @@ public class FileNameMatcherTest {
 			assertEquals(appendCanMatchExpected, matcher.canAppendMatch());
 		} else {
 			IMatcher matcher = PathMatcher.createNameMatcher(pattern, Character.valueOf(excludedCharacter));
-			assertEquals(matchExpected, matcher.matches(input));
+			boolean assumeDir = input.endsWith("/");
+			assertEquals(matchExpected, matcher.matches(input, assumeDir));
 		}
 	}
 

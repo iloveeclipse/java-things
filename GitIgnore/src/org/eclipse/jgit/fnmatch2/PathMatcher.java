@@ -92,15 +92,17 @@ public class PathMatcher extends AbstractMatcher {
 		return createNameMatcher0(segment, pathSeparator, false);
 	}
 
-	public boolean matches(String path) {
-		return matches(path, 0, path.length());
+	public boolean matches(String path, boolean assumeDirectory) {
+		return matches(path, 0, path.length(), assumeDirectory);
 	}
 
-	public boolean matches(String segment, int startIncl, int endExcl) {
-		return iterate(segment, startIncl, endExcl);
+	public boolean matches(String segment, int startIncl, int endExcl,
+			boolean assumeDirectory) {
+		return iterate(segment, startIncl, endExcl, assumeDirectory);
 	}
 
-	boolean iterate(final String path, final int startIncl, final int endExcl){
+	boolean iterate(final String path, final int startIncl, final int endExcl,
+			boolean assumeDirectory) {
 		int matcher = 0;
 		int right = startIncl;
 		boolean match = false;
@@ -110,7 +112,8 @@ public class PathMatcher extends AbstractMatcher {
 			right = path.indexOf(slash, right);
 			if(right == -1) {
 				if(left < endExcl){
-					match = matches(matcher, path, left, endExcl);
+					match = matches(matcher, path, left, endExcl,
+							assumeDirectory);
 				}
 				if(match){
 					if(matcher == matchers.size() - 2 && matchers.get(matcher + 1) == WILD){
@@ -120,7 +123,8 @@ public class PathMatcher extends AbstractMatcher {
 					if(matcher < matchers.size() - 1 && matchers.get(matcher) == WILD){
 						// ** can match *nothing*: a/**/b match also a/b
 						matcher ++;
-						match = matches(matcher, path, left, endExcl);
+						match = matches(matcher, path, left, endExcl,
+								assumeDirectory);
 					} else
 						if(dirOnly){
 							return false;
@@ -129,7 +133,7 @@ public class PathMatcher extends AbstractMatcher {
 				return match && matcher + 1 == matchers.size();
 			}
 			if(right - left > 0) {
-				match = matches(matcher, path, left, right);
+				match = matches(matcher, path, left, right, assumeDirectory);
 			} else {
 				// path starts with slash???
 				right ++;
@@ -156,8 +160,9 @@ public class PathMatcher extends AbstractMatcher {
 		}
 	}
 
-	boolean matches(int matcherIdx, String path, int startIncl, int endExcl){
+	boolean matches(int matcherIdx, String path, int startIncl, int endExcl,
+			boolean assumeDirectory) {
 		IMatcher matcher = matchers.get(matcherIdx);
-		return matcher.matches(path, startIncl, endExcl);
+		return matcher.matches(path, startIncl, endExcl, assumeDirectory);
 	}
 }

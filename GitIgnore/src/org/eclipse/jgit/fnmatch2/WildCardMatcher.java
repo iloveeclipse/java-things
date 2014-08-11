@@ -32,7 +32,8 @@ public class WildCardMatcher extends NameMatcher {
 	}
 
 	@Override
-	public boolean matches(String segment, int startIncl, int endExcl) {
+	public boolean matches(String segment, int startIncl, int endExcl,
+			boolean assumeDirectory) {
 		return p.matcher(new SubString(segment, startIncl, endExcl)).matches();
 	}
 

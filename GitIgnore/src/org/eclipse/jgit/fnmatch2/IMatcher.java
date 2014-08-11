@@ -17,12 +17,15 @@ public interface IMatcher {
 
 	/**
 	 * Matches entire given string
-	 *
+	 * 
 	 * @param path
 	 *            string which is not null, but might be empty
+	 * @param assumeDirectory
+	 *            true to assume this path as directory (even if it doesn't end
+	 *            with a slash)
 	 * @return true if this matcher pattern matches given string
 	 */
-	boolean matches(String path);
+	boolean matches(String path, boolean assumeDirectory);
 
 	/**
 	 * Matches only part of given string
@@ -33,7 +36,11 @@ public interface IMatcher {
 	 *            start index, inclusive
 	 * @param endExcl
 	 *            end index, exclusive
+	 * @param assumeDirectory
+	 *            true to assume this path as directory (even if it doesn't end
+	 *            with a slash)
 	 * @return true if this matcher pattern matches given string
 	 */
-	boolean matches(String segment, int startIncl, int endExcl);
+	boolean matches(String segment, int startIncl, int endExcl,
+			boolean assumeDirectory);
 }

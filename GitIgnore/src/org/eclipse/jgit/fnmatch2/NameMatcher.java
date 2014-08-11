@@ -33,22 +33,25 @@ public class NameMatcher extends AbstractMatcher {
 		}
 	}
 
-	public boolean matches(String path) {
+	public boolean matches(String path, boolean assumeDirectory) {
 		int end = 0;
 		int firstChar = 0;
 		do {
 			firstChar = getFirstNotSlash(path, end);
 			end = getFirstSlash(path, firstChar);
-			boolean match = matches(path, firstChar, end);
+			boolean match = matches(path, firstChar, end, assumeDirectory);
 			if(match){
-				return dirOnly? end > 0 && end != path.length() : true;
+				boolean isDirMatch = (end > 0 && end != path.length())
+						|| assumeDirectory;
+				return dirOnly ? isDirMatch : true;
 			}
 		}
 		while(!beginning && end != path.length());
 		return false;
 	}
 
-	public boolean matches(String segment, int startIncl, int endExcl){
+	public boolean matches(String segment, int startIncl, int endExcl,
+			boolean assumeDirectory) {
 		if(subPattern.length() != (endExcl - startIncl)){
 			return false;
 		}

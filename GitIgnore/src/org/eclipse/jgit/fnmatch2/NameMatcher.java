@@ -11,8 +11,10 @@ package org.eclipse.jgit.fnmatch2;
 import static org.eclipse.jgit.fnmatch2.Strings.getPathSeparator;
 
 /**
- * Matcher built from patterns for file names (single path segments).
- * This class is immutable and thread safe.
+ * Matcher built from patterns for file names (single path segments). This class
+ * is immutable and thread safe.
+ *
+ * @since 3.5
  */
 public class NameMatcher extends AbstractMatcher {
 

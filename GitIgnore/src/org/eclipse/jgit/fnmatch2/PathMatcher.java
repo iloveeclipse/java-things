@@ -18,6 +18,8 @@ import org.eclipse.jgit.errors.InvalidPatternException;
  * Matcher built by patterns consists of multiple path segments.
  * <p>
  * This class is immutable and thread safe.
+ *
+ * @since 3.5
  */
 public class PathMatcher extends AbstractMatcher {
 

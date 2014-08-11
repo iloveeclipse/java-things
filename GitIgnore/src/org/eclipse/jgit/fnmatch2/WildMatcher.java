@@ -9,10 +9,12 @@
 package org.eclipse.jgit.fnmatch2;
 
 /**
- * Wildmatch matcher for "double star" (<code>**</code>) pattern only.
- * This matcher matches any path.
+ * Wildmatch matcher for "double star" (<code>**</code>) pattern only. This
+ * matcher matches any path.
  * <p>
  * This class is immutable and thread safe.
+ *
+ * @since 3.5
  */
 public final class WildMatcher extends AbstractMatcher {
 

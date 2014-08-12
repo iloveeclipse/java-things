@@ -49,7 +49,6 @@ import static org.junit.Assume.*;
 
 import java.util.Arrays;
 
-import org.eclipse.jgit.errors.InvalidPatternException;
 import org.eclipse.jgit.ignore.IgnoreRule;
 import org.eclipse.jgit.ignore2.FastIgnoreRule;
 import org.junit.Test;
@@ -71,8 +70,7 @@ public class IgnoreRuleSpecialCasesTest {
 	public Boolean useJGitRule;
 
 	private void assertMatch(final String pattern, final String input,
-			final boolean matchExpected, Boolean ... assume)
-					throws InvalidPatternException {
+			final boolean matchExpected, Boolean... assume) {
 		boolean assumeDir = input.endsWith("/");
 		if(useJGitRule.booleanValue()){
 			final IgnoreRule matcher = new IgnoreRule(pattern);
@@ -92,9 +90,8 @@ public class IgnoreRuleSpecialCasesTest {
 	}
 
 	private void assertFileNameMatch(final String pattern,
-			final String input,
-			final char excludedCharacter, final boolean matchExpected)
-					throws InvalidPatternException {
+ final String input,
+			final boolean matchExpected) {
 		boolean assumeDir = input.endsWith("/");
 		if(useJGitRule.booleanValue()){
 			final IgnoreRule matcher = new IgnoreRule(pattern);
@@ -885,27 +882,27 @@ public class IgnoreRuleSpecialCasesTest {
 
 	@Test
 	public void testFilePathSimpleCase() throws Exception {
-		assertFileNameMatch("a/b", "a/b", '/', true);
+		assertFileNameMatch("a/b", "a/b", true);
 	}
 
 	@Test
 	public void testFilePathCase0() throws Exception {
-		assertFileNameMatch("a*b", "a/b", '/', false);
+		assertFileNameMatch("a*b", "a/b", false);
 	}
 
 	@Test
 	public void testFilePathCase1() throws Exception {
-		assertFileNameMatch("a?b", "a/b", '/', false);
+		assertFileNameMatch("a?b", "a/b", false);
 	}
 
 	@Test
 	public void testFilePathCase2() throws Exception {
-		assertFileNameMatch("a*b", "a\\b", '\\', true);
+		assertFileNameMatch("a*b", "a\\b", true);
 	}
 
 	@Test
 	public void testFilePathCase3() throws Exception {
-		assertFileNameMatch("a?b", "a\\b", '\\', true);
+		assertFileNameMatch("a?b", "a\\b", true);
 	}
 
 

@@ -41,7 +41,7 @@ public class FastIgnoreRule {
 	 */
 	public FastIgnoreRule(String pattern) {
 		if(pattern == null){
-			throw new IllegalArgumentException("Pattern must be not null!");
+			throw new IllegalArgumentException("Pattern must be not null!"); //$NON-NLS-1$
 		}
 		pattern = pattern.trim();
 		if (pattern.length() == 0) {

@@ -40,34 +40,20 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.eclipse.jgit.ignore2.tests;
+package org.eclipse.jgit.ignore;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import java.util.Arrays;
-
-import org.eclipse.jgit.ignore.IgnoreRule;
-import org.eclipse.jgit.ignore2.*;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.*;
-import org.junit.runners.Parameterized.Parameter;
-import org.junit.runners.Parameterized.Parameters;
 
 
 /**
  * Tests ignore pattern matches
  */
-@RunWith(Parameterized.class)
+@SuppressWarnings("deprecation")
 public class IgnoreMatcherTest {
-
-	@Parameters(name = "JGit? {0}")
-	public static Iterable<Boolean[]> data(){
-		return Arrays.asList(new Boolean[][]{{Boolean.FALSE}, {Boolean.TRUE}});
-	}
-
-	@Parameter
-	public Boolean useJGitRule;
 
 	@Test
 	public void testBasic() {
@@ -310,6 +296,63 @@ public class IgnoreMatcherTest {
 		assertMatched(pattern, "/test.stp");
 	}
 
+	@Test
+	public void testGetters() {
+		IgnoreRule r = new IgnoreRule("/pattern/");
+		assertFalse(r.getNameOnly());
+		assertTrue(r.dirOnly());
+		assertFalse(r.getNegation());
+		assertEquals(r.getPattern(), "/pattern");
+
+		r = new IgnoreRule("/patter?/");
+		assertFalse(r.getNameOnly());
+		assertTrue(r.dirOnly());
+		assertFalse(r.getNegation());
+		assertEquals(r.getPattern(), "/patter?");
+
+		r = new IgnoreRule("patt*");
+		assertTrue(r.getNameOnly());
+		assertFalse(r.dirOnly());
+		assertFalse(r.getNegation());
+		assertEquals(r.getPattern(), "patt*");
+
+		r = new IgnoreRule("pattern");
+		assertTrue(r.getNameOnly());
+		assertFalse(r.dirOnly());
+		assertFalse(r.getNegation());
+		assertEquals(r.getPattern(), "pattern");
+
+		r = new IgnoreRule("!pattern");
+		assertTrue(r.getNameOnly());
+		assertFalse(r.dirOnly());
+		assertTrue(r.getNegation());
+		assertEquals(r.getPattern(), "pattern");
+
+		r = new IgnoreRule("!/pattern");
+		assertFalse(r.getNameOnly());
+		assertFalse(r.dirOnly());
+		assertTrue(r.getNegation());
+		assertEquals(r.getPattern(), "/pattern");
+
+		r = new IgnoreRule("!/patter?");
+		assertFalse(r.getNameOnly());
+		assertFalse(r.dirOnly());
+		assertTrue(r.getNegation());
+		assertEquals(r.getPattern(), "/patter?");
+	}
+
+	@Test
+	public void testResetState() {
+		String pattern = "/build/*";
+		String target = "/build";
+		// Don't use the assert methods of this class, as we want to test
+		// whether the state in IgnoreRule is reset properly
+		IgnoreRule r = new IgnoreRule(pattern);
+		// Result should be the same for the same inputs
+		assertFalse(r.isMatch(target, true));
+		assertFalse(r.isMatch(target, true));
+	}
+
 	/**
 	 * Check for a match. If target ends with "/", match will assume that the
 	 * target is meant to be a directory.
@@ -341,24 +384,17 @@ public class IgnoreMatcherTest {
 	/**
 	 * Check for a match. If target ends with "/", match will assume that the
 	 * target is meant to be a directory.
+	 *
 	 * @param pattern
-	 * 			  Pattern as it would appear in a .gitignore file
+	 *            Pattern as it would appear in a .gitignore file
 	 * @param target
-	 * 			  Target file path relative to repository's GIT_DIR
-	 * @return
-	 * 			  Result of {@link IgnoreRule#isMatch(String, boolean)}
+	 *            Target file path relative to repository's GIT_DIR
+	 * @return Result of {@link FastIgnoreRule#isMatch(String, boolean)}
 	 */
-	private boolean match(String pattern, String target) {
-		boolean isDirectory = target.endsWith("/");
-		if(useJGitRule.booleanValue()){
-			IgnoreRule r = new IgnoreRule(pattern);
-			//If speed of this test is ever an issue, we can use a presetRule field
-			//to avoid recompiling a pattern each time.
-			return r.isMatch(target, isDirectory);
-		}
-		FastIgnoreRule r = new FastIgnoreRule(pattern);
+	private static boolean match(String pattern, String target) {
+		IgnoreRule r = new IgnoreRule(pattern);
 		//If speed of this test is ever an issue, we can use a presetRule field
 		//to avoid recompiling a pattern each time.
-		return r.isMatch(target, isDirectory);
+		return r.isMatch(target, target.endsWith("/"));
 	}
 }

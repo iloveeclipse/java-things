@@ -41,29 +41,29 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-package org.eclipse.jgit.ignore2.tests;
+package org.eclipse.jgit.ignore;
 
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 
 import java.util.Arrays;
 
+import org.eclipse.jgit.ignore.FastIgnoreRule;
 import org.eclipse.jgit.ignore.IgnoreRule;
-import org.eclipse.jgit.ignore2.FastIgnoreRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.*;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
-@SuppressWarnings("boxing")
 @RunWith(Parameterized.class)
+@SuppressWarnings({ "deprecation", "boxing" })
 public class IgnoreRuleSpecialCasesTest {
 
 	@Parameters(name = "JGit? {0}")
-	public static Iterable<Boolean[]> data(){
-		return Arrays.asList(new Boolean[][]{{Boolean.FALSE}, {Boolean.TRUE}});
+	public static Iterable<Boolean[]> data() {
+		return Arrays.asList(new Boolean[][] { { Boolean.FALSE },
+				{ Boolean.TRUE } });
 	}
 
 	@Parameter
@@ -72,28 +72,25 @@ public class IgnoreRuleSpecialCasesTest {
 	private void assertMatch(final String pattern, final String input,
 			final boolean matchExpected, Boolean... assume) {
 		boolean assumeDir = input.endsWith("/");
-		if(useJGitRule.booleanValue()){
+		if (useJGitRule.booleanValue()) {
 			final IgnoreRule matcher = new IgnoreRule(pattern);
-			if(assume.length == 0 || !assume[0].booleanValue()) {
+			if (assume.length == 0 || !assume[0].booleanValue())
 				assertEquals(matchExpected, matcher.isMatch(input, assumeDir));
-			} else  {
+			else
 				assumeTrue(matchExpected == matcher.isMatch(input, assumeDir));
-			}
 		} else {
 			FastIgnoreRule matcher = new FastIgnoreRule(pattern);
-			if(assume.length == 0 || !assume[0].booleanValue()) {
+			if (assume.length == 0 || !assume[0].booleanValue())
 				assertEquals(matchExpected, matcher.isMatch(input, assumeDir));
-			} else {
+			else
 				assumeTrue(matchExpected == matcher.isMatch(input, assumeDir));
-			}
 		}
 	}
 
-	private void assertFileNameMatch(final String pattern,
- final String input,
+	private void assertFileNameMatch(final String pattern, final String input,
 			final boolean matchExpected) {
 		boolean assumeDir = input.endsWith("/");
-		if(useJGitRule.booleanValue()){
+		if (useJGitRule.booleanValue()) {
 			final IgnoreRule matcher = new IgnoreRule(pattern);
 			assertEquals(matchExpected, matcher.isMatch(input, assumeDir));
 		} else {
@@ -104,9 +101,9 @@ public class IgnoreRuleSpecialCasesTest {
 
 	@Test
 	public void testVerySimplePatternCase0() throws Exception {
-		if(useJGitRule){
-			System.err.println("IgnoreRule can't understand blank lines, skipping");
-		}
+		if (useJGitRule)
+			System.err
+					.println("IgnoreRule can't understand blank lines, skipping");
 		Boolean assume = useJGitRule;
 		assertMatch("", "", false, assume);
 	}
@@ -805,9 +802,8 @@ public class IgnoreRuleSpecialCasesTest {
 
 	@Test
 	public void testSpecialGroupCase9() throws Exception {
-		if(useJGitRule){
+		if (useJGitRule)
 			System.err.println("IgnoreRule can't understand [[:], skipping");
-		}
 		Boolean assume = useJGitRule;
 		// Second bracket is threated literally, so both [ and : should match
 		assertMatch("[[:]", ":", true, assume);
@@ -867,9 +863,9 @@ public class IgnoreRuleSpecialCasesTest {
 
 	@Test
 	public void testEscapedBackslash() throws Exception {
-		if(useJGitRule){
-			System.err.println("IgnoreRule can't understand escaped backslashes, skipping");
-		}
+		if (useJGitRule)
+			System.err
+					.println("IgnoreRule can't understand escaped backslashes, skipping");
 		Boolean assume = useJGitRule;
 		// In Git CLI a\\b matches a\b file
 		assertMatch("a\\\\b", "a\\b", true, assume);
@@ -904,7 +900,5 @@ public class IgnoreRuleSpecialCasesTest {
 	public void testFilePathCase3() throws Exception {
 		assertFileNameMatch("a?b", "a\\b", true);
 	}
-
-
 
 }

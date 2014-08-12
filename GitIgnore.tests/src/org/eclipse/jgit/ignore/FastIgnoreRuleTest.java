@@ -1,34 +1,69 @@
-/*******************************************************************************
- * Copyright (c) 2014 Andrey Loskutov.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- * Contributor:  Andrey Loskutov - initial API and implementation
- *******************************************************************************/
-package org.eclipse.jgit.ignore2.tests;
+/*
+ * Copyright (C) 2014, Andrey Loskutov <loskutov@gmx.de>
+ * and other copyright owners as documented in the project's IP log.
+ *
+ * This program and the accompanying materials are made available
+ * under the terms of the Eclipse Distribution License v1.0 which
+ * accompanies this distribution, is reproduced below, and is
+ * available at http://www.eclipse.org/org/documents/edl-v10.php
+ *
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or
+ * without modification, are permitted provided that the following
+ * conditions are met:
+ *
+ * - Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above
+ *   copyright notice, this list of conditions and the following
+ *   disclaimer in the documentation and/or other materials provided
+ *   with the distribution.
+ *
+ * - Neither the name of the Eclipse Foundation, Inc. nor the
+ *   names of its contributors may be used to endorse or promote
+ *   products derived from this software without specific prior
+ *   written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+ * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES,
+ * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+ * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+package org.eclipse.jgit.ignore;
 
-
-import static org.eclipse.jgit.ignore2.internal.Strings.split;
+import static org.eclipse.jgit.ignore.internal.Strings.split;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 
 import java.util.Arrays;
 
+import org.eclipse.jgit.ignore.FastIgnoreRule;
 import org.eclipse.jgit.ignore.IgnoreRule;
-import org.eclipse.jgit.ignore2.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.*;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
 
+@SuppressWarnings("deprecation")
 @RunWith(Parameterized.class)
 public class FastIgnoreRuleTest {
 
 	@Parameters(name = "JGit? {0}")
-	public static Iterable<Boolean[]> data(){
-		return Arrays.asList(new Boolean[][]{{Boolean.FALSE}, {Boolean.TRUE}});
+	public static Iterable<Boolean[]> data() {
+		return Arrays.asList(new Boolean[][] { { Boolean.FALSE },
+				{ Boolean.TRUE } });
 	}
 
 	@Parameter
@@ -351,9 +386,9 @@ public class FastIgnoreRuleTest {
 	@SuppressWarnings("boxing")
 	@Test
 	public void testWildmatch() {
-		if(useJGitRule){
-			System.err.println("IgnoreRule can't understand wildmatch rules, skipping testWildmatch!");
-		}
+		if (useJGitRule)
+			System.err
+					.println("IgnoreRule can't understand wildmatch rules, skipping testWildmatch!");
 
 		Boolean assume = useJGitRule;
 		assertMatched("**/a/b", "a/b", assume);
@@ -387,7 +422,7 @@ public class FastIgnoreRuleTest {
 
 	@SuppressWarnings("unused")
 	@Test
-	public void testSimpleRules(){
+	public void testSimpleRules() {
 		try {
 			new FastIgnoreRule(null);
 			fail("Illegal input allowed!");
@@ -402,102 +437,108 @@ public class FastIgnoreRuleTest {
 	}
 
 	@Test
-	public void testSplit(){
-		try{
+	public void testSplit() {
+		try {
 			split("/", '/').toArray();
 			fail("should not allow single slash");
-		} catch(IllegalStateException e){
+		} catch (IllegalStateException e) {
 			// expected
 		}
 
-		assertArrayEquals(new String[]{"a", "b"}, split("a/b", '/').toArray());
-		assertArrayEquals(new String[]{"a", "b/"}, split("a/b/", '/').toArray());
-		assertArrayEquals(new String[]{"/a", "b"}, split("/a/b", '/').toArray());
-		assertArrayEquals(new String[]{"/a", "b/"}, split("/a/b/", '/').toArray());
-		assertArrayEquals(new String[]{"/a", "b", "c"}, split("/a/b/c", '/').toArray());
-		assertArrayEquals(new String[]{"/a", "b", "c/"}, split("/a/b/c/", '/').toArray());
+		assertArrayEquals(new String[] { "a", "b" }, split("a/b", '/')
+				.toArray());
+		assertArrayEquals(new String[] { "a", "b/" }, split("a/b/", '/')
+				.toArray());
+		assertArrayEquals(new String[] { "/a", "b" }, split("/a/b", '/')
+				.toArray());
+		assertArrayEquals(new String[] { "/a", "b/" }, split("/a/b/", '/')
+				.toArray());
+		assertArrayEquals(new String[] { "/a", "b", "c" }, split("/a/b/c", '/')
+				.toArray());
+		assertArrayEquals(new String[] { "/a", "b", "c/" },
+				split("/a/b/c/", '/').toArray());
 	}
 
-
-	public void assertMatched(String pattern, String path, Boolean... assume){
+	public void assertMatched(String pattern, String path, Boolean... assume) {
 		boolean match = match(pattern, path);
-		String result = path + " is " + (match? "ignored" : "not ignored") + " via '" + pattern + "' rule";
-		if(!match) {
+		String result = path + " is " + (match ? "ignored" : "not ignored")
+				+ " via '" + pattern + "' rule";
+		if (!match)
 			System.err.println(result);
-		}
-		if(assume.length == 0 || !assume[0].booleanValue()) {
-			assertTrue("Expected a match for: " + pattern + " with: " + path, match);
-		} else {
-			assumeTrue("Expected a match for: " + pattern + " with: " + path, match);
-		}
+		if (assume.length == 0 || !assume[0].booleanValue())
+			assertTrue("Expected a match for: " + pattern + " with: " + path,
+					match);
+		else
+			assumeTrue("Expected a match for: " + pattern + " with: " + path,
+					match);
 
-		if(pattern.startsWith("!")){
+		if (pattern.startsWith("!"))
 			pattern = pattern.substring(1);
-		} else {
+		else
 			pattern = "!" + pattern;
-		}
 		match = match(pattern, path);
-		if(assume.length == 0 || !assume[0].booleanValue()) {
-			assertFalse("Expected no match for: " + pattern + " with: " + path, match);
-		} else {
-			assumeFalse("Expected no match for: " + pattern + " with: " + path, match);
-		}
+		if (assume.length == 0 || !assume[0].booleanValue())
+			assertFalse("Expected no match for: " + pattern + " with: " + path,
+					match);
+		else
+			assumeFalse("Expected no match for: " + pattern + " with: " + path,
+					match);
 	}
 
-	public void assertNotMatched(String pattern, String path, Boolean... assume){
+	public void assertNotMatched(String pattern, String path, Boolean... assume) {
 		boolean match = match(pattern, path);
-		String result = path + " is " + (match? "ignored" : "not ignored") + " via '" + pattern + "' rule";
-		if(match) {
+		String result = path + " is " + (match ? "ignored" : "not ignored")
+				+ " via '" + pattern + "' rule";
+		if (match)
 			System.err.println(result);
-		}
-		if(assume.length == 0 || !assume[0].booleanValue()) {
-			assertFalse("Expected no match for: " + pattern + " with: " + path, match);
-		} else {
-			assumeFalse("Expected no match for: " + pattern + " with: " + path, match);
-		}
+		if (assume.length == 0 || !assume[0].booleanValue())
+			assertFalse("Expected no match for: " + pattern + " with: " + path,
+					match);
+		else
+			assumeFalse("Expected no match for: " + pattern + " with: " + path,
+					match);
 
-		if(pattern.startsWith("!")){
+		if (pattern.startsWith("!"))
 			pattern = pattern.substring(1);
-		} else {
+		else
 			pattern = "!" + pattern;
-		}
 		match = match(pattern, path);
-		if(assume.length == 0 || !assume[0].booleanValue()) {
-			assertTrue("Expected a match for: " + pattern + " with: " + path, match);
-		} else {
-			assumeTrue("Expected a match for: " + pattern + " with: " + path, match);
-		}
+		if (assume.length == 0 || !assume[0].booleanValue())
+			assertTrue("Expected a match for: " + pattern + " with: " + path,
+					match);
+		else
+			assumeTrue("Expected a match for: " + pattern + " with: " + path,
+					match);
 	}
 
 	/**
 	 * Check for a match. If target ends with "/", match will assume that the
 	 * target is meant to be a directory.
+	 *
 	 * @param pattern
-	 * 			  Pattern as it would appear in a .gitignore file
+	 *            Pattern as it would appear in a .gitignore file
 	 * @param target
-	 * 			  Target file path relative to repository's GIT_DIR
-	 * @return
-	 * 			  Result of {@link IgnoreRule#isMatch(String, boolean)}
+	 *            Target file path relative to repository's GIT_DIR
+	 * @return Result of {@link FastIgnoreRule#isMatch(String, boolean)}
 	 */
 	private boolean match(String pattern, String target) {
 		boolean isDirectory = target.endsWith("/");
-		if(useJGitRule.booleanValue()){
+		if (useJGitRule.booleanValue()) {
 			IgnoreRule r = new IgnoreRule(pattern);
-			//If speed of this test is ever an issue, we can use a presetRule field
-			//to avoid recompiling a pattern each time.
+			// If speed of this test is ever an issue, we can use a presetRule
+			// field
+			// to avoid recompiling a pattern each time.
 			boolean match = r.isMatch(target, isDirectory);
-			if(r.getNegation()){
+			if (r.getNegation())
 				match = !match;
-			}
 			return match;
 		}
 		FastIgnoreRule r = new FastIgnoreRule(pattern);
-		//If speed of this test is ever an issue, we can use a presetRule field
-		//to avoid recompiling a pattern each time.
+		// If speed of this test is ever an issue, we can use a presetRule field
+		// to avoid recompiling a pattern each time.
 		boolean match = r.isMatch(target, isDirectory);
-		if(r.getNegation()){
+		if (r.getNegation())
 			match = !match;
-		}
 		return match;
 	}
 }

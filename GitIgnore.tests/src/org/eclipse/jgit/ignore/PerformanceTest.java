@@ -6,14 +6,14 @@
  * http://www.eclipse.org/legal/epl-v10.html
  * Contributor:  Andrey Loskutov - initial API and implementation
  *******************************************************************************/
-package org.eclipse.jgit.ignore2.tests;
+package org.eclipse.jgit.ignore;
 
 import static org.junit.Assert.assertTrue;
 
 import java.util.*;
 
+import org.eclipse.jgit.ignore.FastIgnoreRule;
 import org.eclipse.jgit.ignore.IgnoreRule;
-import org.eclipse.jgit.ignore2.FastIgnoreRule;
 import org.junit.*;
 import org.junit.runners.MethodSorters;
 

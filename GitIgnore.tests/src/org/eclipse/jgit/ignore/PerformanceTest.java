@@ -19,6 +19,7 @@ import org.junit.runners.MethodSorters;
 
 import com.carrotsearch.junitbenchmarks.*;
 
+@SuppressWarnings("deprecation")
 @Ignore
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @BenchmarkOptions(benchmarkRounds = 2000, warmupRounds = 1000)

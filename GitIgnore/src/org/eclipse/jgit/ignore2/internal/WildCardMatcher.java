@@ -52,8 +52,8 @@ public class WildCardMatcher extends NameMatcher {
 			this.length = endExcl - startIncl;
 			if (startIncl < 0 || endExcl < 0 || length < 0 || startIncl + length > parent.length()) {
 				throw new IndexOutOfBoundsException(
-						"Trying to create substring on: " + parent
-						+ " with invalid indices: " + startIncl + " / " + endExcl);
+						"Trying to create substring on: " + parent //$NON-NLS-1$
+								+ " with invalid indices: " + startIncl + " / " + endExcl); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 

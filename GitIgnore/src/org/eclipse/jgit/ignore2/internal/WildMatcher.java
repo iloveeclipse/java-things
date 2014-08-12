@@ -18,7 +18,7 @@ package org.eclipse.jgit.ignore2.internal;
  */
 public final class WildMatcher extends AbstractMatcher {
 
-	static final String WILDMATCH = "**";
+	static final String WILDMATCH = "**"; //$NON-NLS-1$
 	static final WildMatcher INSTANCE = new WildMatcher();
 
 	private WildMatcher() {

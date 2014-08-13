@@ -54,6 +54,9 @@ public final class WildMatcher extends AbstractMatcher {
 
 	static final String WILDMATCH = "**"; //$NON-NLS-1$
 
+	// double star for the beginning of pattern
+	static final String WILDMATCH2 = "/**"; //$NON-NLS-1$
+
 	static final WildMatcher INSTANCE = new WildMatcher();
 
 	private WildMatcher() {

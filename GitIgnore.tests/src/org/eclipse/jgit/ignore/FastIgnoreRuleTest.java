@@ -396,6 +396,11 @@ public class FastIgnoreRuleTest {
 		assertMatched("**/a/b", "c/d/a/b", assume);
 		assertMatched("**/**/a/b", "c/d/a/b", assume);
 
+		assertMatched("/**/a/b", "a/b", assume);
+		assertMatched("/**/a/b", "c/a/b", assume);
+		assertMatched("/**/a/b", "c/d/a/b", assume);
+		assertMatched("/**/**/a/b", "c/d/a/b", assume);
+
 		assertMatched("a/b/**", "a/b", assume);
 		assertMatched("a/b/**", "a/b/c", assume);
 		assertMatched("a/b/**", "a/b/c/d/", assume);
@@ -404,6 +409,10 @@ public class FastIgnoreRuleTest {
 		assertMatched("**/a/**/b", "c/d/a/b", assume);
 		assertMatched("**/a/**/b", "c/d/a/e/b", assume);
 		assertMatched("**/**/a/**/**/b", "c/d/a/e/b", assume);
+
+		assertMatched("/**/a/**/b", "c/d/a/b", assume);
+		assertMatched("/**/a/**/b", "c/d/a/e/b", assume);
+		assertMatched("/**/**/a/**/**/b", "c/d/a/e/b", assume);
 
 		assertMatched("a/**/b", "a/b", assume);
 		assertMatched("a/**/b", "a/c/b", assume);
@@ -414,10 +423,18 @@ public class FastIgnoreRuleTest {
 		assertMatched("a/**/**/b/**/**/c", "a/c/b/d/c", assume);
 	}
 
+	@SuppressWarnings("boxing")
 	@Test
 	public void testWildmatchDoNotMatch() {
-		assertNotMatched("**/a/b", "a/c/b");
-		assertNotMatched("a/**/b", "a/c/bb");
+		if (useJGitRule)
+			System.err
+					.println("IgnoreRule can't understand wildmatch rules, skipping testWildmatchDoNotMatch!");
+
+		Boolean assume = useJGitRule;
+		assertNotMatched("**/a/b", "a/c/b", assume);
+		assertNotMatched("!/**/*.zip", "c/a/b.zip", assume);
+		assertNotMatched("!**/*.zip", "c/a/b.zip", assume);
+		assertNotMatched("a/**/b", "a/c/bb", assume);
 	}
 
 	@SuppressWarnings("unused")

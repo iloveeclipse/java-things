@@ -123,7 +123,9 @@ public class PathMatcher extends AbstractMatcher {
 	private static IMatcher createNameMatcher0(String segment,
 			Character pathSeparator, boolean dirOnly)
 			throws InvalidPatternException {
-		if (WildMatcher.WILDMATCH.equals(segment))
+		// check if we see /** or ** segments => double star pattern
+		if (WildMatcher.WILDMATCH.equals(segment)
+				|| WildMatcher.WILDMATCH2.equals(segment))
 			return WILD;
 		if (isWildCard(segment))
 			return new WildCardMatcher(segment, pathSeparator, dirOnly);

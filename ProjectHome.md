@@ -1,0 +1,1 @@
+This is a place for all little utility projects I needed to code in Java for myself.

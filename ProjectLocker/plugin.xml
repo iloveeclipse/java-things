@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            name="Workspace"
+            id="projectLocker.commands.category">
+      </category>
+
+      <command
+            name="Lock Project"
+            categoryId="projectLocker.commands.category"
+            id="projectLocker.commands.lockCommand">
+      </command>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            commandId="projectLocker.commands.lockCommand"
+            class="de.loskutov.workspace.LockHandler">
+      </handler>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:project?after=additions">
+
+         <menu
+               label="Lock"
+               mnemonic="M"
+               id="projectLocker.menus.lock">
+            <command
+                  commandId="projectLocker.commands.lockCommand"
+                  mnemonic="S"
+                  id="projectLocker.menus.lock">
+            </command>
+         </menu>
+
+      </menuContribution>
+
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+
+         <toolbar
+               id="projectLocker.toolbars.sampleToolbar">
+            <command
+                  commandId="projectLocker.commands.lockCommand"
+                  icon="icons/lock.gif"
+                  tooltip="Lock Project"
+                  id="projectLocker.toolbars.lock">
+            </command>
+         </toolbar>
+
+      </menuContribution>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commandImages">
+      <image
+            commandId="projectLocker.commands.lockCommand"
+            icon="icons/lock.gif">
+      </image>
+   </extension>
+
+</plugin>

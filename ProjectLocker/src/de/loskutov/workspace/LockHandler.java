@@ -65,20 +65,25 @@ public class LockHandler extends AbstractHandler {
 		}
 		IStructuredSelection sel = (IStructuredSelection) selection;
 		Object object = sel.getFirstElement();
-		IProject project = Platform.getAdapterManager().getAdapter(object, IProject.class);
+		IProject project = getAdapter(object, IProject.class);
 		if(project == null){
-			IResource res = Platform.getAdapterManager().getAdapter(object, IResource.class);
+			IResource res = getAdapter(object, IResource.class);
 			if(res == null){
-				res = Platform.getAdapterManager().getAdapter(object, IContainer.class);
+				res = getAdapter(object, IContainer.class);
 			}
 			if(res == null){
-				res = Platform.getAdapterManager().getAdapter(object, IFile.class);
+				res = getAdapter(object, IFile.class);
 			}
 			if(res != null){
 				project = res.getProject();
 			}
 		}
 		return project;
+	}
+
+	private static <T> T getAdapter(Object o, Class<T> clazz){
+		Object adapter = Platform.getAdapterManager().getAdapter(o, clazz);
+		return clazz.cast(adapter);
 	}
 
 	private IProject getFromActiveEditor(ExecutionEvent event) {

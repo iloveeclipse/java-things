@@ -6,15 +6,19 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspaceRunnable;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.WorkspaceJob;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.progress.IProgressService;
 
-public class LockJob extends Job {
+public class LockJob extends WorkspaceJob {
 
 	private final IResource resource;
 
@@ -25,14 +29,13 @@ public class LockJob extends Job {
 
 	public LockJob(String name, IResource resource) {
 		super(name);
-		setRule(resource);
+		//		setRule(resource);
 		setUser(true);
 		setSystem(true);
 		this.resource = resource;
 	}
 
-	@Override
-	public IStatus run(IProgressMonitor monitor) {
+	public IStatus run2(IProgressMonitor monitor) {
 
 		while(!monitor.isCanceled()){
 			try {
@@ -62,6 +65,27 @@ public class LockJob extends Job {
 	@Override
 	public String toString() {
 		return super.toString() + " on " + resource;
+	}
+
+	@Override
+	public IStatus runInWorkspace(IProgressMonitor monitor) throws CoreException {
+		IWorkspaceRunnable workspaceRunnable = new IWorkspaceRunnable() {
+			@Override
+			public void run(IProgressMonitor pm) throws CoreException {
+				try {
+					run2(pm);
+				} catch (Exception e) {
+					// Re-throw as OperationCanceledException, which will be
+					// caught and re-thrown as InterruptedException below.
+					throw new OperationCanceledException(e.getMessage());
+				}
+				// CoreException and OperationCanceledException are propagated
+			}
+		};
+		ResourcesPlugin.getWorkspace().run(workspaceRunnable,
+				resource, IResource.NONE, monitor);
+
+		return run2(monitor);
 	}
 
 }

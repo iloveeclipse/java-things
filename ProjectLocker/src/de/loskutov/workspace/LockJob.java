@@ -85,7 +85,7 @@ public class LockJob extends WorkspaceJob {
 		ResourcesPlugin.getWorkspace().run(workspaceRunnable,
 				resource, IResource.NONE, monitor);
 
-		return run2(monitor);
+		return monitor.isCanceled()? Status.CANCEL_STATUS : Status.OK_STATUS;
 	}
 
 }

@@ -40,7 +40,7 @@ public class LockJob extends WorkspaceJob {
 		while(!monitor.isCanceled()){
 			try {
 				Thread.sleep(1000);
-				Path path = Paths.get(System.getProperty("user.home"), ".stopLockJob");
+				Path path = Paths.get(System.getProperty("user.home"), "stopLockJob");
 				if(Files.exists(path)){
 					try {
 						Files.delete(path);

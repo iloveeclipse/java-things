@@ -5,8 +5,8 @@ import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -27,19 +27,19 @@ public class LockHandler extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
-		IProject project = getFromActiveEditor(event);
-		if(project == null){
-			project = getFromSelection(event);
+		IResource resource = getFromActiveEditor(event);
+		if(resource == null){
+			resource = getFromSelection(event);
 		}
-		if(project == null){
-			return null;
+		if(resource == null){
+			resource = ResourcesPlugin.getWorkspace().getRoot();
 		}
 
-		String hint = "To unlock, create empty .stopLockJob file in "
+		String hint = "To unlock, create empty stopLockJob file in "
 				+ System.getProperty("user.home") + " directory or cancel the lock job!";
 		boolean confirm = MessageDialog.openConfirm(
 				HandlerUtil.getActiveShell(event), "Confirm lock",
-				"Lock the project " + project.getName() + "?" + "\n " + hint);
+				"Lock " + resource + "?" + "\n " + hint);
 
 		if (confirm) {
 			System.out.println(hint);
@@ -52,20 +52,20 @@ public class LockHandler extends AbstractHandler {
 					// ignore
 				}
 			}
-			LockJob job = new LockJob("Locking " + project, project);
+			LockJob job = new LockJob("Locking " + resource, resource);
 			job.schedule();
 		}
 		return null;
 	}
 
-	private IProject getFromSelection(ExecutionEvent event) {
+	private IResource getFromSelection(ExecutionEvent event) {
 		ISelection selection = HandlerUtil.getCurrentSelection(event);
 		if(selection == null || !(selection instanceof IStructuredSelection) || selection.isEmpty()){
 			return null;
 		}
 		IStructuredSelection sel = (IStructuredSelection) selection;
 		Object object = sel.getFirstElement();
-		IProject project = getAdapter(object, IProject.class);
+		IResource project = getAdapter(object, IResource.class);
 		if(project == null){
 			IResource res = getAdapter(object, IResource.class);
 			if(res == null){
@@ -86,13 +86,13 @@ public class LockHandler extends AbstractHandler {
 		return clazz.cast(adapter);
 	}
 
-	private IProject getFromActiveEditor(ExecutionEvent event) {
+	private IResource getFromActiveEditor(ExecutionEvent event) {
 		IEditorInput input = HandlerUtil.getActiveEditorInput(event);
 		if (!(input instanceof IFileEditorInput)) {
 			return null;
 		}
 		IFileEditorInput fei = (IFileEditorInput) input;
-		IProject project = fei.getFile().getProject();
+		IResource project = fei.getFile().getProject();
 		return project;
 	}
 }

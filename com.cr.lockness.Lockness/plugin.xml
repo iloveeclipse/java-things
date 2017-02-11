@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="Lockness - Thread Dump Analyzer"
+            icon="icons/lockness.gif"
+            extensions="log,out,txt,trc"
+            contributorClass="com.cr.lockness.editors.MultiPageEditorContributor"
+            class="com.cr.lockness.editors.MultiPageEditor"
+            id="com.cr.lockness.editors.MultiPageEditor">
+      </editor>
+   </extension>
+
+</plugin>

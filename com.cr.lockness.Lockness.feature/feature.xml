@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="com.cr.lockness.Lockness.feature"
+      label="Lockness"
+      version="3.1.1"
+      provider-name="CR"
+      plugin="com.cr.lockness.Lockness">
+
+   <description url="http://lockness.plugin.free.fr/download.php">
+      Lockness Eclipse Plugin - Java Thread Dump Analyser
+   </description>
+   
+   <copyright>
+   CR, lockness.plugin@free.fr
+   </copyright>
+
+   <license>
+   lockness.plugin@free.fr
+   </license>
+   
+   <url>
+      <update label="Andrey Loskutov plugins site" url="http://andrei.gmxhome.de/eclipse/"/>
+      <discovery label="Andrey Loskutov plugins site" url="http://andrei.gmxhome.de/eclipse/"/>
+   </url>
+
+   <requires>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.core.runtime" version="3.6.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jdt"/>
+      <import plugin="org.eclipse.jdt.core"/>
+      <import plugin="org.eclipse.jdt.ui"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor"/>
+   </requires>
+
+   <plugin
+         id="com.cr.lockness.Lockness"
+         download-size="88028"
+         install-size="88028"
+         version="3.1.1"
+         unpack="true"/>
+
+</feature>

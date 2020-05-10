@@ -14,6 +14,11 @@
             categoryId="projectLocker.commands.category"
             id="projectLocker.commands.lockCommand">
       </command>
+      <command
+            name="Build Project"
+            categoryId="projectLocker.commands.category"
+            id="projectLocker.commands.buildCommand">
+      </command>
    </extension>
 
    <extension
@@ -21,6 +26,10 @@
       <handler
             commandId="projectLocker.commands.lockCommand"
             class="de.loskutov.workspace.LockHandler">
+      </handler>
+      <handler
+            commandId="projectLocker.commands.buildCommand"
+            class="de.loskutov.workspace.BuildHandler">
       </handler>
    </extension>
 
@@ -39,6 +48,16 @@
                   id="projectLocker.menus.lock">
             </command>
          </menu>
+         <menu
+               label="Build"
+               mnemonic="B"
+               id="projectLocker.menus.build">
+            <command
+                  commandId="projectLocker.commands.buildCommand"
+                  mnemonic="S"
+                  id="projectLocker.menus.build">
+            </command>
+         </menu>
 
       </menuContribution>
 
@@ -46,22 +65,33 @@
             locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
 
          <toolbar
-               id="projectLocker.toolbars.sampleToolbar">
+               id="projectLocker.toolbar">
             <command
                   commandId="projectLocker.commands.lockCommand"
                   icon="icons/lock.gif"
                   tooltip="Lock Project"
                   id="projectLocker.toolbars.lock">
             </command>
+            <command
+                  commandId="projectLocker.commands.buildCommand"
+                  icon="icons/build.png"
+                  tooltip="Build Project"
+                  id="projectLocker.toolbars.build">
+            </command>
          </toolbar>
 
       </menuContribution>
    </extension>
+   
    <extension
          point="org.eclipse.ui.commandImages">
       <image
             commandId="projectLocker.commands.lockCommand"
             icon="icons/lock.gif">
+      </image>
+      <image
+            commandId="projectLocker.commands.buildCommand"
+            icon="icons/build.png"> 
       </image>
    </extension>
 

@@ -1,5 +1,3 @@
-package memoryhog;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
@@ -76,7 +74,6 @@ public class MemoryHog {
 			Thread.sleep(10_000);
 		}
 	}
-
 
 	private static void reportMemoryUse(String message) throws IOException {
 		runFreeAndPrintOutput();

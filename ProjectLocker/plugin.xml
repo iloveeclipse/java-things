@@ -19,6 +19,11 @@
             categoryId="projectLocker.commands.category"
             id="projectLocker.commands.buildCommand">
       </command>
+      <command
+            name="Build Project"
+            categoryId="projectLocker.commands.category"
+            id="projectLocker.commands.customCommand">
+      </command>
    </extension>
 
    <extension
@@ -30,6 +35,10 @@
       <handler
             commandId="projectLocker.commands.buildCommand"
             class="de.loskutov.workspace.BuildHandler">
+      </handler>
+      <handler
+            commandId="projectLocker.commands.customCommand"
+            class="de.loskutov.workspace.CustomHandler">
       </handler>
    </extension>
 
@@ -58,6 +67,16 @@
                   id="projectLocker.menus.build">
             </command>
          </menu>
+         <menu
+               label="Custom action"
+               mnemonic="C"
+               id="projectLocker.menus.custom">
+            <command
+                  commandId="projectLocker.commands.customCommand"
+                  mnemonic="S"
+                  id="projectLocker.menus.custom">
+            </command>
+         </menu>
 
       </menuContribution>
 
@@ -78,6 +97,12 @@
                   tooltip="Build Project"
                   id="projectLocker.toolbars.build">
             </command>
+            <command
+                  commandId="projectLocker.commands.customCommand"
+                  icon="icons/custom.png"
+                  tooltip="Custom Project Action"
+                  id="projectLocker.toolbars.custom">
+            </command>
          </toolbar>
 
       </menuContribution>
@@ -92,6 +117,10 @@
       <image
             commandId="projectLocker.commands.buildCommand"
             icon="icons/build.png"> 
+      </image>
+      <image
+            commandId="projectLocker.commands.customCommand"
+            icon="icons/custom.png"> 
       </image>
    </extension>
 

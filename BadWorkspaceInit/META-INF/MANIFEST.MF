@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: BadWorkspaceInit
+Bundle-SymbolicName: BadWorkspaceInit
+Bundle-Version: 1.0.0.qualifier
+Automatic-Module-Name: BadWorkspaceInit
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Require-Bundle: org.eclipse.core.resources,
+ org.eclipse.core.runtime
+Service-Component: OSGI-INF/startupComponent.xml
+Bundle-ActivationPolicy: lazy
